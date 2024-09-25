@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { FaHospital, FaChevronDown, FaChevronUp } from 'react-icons/fa'; // Importar iconos desde react-icons
+import { Link } from 'react-router-dom'; // Importar Link para navegación
 
 interface SidebarProps {
   isOpen: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+  const [isHospitalOptionsOpen, setHospitalOptionsOpen] = useState(false); // Estado para manejar las subopciones de Hospital
+
+  const toggleHospitalOptions = () => {
+    setHospitalOptionsOpen(!isHospitalOptionsOpen);
+  };
+
   return (
     <div
       className={`fixed inset-y-0 left-0 transform ${
@@ -17,16 +25,35 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       <nav className="mt-5">
         <ul className="space-y-2">
           <li>
-            <a href="/dashboard" className="block px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white">
-              Hospitales
-            </a>
+            <div className="flex items-center justify-between px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white cursor-pointer" onClick={toggleHospitalOptions}>
+              <div className="flex items-center space-x-2">
+                <FaHospital className="text-white" />
+                <span>Hospitales</span>
+              </div>
+              <div>
+                {isHospitalOptionsOpen ? <FaChevronUp /> : <FaChevronDown />}
+              </div>
+            </div>
+
+            {/* Subopciones de Hospitales */}
+            {isHospitalOptionsOpen && (
+              <ul className="ml-8 space-y-1">
+                <li>
+                  <Link to="/hospitales" className="block px-4 py-1 text-gray-200 hover:bg-blue-600 hover:text-white">
+                    Lista de Hospitales
+                  </Link>
+                </li>
+                {/* Más subopciones pueden añadirse aquí */}
+              </ul>
+            )}
           </li>
+
+          {/* Otras opciones del menú */}
           <li>
-            <a href="/profile" className="block px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white">
-              Perfiles
+            <a href="/services" className="block px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white">
+              Servicios
             </a>
           </li>
-          {/* Más enlaces */}
         </ul>
       </nav>
     </div>
