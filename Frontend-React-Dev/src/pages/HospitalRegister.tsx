@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Map, { Marker, NavigationControl } from 'react-map-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoiam9lbGxvcGV6eiIsImEiOiJjbTFpM2VmZjMwa21uMnFwcWJ4a3RmZDd2In0.lXyWl4TbArzXg31Qf1q6oA'; // Reemplaza con tu token de Mapbox
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L, { LeafletMouseEvent } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const HospitalRegister: React.FC = () => {
   const navigate = useNavigate(); // Hook para manejar la navegación
@@ -63,14 +62,26 @@ const HospitalRegister: React.FC = () => {
     navigate('/hospitales'); // Navegar de regreso a la lista de hospitales
   };
 
-  // Maneja la actualización de latitud y longitud al mover el cursor en el mapa
-  const handleMapClick = (event: mapboxgl.MapLayerMouseEvent) => {
-    setFormData({
-      ...formData,
-      latitud: event.lngLat.lat,
-      longitud: event.lngLat.lng,
+  // Función para manejar los eventos del mapa
+  const MapClickHandler = () => {
+    useMapEvents({
+      click(event: LeafletMouseEvent) {
+        setFormData({
+          ...formData,
+          latitud: event.latlng.lat,
+          longitud: event.latlng.lng,
+        });
+      },
     });
+    return null;
   };
+
+  // Personalizar el icono del marcador
+  const customMarker = new L.Icon({
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+  });
   return (
     <div className="p-6">
       {/* Título de la página */}
@@ -178,26 +189,24 @@ const HospitalRegister: React.FC = () => {
           </div>
         </div>
         
-         {/* Sección para el mapa */}
-         <div>
+        <div>
           <label className="block text-gray-700 mb-2">Ubicación en el mapa</label>
           <div className="mb-4 h-64 w-full border rounded">
-            <Map
-              initialViewState={{
-                longitude: formData.longitud,
-                latitude: formData.latitud,
-                zoom: 12,
-              }}
-              style={{ width: '100%', height: '100%' }}
-              mapStyle="mapbox://styles/mapbox/streets-v11"
-              mapboxAccessToken={MAPBOX_TOKEN}
-              onClick={handleMapClick}
+            <MapContainer
+              center={[formData.latitud, formData.longitud]} 
+              zoom={12}
+              style={{ height: '100%', width: '100%' }}
             >
-              {/* Añadir marcador en la ubicación seleccionada */}
-              <Marker longitude={formData.longitud} latitude={formData.latitud} color="red" />
-              {/* Controles de navegación */}
-              <NavigationControl position="top-left" />
-            </Map>
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Marker
+                position={[formData.latitud, formData.longitud]}
+                icon={customMarker}
+              />
+              <MapClickHandler />
+            </MapContainer>
           </div>
         </div>
 
@@ -224,6 +233,7 @@ const HospitalRegister: React.FC = () => {
             />
           </div>
         </div>
+
     
 
         {/* Botones */}

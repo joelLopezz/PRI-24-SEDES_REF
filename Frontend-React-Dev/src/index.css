@@ -1,5 +1,7 @@
+/* Importar estilos de Leaflet al principio */
+@import "leaflet/dist/leaflet.css";
+
+/* Configuraciones de Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* En tu archivo index.css o similar */
-@import "leaflet/dist/leaflet.css";
