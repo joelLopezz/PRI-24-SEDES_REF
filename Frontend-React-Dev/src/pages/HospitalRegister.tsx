@@ -3,9 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L, { LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import EspecialidadesModal from './EspecialidadesModal'; // Importa el modal para especialidades
+import ServiciosModal from './ServiciosModal'; // Importa el modal para servicios
+
+// Definir la interfaz para los servicios
+interface Servicio {
+  unidad: string;
+  responsable: string;
+  codigo: string;
+  servicio: string;
+  requerimientos: {
+    equipamiento: boolean;
+    medicamentos: boolean;
+    insumos: boolean;
+  };
+}
 
 const HospitalRegister: React.FC = () => {
   const navigate = useNavigate(); // Hook para manejar la navegación
+  const [especialidades, setEspecialidades] = useState<string[]>([]);
+  const [servicios, setServicios] = useState<Servicio[]>([]); // Array para manejar servicios
+  const [isEspecialidadesModalOpen, setEspecialidadesModalOpen] = useState(false);
+  const [isServiciosModalOpen, setServiciosModalOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     nombre: '',
     direccion: '',
@@ -13,49 +33,38 @@ const HospitalRegister: React.FC = () => {
     telefono: '',
     rues: '',
     tipo: '',
-    servicios: [] as string[],
+    coordinadorRed: '', // Coordinador de red
     latitud: -17.3935, // Coordenada inicial (ejemplo)
     longitud: -66.1570, // Coordenada inicial (ejemplo)
   });
 
-  const provinciasEjemplo = ['Cercado', 'Quillacollo', 'Sacaba', 'Tiquipaya', 'Vinto']; // Ejemplos de provincias
-  const serviciosEjemplo = [
-    'Cardiología',
-    'Pediatría',
-    'Ginecología',
-    'Traumatología',
-    'Neurología',
-    'Odontología',
-  ]; // Ejemplos de servicios
+  const municipiosEjemplo = ['Cercado', 'Quillacollo', 'Sacaba', 'Tiquipaya', 'Vinto']; // Ejemplos de provincias
+  const coordinadoresRed = ['Primero', 'Segundo', 'Tercero']; // Opciones para el Coordinador de red
+
+//Para recibir las especialidades seleccionadas
+const handleEspecialidadesSelect = (especialidadesSeleccionadas: string[]) => {
+  setEspecialidades(especialidadesSeleccionadas);
+};
+//Para recibir lso servicios seleccionados
+const handleServiciosSelect = (serviciosSeleccionados: Servicio[]) => {
+  setServicios(serviciosSeleccionados);
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    if (e.target instanceof HTMLInputElement && e.target.type === 'checkbox') {
-      const { checked } = e.target;
-      if (checked) {
-        setFormData((prev) => ({
-          ...prev,
-          servicios: [...prev.servicios, value],
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          servicios: prev.servicios.filter((servicio) => servicio !== value),
-        }));
-      }
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí agregarías la lógica para enviar los datos a la base de datos o backend
-    console.log(formData);
+    if (especialidades.length === 0 || servicios.length === 0) {
+      alert("Debe seleccionar al menos una especialidad y un servicio.");
+      return;
+    }
+    console.log("Formulario enviado:", formData, especialidades, servicios);
   };
 
   const handleCancel = () => {
@@ -82,6 +91,7 @@ const HospitalRegister: React.FC = () => {
     iconSize: [25, 41],
     iconAnchor: [12, 41],
   });
+
   return (
     <div className="p-6">
       {/* Título de la página */}
@@ -114,7 +124,7 @@ const HospitalRegister: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700">Provincia</label>
+          <label className="block text-gray-700">Municipalidad</label>
           <select
             name="provincia"
             value={formData.provincia}
@@ -122,10 +132,10 @@ const HospitalRegister: React.FC = () => {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
-            <option value="">Seleccione una provincia</option>
-            {provinciasEjemplo.map((provincia) => (
-              <option key={provincia} value={provincia}>
-                {provincia}
+            <option value="">Seleccione el municipio</option>
+            {municipiosEjemplo.map((municipio) => (
+              <option key={municipio} value={municipio}>
+                {municipio}
               </option>
             ))}
           </select>
@@ -153,45 +163,65 @@ const HospitalRegister: React.FC = () => {
             required
           />
         </div>
+        
+        {/* Select para Coordinador de Red */}
         <div>
-          <label className="block text-gray-700">Tipo de Hospital</label>
+          <label className="block text-gray-700">Coordinador de Red</label>
           <select
-            name="tipo"
-            value={formData.tipo}
+            name="coordinadorRed"
+            value={formData.coordinadorRed}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
-            <option value="">Seleccione el tipo</option>
-            <option value="Primer Nivel">Primer Nivel</option>
-            <option value="Segundo Nivel">Segundo Nivel</option>
-            <option value="Tercer Nivel">Tercer Nivel</option>
+            <option value="">Seleccione el Coordinador de Red</option>
+            {coordinadoresRed.map((coordinador) => (
+              <option key={coordinador} value={coordinador}>
+                {coordinador}
+              </option>
+            ))}
           </select>
         </div>
 
+        {/* Botón para abrir el modal de Especialidades */}
         <div>
-          <label className="block text-gray-700">Cartera de Servicios</label>
-          <div className="grid grid-cols-2 gap-2">
-            {serviciosEjemplo.map((servicio) => (
-              <div key={servicio}>
-                <label className="inline-flex items-center">
-                  <input
-                    type="checkbox"
-                    name="servicios"
-                    value={servicio}
-                    onChange={handleChange}
-                    className="form-checkbox text-blue-500"
-                  />
-                  <span className="ml-2 text-gray-700">{servicio}</span>
-                </label>
-              </div>
-            ))}
-          </div>
+          <button
+            type="button"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={() => setEspecialidadesModalOpen(true)}
+          >
+            Seleccionar Especialidades
+          </button>
         </div>
-        
+
+        {/* Botón para abrir el modal de Servicios */}
+        <div>
+          <button
+            type="button"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={() => setServiciosModalOpen(true)}
+          >
+            Seleccionar Cartera de Servicios
+          </button>
+        </div>
+
+        {/* Modales */}
+        <EspecialidadesModal
+          isOpen={isEspecialidadesModalOpen}
+          onClose={() => setEspecialidadesModalOpen(false)}
+          onSelect={handleEspecialidadesSelect} //setEspecialidades
+        />
+
+        <ServiciosModal
+          isOpen={isServiciosModalOpen}
+          onClose={() => setServiciosModalOpen(false)}
+          onSelect={handleServiciosSelect} //setServicios
+        />
+
+        {/* Mapa de Leaflet */}
         <div>
           <label className="block text-gray-700 mb-2">Ubicación en el mapa</label>
-          <div className="mb-4 h-64 w-full border rounded">
+          <div className="mb-4 h-64 w-full border rounded relative" style={{ zIndex: 1 }}>
             <MapContainer
               center={[formData.latitud, formData.longitud]} 
               zoom={12}
@@ -234,9 +264,7 @@ const HospitalRegister: React.FC = () => {
           </div>
         </div>
 
-    
-
-        {/* Botones */}
+        {/* Botones para registrar o cancelar */}
         <div className="flex space-x-4">
           <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
             Registrar

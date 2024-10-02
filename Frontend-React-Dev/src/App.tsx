@@ -4,6 +4,8 @@ import Layout from './Components/Layout/Layout';
 import HospitalList from './pages/hospitalList';
 import HospitalRegister from './pages/HospitalRegister'; 
 import HospitalEdit from './pages/HospitalEdit';// Importar la página Lista de Hospitales
+import EspecialidadesList from './pages/Especialidades/EspecialidadesList';
+import EspecialidadCreate from './pages/Especialidades/EspecialidadCreate'; 
 
 
 const App: React.FC = () => {
@@ -14,6 +16,8 @@ const App: React.FC = () => {
           <Route path="/hospitales" element={<HospitalList />} />
           <Route path="/hospitales/registrar" element={<HospitalRegister />} />
           <Route path="/hospitales/editar/:id" element={<HospitalEdit />} />
+          <Route path="/especialidades" element={<EspecialidadesList />} />
+          <Route path="/especialidades/crear" element={<EspecialidadCreate />} /> 
           {/* Puedes agregar más rutas aquí para otras páginas */}
         </Routes>
       </Layout>

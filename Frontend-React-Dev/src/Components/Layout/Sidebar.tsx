@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaHospital, FaChevronDown, FaChevronUp } from 'react-icons/fa'; // Importar iconos desde react-icons
+import { FaHospital, FaChevronDown, FaChevronUp, FaListAlt } from 'react-icons/fa'; // Agregamos el icono para especialidades
 import { Link } from 'react-router-dom'; // Importar Link para navegación
 
 interface SidebarProps {
@@ -43,9 +43,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                     Lista de Hospitales
                   </Link>
                 </li>
-                {/* Más subopciones pueden añadirse aquí */}
               </ul>
             )}
+          </li>
+
+          {/* Opción para Especialidades */}
+          <li>
+            <Link to="/especialidades" className="block px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white">
+              <div className="flex items-center space-x-2">
+                <FaListAlt className="text-white" />
+                <span>Especialidades</span>
+              </div>
+            </Link>
           </li>
 
           {/* Otras opciones del menú */}
