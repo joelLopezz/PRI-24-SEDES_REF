@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConfirmationModal from '../Components/ConfirmationModal'; // Importar el modal
+import ConfirmationModal from '../../Components/ConfirmationModal'; // Importar el modal
 
 const HospitalList: React.FC = () => {
     const navigate = useNavigate();

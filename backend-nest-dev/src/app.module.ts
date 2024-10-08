@@ -3,9 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Specialty } from './specialty/specialty.entity'; // Importar la entidad Specialty
-import { SpecialtyService } from './specialty/specialty.service';
-import { SpecialtyController } from './specialty/specialty.controller';
+import { SpecialtyModule } from './specialty/specialty.module'; // Importar el módulo de Specialty
+import { ServicioModule } from './servicio/servicio.module';
+import { TipoModule } from './tipo/tipo.module';
 
 @Module({
   imports: [
@@ -23,12 +23,14 @@ import { SpecialtyController } from './specialty/specialty.controller';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // Solo en desarrollo. Desactívalo en producción.
+        synchronize: false, // Solo en desarrollo. Desactívalo en producción.
       }),
     }),
-    TypeOrmModule.forFeature([Specialty]), // Importar el módulo de Specialty
+    SpecialtyModule, // Ahora Specialty está encapsulado en su propio módulo
+    ServicioModule,
+    TipoModule,
   ],
-  controllers: [AppController, SpecialtyController],
-  providers: [AppService, SpecialtyService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -2,30 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L, { LeafletMouseEvent } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import EspecialidadesModal from './EspecialidadesModal'; // Importa el modal para especialidades
-import ServiciosModal from './ServiciosModal'; // Importa el modal para servicios
+import 'leaflet/dist/leaflet.css';// Importa el modal para servicios
 
-// Definir la interfaz para los servicios
-interface Servicio {
-  unidad: string;
-  responsable: string;
-  codigo: string;
-  servicio: string;
-  requerimientos: {
-    equipamiento: boolean;
-    medicamentos: boolean;
-    insumos: boolean;
-  };
-}
 
 const HospitalRegister: React.FC = () => {
   const navigate = useNavigate(); // Hook para manejar la navegación
-  const [especialidades, setEspecialidades] = useState<string[]>([]);
-  const [servicios, setServicios] = useState<Servicio[]>([]); // Array para manejar servicios
-  const [isEspecialidadesModalOpen, setEspecialidadesModalOpen] = useState(false);
-  const [isServiciosModalOpen, setServiciosModalOpen] = useState(false);
-
   const [formData, setFormData] = useState({
     nombre: '',
     direccion: '',
@@ -41,15 +22,6 @@ const HospitalRegister: React.FC = () => {
   const municipiosEjemplo = ['Cercado', 'Quillacollo', 'Sacaba', 'Tiquipaya', 'Vinto']; // Ejemplos de provincias
   const coordinadoresRed = ['Primero', 'Segundo', 'Tercero']; // Opciones para el Coordinador de red
 
-//Para recibir las especialidades seleccionadas
-const handleEspecialidadesSelect = (especialidadesSeleccionadas: string[]) => {
-  setEspecialidades(especialidadesSeleccionadas);
-};
-//Para recibir lso servicios seleccionados
-const handleServiciosSelect = (serviciosSeleccionados: Servicio[]) => {
-  setServicios(serviciosSeleccionados);
-};
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -60,11 +32,6 @@ const handleServiciosSelect = (serviciosSeleccionados: Servicio[]) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (especialidades.length === 0 || servicios.length === 0) {
-      alert("Debe seleccionar al menos una especialidad y un servicio.");
-      return;
-    }
-    console.log("Formulario enviado:", formData, especialidades, servicios);
   };
 
   const handleCancel = () => {
@@ -182,41 +149,6 @@ const handleServiciosSelect = (serviciosSeleccionados: Servicio[]) => {
             ))}
           </select>
         </div>
-
-        {/* Botón para abrir el modal de Especialidades */}
-        <div>
-          <button
-            type="button"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={() => setEspecialidadesModalOpen(true)}
-          >
-            Seleccionar Especialidades
-          </button>
-        </div>
-
-        {/* Botón para abrir el modal de Servicios */}
-        <div>
-          <button
-            type="button"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={() => setServiciosModalOpen(true)}
-          >
-            Seleccionar Cartera de Servicios
-          </button>
-        </div>
-
-        {/* Modales */}
-        <EspecialidadesModal
-          isOpen={isEspecialidadesModalOpen}
-          onClose={() => setEspecialidadesModalOpen(false)}
-          onSelect={handleEspecialidadesSelect} //setEspecialidades
-        />
-
-        <ServiciosModal
-          isOpen={isServiciosModalOpen}
-          onClose={() => setServiciosModalOpen(false)}
-          onSelect={handleServiciosSelect} //setServicios
-        />
 
         {/* Mapa de Leaflet */}
         <div>

@@ -57,11 +57,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             </Link>
           </li>
 
-          {/* Otras opciones del menú */}
+          {/* Opción para Servicios */}
           <li>
-            <a href="/services" className="block px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white">
-              Servicios
-            </a>
+            <Link to="/servicios" className="block px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white">
+              <div className="flex items-center space-x-2">
+                <FaListAlt className="text-white" />
+                <span>Servicios</span>
+              </div>
+            </Link>
           </li>
         </ul>
       </nav>
