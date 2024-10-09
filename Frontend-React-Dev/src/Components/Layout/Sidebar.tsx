@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaHospital, FaChevronDown, FaChevronUp, FaListAlt } from 'react-icons/fa'; // Agregamos el icono para especialidades
+import React from 'react';
+import { FaHospital, FaListAlt } from 'react-icons/fa'; // Agregamos el icono para especialidades
 import { Link } from 'react-router-dom'; // Importar Link para navegación
 
 interface SidebarProps {
@@ -7,12 +7,6 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
-  const [isHospitalOptionsOpen, setHospitalOptionsOpen] = useState(false); // Estado para manejar las subopciones de Hospital
-
-  const toggleHospitalOptions = () => {
-    setHospitalOptionsOpen(!isHospitalOptionsOpen);
-  };
-
   return (
     <div
       className={`fixed inset-y-0 left-0 transform ${
@@ -24,27 +18,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       </div>
       <nav className="mt-5">
         <ul className="space-y-2">
+          {/* Opción para Hospitales */}
           <li>
-            <div className="flex items-center justify-between px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white cursor-pointer" onClick={toggleHospitalOptions}>
+            <Link to="/establecimientos" className="block px-4 py-2 text-gray-200 hover:bg-blue-700 hover:text-white">
               <div className="flex items-center space-x-2">
                 <FaHospital className="text-white" />
                 <span>Hospitales</span>
               </div>
-              <div>
-                {isHospitalOptionsOpen ? <FaChevronUp /> : <FaChevronDown />}
-              </div>
-            </div>
-
-            {/* Subopciones de Hospitales */}
-            {isHospitalOptionsOpen && (
-              <ul className="ml-8 space-y-1">
-                <li>
-                  <Link to="/hospitales" className="block px-4 py-1 text-gray-200 hover:bg-blue-600 hover:text-white">
-                    Lista de Hospitales
-                  </Link>
-                </li>
-              </ul>
-            )}
+            </Link>
           </li>
 
           {/* Opción para Especialidades */}

@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { SpecialtyModule } from './specialty/specialty.module'; // Importar el módulo de Specialty
 import { ServicioModule } from './servicio/servicio.module';
 import { TipoModule } from './tipo/tipo.module';
+import { EstablecimientoModule } from './establecimiento/establecimiento.module';
+import { RedCordinacionModule } from './red-cordinacion/red-cordinacion.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { TipoModule } from './tipo/tipo.module';
     SpecialtyModule, // Ahora Specialty está encapsulado en su propio módulo
     ServicioModule,
     TipoModule,
+    EstablecimientoModule,
+    RedCordinacionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

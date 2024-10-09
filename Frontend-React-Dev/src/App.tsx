@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Layout from './Components/Layout/Layout';
-import HospitalList from './pages/Hospital/hospitalList';
-import HospitalRegister from './pages/Hospital/HospitalRegister';
-import HospitalEdit from './pages/Hospital/HospitalEdit';
+import EstablecimientoList from './pages/EstablecimientoSalud/EstablecimientoList'; // Cambiar el nombre
+import EstablecimientoRegister from './pages/EstablecimientoSalud/EstablecimientoRegister'; // Cambiar el nombre
+import EstablecimientoEdit from './pages/EstablecimientoSalud/EstablecimientoEdit'; // Cambiar el nombre
 import EspecialidadesList from './pages/Especialidades/EspecialidadesList';
 import EspecialidadCreate from './pages/Especialidades/EspecialidadCreate';
 import EspecialidadEdit from './pages/Especialidades/EspecialidadEdit';
@@ -18,16 +18,16 @@ const App: React.FC = () => {
     <Router>
       <Layout>
         <Routes>
-          {/* Rutas de hospitales */}
-          <Route path="/hospitales" element={<HospitalList />} />
-          <Route path="/hospitales/registrar" element={<HospitalRegister />} />
-          <Route path="/hospitales/editar/:id" element={<HospitalEdit />} />
-          
+          {/* Rutas de establecimientos de salud */}
+          <Route path="/establecimientos" element={<EstablecimientoList />} />
+          <Route path="/establecimientos/crear" element={<EstablecimientoRegister />} />
+          <Route path="/establecimientos/editar/:id" element={<EstablecimientoEdit />} />
+
           {/* Rutas de especialidades */}
           <Route path="/especialidades" element={<EspecialidadesList />} />
           <Route path="/especialidades/crear" element={<EspecialidadCreate />} />
           <Route path="/especialidades/editar/:id" element={<EspecialidadEdit />} />
-          
+
           {/* Rutas de servicios */}
           <Route path="/servicios" element={<ServiceList />} />
           <Route path="/servicios/crear" element={<CreateService />} />
