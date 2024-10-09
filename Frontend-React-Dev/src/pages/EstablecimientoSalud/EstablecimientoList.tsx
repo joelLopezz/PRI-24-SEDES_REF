@@ -90,12 +90,12 @@ const EstablecimientoList: React.FC = () => {
     navigate(`/establecimientos/editar/${id}`);
   };
 
-  if (loading) return <p>Cargando establecimientos...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <p className="text-center text-lg text-gray-600">Cargando establecimientos...</p>;
+  if (error) return <p className="text-center text-lg text-red-600">{error}</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Establecimientos</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Establecimientos</h1>
 
       {/* Modal de confirmación */}
       <ConfirmationModal
@@ -106,64 +106,71 @@ const EstablecimientoList: React.FC = () => {
       />
 
       {/* Botón para agregar un nuevo establecimiento */}
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-6">
         <button
           onClick={handleCreate}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full hover:from-green-500 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
         >
           Agregar Nuevo Establecimiento
         </button>
       </div>
 
       {/* Tabla de establecimientos */}
-      <table className="min-w-full bg-white border">
-        <thead>
-          <tr className="bg-blue-800 text-white">
-            <th className="py-2 px-4 text-left">Nombre</th>
-            <th className="py-2 px-4 text-left">Nivel</th>
-            <th className="py-2 px-4 text-left">Teléfono</th>
-            <th className="py-2 px-4 text-left">Latitud</th> {/* Nueva columna para la latitud */}
-            <th className="py-2 px-4 text-left">Longitud</th> {/* Nueva columna para la longitud */}
-            <th className="py-2 px-4 text-left">Red de Coordinación</th> {/* Columna combinada */}
-            <th className="py-2 px-4 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {establecimientos.map((establecimiento) => (
-            <tr key={establecimiento.id} className="border-t">
-              <td className="py-2 px-4">{establecimiento.nombre}</td>
-              <td className="py-2 px-4">{establecimiento.nivel}</td>
-              <td className="py-2 px-4">{establecimiento.telefono}</td>
-              <td className="py-2 px-4">{establecimiento.latitud}</td> {/* Mostrar la latitud */}
-              <td className="py-2 px-4">{establecimiento.longitud}</td> {/* Mostrar la longitud */}
-              <td className="py-2 px-4">
-                {establecimiento.redCordinacion ? (
-                  <>
-                    {establecimiento.redCordinacion.nombre} -{' '}
-                    <strong>{establecimiento.redCordinacion.numeracion}</strong> {/* Mostrar nombre y numeración */}
-                  </>
-                ) : (
-                  'No asignada'
-                )}
-              </td>
-              <td className="py-2 px-4">
-                <button
-                  onClick={() => handleEdit(establecimiento.id)}
-                  className="text-blue-500 hover:text-blue-700 mr-4"
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => handleDeleteClick(establecimiento.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <FaTrash />
-                </button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-lg rounded-lg">
+          <thead>
+            <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+              <th className="py-4 px-6 text-left font-semibold">Nombre</th>
+              <th className="py-4 px-6 text-left font-semibold">Nivel</th>
+              <th className="py-4 px-6 text-left font-semibold">Teléfono</th>
+              <th className="py-4 px-6 text-left font-semibold">Latitud</th>
+              <th className="py-4 px-6 text-left font-semibold">Longitud</th>
+              <th className="py-4 px-6 text-left font-semibold">Red de Coordinación</th>
+              <th className="py-4 px-6 text-left font-semibold">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {establecimientos.map((establecimiento, index) => (
+              <tr
+                key={establecimiento.id}
+                className={`${
+                  index % 2 === 0 ? 'bg-white' : 'bg-white'
+                } hover:bg-gray-200 transition-colors duration-200`}
+              >
+                <td className="py-4 px-6">{establecimiento.nombre}</td>
+                <td className="py-4 px-6">{establecimiento.nivel}</td>
+                <td className="py-4 px-6">{establecimiento.telefono}</td>
+                <td className="py-4 px-6">{establecimiento.latitud}</td>
+                <td className="py-4 px-6">{establecimiento.longitud}</td>
+                <td className="py-4 px-6">
+                  {establecimiento.redCordinacion ? (
+                    <>
+                      {establecimiento.redCordinacion.nombre} -{' '}
+                      <strong>{establecimiento.redCordinacion.numeracion}</strong>
+                    </>
+                  ) : (
+                    'No asignada'
+                  )}
+                </td>
+                <td className="py-4 px-6 flex space-x-4">
+                  <button
+                    onClick={() => handleEdit(establecimiento.id)}
+                    className="text-blue-500 hover:text-blue-700 transition-transform transform hover:scale-110"
+                  >
+                    <FaEdit className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(establecimiento.id)}
+                    className="text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
+                  >
+                    <FaTrash className="w-5 h-5" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
