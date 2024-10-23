@@ -5,8 +5,8 @@ import { CamaController } from './cama.controller';
 import { Cama } from './cama.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cama])], // Importamos el repositorio de la entidad Cama
-  providers: [CamaService], // Registramos el servicio de Cama
-  controllers: [CamaController], // Registramos el controlador de Cama
+  imports: [TypeOrmModule.forFeature([Cama])], 
+  providers: [CamaService], 
+  controllers: [CamaController],
 })
 export class DatosCamaModule {}

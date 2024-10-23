@@ -44,4 +44,32 @@ export class UsuarioService {
 
       return usuario; 
     }
+
+
+
+    // Método para actualizar la contraseña (requiere la contraseña actual y la nueva)
+  async updatePassword(usuario_ID: number, contraseniaActual: string, nuevaContrasenia: string): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOne({ where: { usuario_ID } });
+
+    if (!usuario) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Verificar si la contraseña actual es correcta
+    const isPasswordMatching = await bcrypt.compare(contraseniaActual, usuario.contrasenia);
+    if (!isPasswordMatching) {
+      throw new UnauthorizedException('La contraseña actual es incorrecta');
+    }
+
+    // Generar un nuevo hash para la nueva contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(nuevaContrasenia, salt);
+
+    // Actualizar la contraseña y la fecha de modificación
+    usuario.contrasenia = hashedPassword;
+    usuario.fecha_modificacion = new Date();
+
+    // Guardar el usuario actualizado
+    return this.usuarioRepository.save(usuario);
+  }
 }

@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 // Controladores y servicios
 import { PersonalSaludController } from './personal_salud/personal_salud.controller';
 import { PersonalSaludService } from './personal_salud/personal_salud.service';
-//import {UsuarioService} from  './usuario/usuario.service';
 import { CamaController} from './cama/cama.controller';
 import { CamaService } from './cama/cama.service';
 

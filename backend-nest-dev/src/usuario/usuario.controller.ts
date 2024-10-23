@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Put, Param, Body, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';  // Asegúrate de importar correctamente el servicio
 
 @Controller('usuario')
@@ -22,4 +22,20 @@ export class UsuarioController {
       estado: usuario.estado,
     };
   }
+
+  // Actualizar la contraseña
+  @Put(':usuario_ID/contrasenia')
+  async updatePassword(
+    @Param('usuario_ID') usuario_ID: number,
+    @Body('nuevaContrasenia') nuevaContrasenia: string,
+  ) {
+    const usuario = await this.usuarioService.updatePassword(usuario_ID, nuevaContrasenia);
+
+    if (!usuario) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    return { mensaje: 'Contraseña actualizada exitosamente' };
+  }
+  
 }
