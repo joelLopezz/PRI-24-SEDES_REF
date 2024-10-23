@@ -1,35 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Layout from './Components/Layout/Layout'; // Layout con Sidebar, NavBar y Footer
+import Login from './pages/Login/login'; // Página de Login
 
-function App() {
-  const [count, setCount] = useState(0)
+// Páginas relacionadas con Personal de Salud
+import PersonalSaludList from './pages/personal_salud/PersonalSaludList';
+import PersonalSaludCreate from './pages/personal_salud/PersonalSaludCreate';
+import PersonalSaludEdit from './pages/personal_salud/PersonalSaludEdit';
 
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        {/* Redirigir a login cuando se accede a la raíz */}
+        <Route path="/" element={<Navigate to="/login" />} />
 
-export default App
+        {/* Ruta exclusiva para el login sin el Layout */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Rutas que utilizan el Layout */}
+        <Route element={<Layout />}>
+          {/* Rutas de Personal de Salud */}
+          <Route path="/personal-salud" element={<PersonalSaludList />} />
+          <Route path="/personal-salud/create" element={<PersonalSaludCreate isEditing={false} />} />
+          <Route path="/personal-salud/edit/:id" element={<PersonalSaludEdit isEditing={true} />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
