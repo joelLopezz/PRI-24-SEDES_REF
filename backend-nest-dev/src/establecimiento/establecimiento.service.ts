@@ -9,10 +9,11 @@ export class EstablecimientoService {
     @InjectRepository(EstablecimientoSalud)
     private establecimientoRepository: Repository<EstablecimientoSalud>,
   ) {}
-  //prettier-ignore
+
   // Crear un nuevo establecimiento
-  async create(data: Partial<EstablecimientoSalud>): Promise<EstablecimientoSalud> {
-    // Asignamos temporalmente el ID del usuario de creación
+  async create(
+    data: Partial<EstablecimientoSalud>,
+  ): Promise<EstablecimientoSalud> {
     data.usuario_creacion = 1;
     const newEstablecimiento = this.establecimientoRepository.create(data);
     return this.establecimientoRepository.save(newEstablecimiento);
@@ -21,27 +22,29 @@ export class EstablecimientoService {
   // Obtener todos los establecimientos
   async findAll(): Promise<EstablecimientoSalud[]> {
     return this.establecimientoRepository.find({
-      relations: ['redCordinacion'], // Incluir la relación con RedCordinacion
+      relations: ['redCordinacion', 'municipio'], // Incluir la relación con RedCordinacion y Municipio
     });
   }
-  //prettier-ignore
+
   // Obtener un establecimiento por su ID
   async findOne(id: number): Promise<EstablecimientoSalud> {
     const establecimiento = await this.establecimientoRepository.findOne({
       where: { id },
-      relations: ['redCordinacion'], // Incluir la relación con RedCordinacion
+      relations: ['redCordinacion', 'municipio'], // Incluir la relación con RedCordinacion y Municipio
     });
     if (!establecimiento) {
       throw new NotFoundException(`Establecimiento con ID ${id} no encontrado`);
     }
     return establecimiento;
   }
-  //prettier-ignore
+
   // Actualizar un establecimiento
-  async update(id: number, data: Partial<EstablecimientoSalud>): Promise<EstablecimientoSalud> {
-    // Actualizamos la fecha de modificación y asignamos el usuario que modifica
+  async update(
+    id: number,
+    data: Partial<EstablecimientoSalud>,
+  ): Promise<EstablecimientoSalud> {
     data.fecha_modificacion = new Date();
-    data.usuario_modificacion = 1; // Temporalmente 1
+    data.usuario_modificacion = 1;
     await this.establecimientoRepository.update(id, data);
     return this.establecimientoRepository.findOne({ where: { id } });
   }
@@ -51,7 +54,7 @@ export class EstablecimientoService {
     await this.establecimientoRepository.update(id, {
       estado: 0,
       fecha_modificacion: new Date(),
-      usuario_modificacion: 1, // Temporalmente 1
+      usuario_modificacion: 1,
     });
   }
 }

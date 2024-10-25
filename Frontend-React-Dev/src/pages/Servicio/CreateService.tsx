@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 
-// Definir la interfaz para el tipo
-interface Tipo {
-  tipo_ID: number;
+// Definir la interfaz para las especialidades
+interface Especialidad {
+  id: number;
   nombre: string;
 }
 
@@ -14,33 +14,31 @@ const CreateService: React.FC = () => {
 
   // Estado para los datos del formulario
   const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    costo: '',
-    tipo_tipo_ID: '', // Aquí almacenamos el ID del tipo seleccionado
+    codigo: '', // Código del servicio
+    nombre: '', // Nombre del servicio
+    especialidad_ID: '', // Aquí almacenamos el ID de la especialidad seleccionada
   });
 
-  // Estado para almacenar los tipos
-  const [tipos, setTipos] = useState<Tipo[]>([]);
+  // Estado para almacenar las especialidades
+  const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
 
-  // Efecto para cargar los tipos desde el backend
+  // Efecto para cargar las especialidades desde el backend
   useEffect(() => {
-    const fetchTipos = async () => {
+    const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get<Tipo[]>('http://localhost:3000/tipo/activos'); // Tipamos la respuesta de Axios como Tipo[]
-        setTipos(response.data); // Ahora TypeScript sabrá que response.data es de tipo Tipo[]
+        const response = await axios.get<Especialidad[]>('http://localhost:3000/specialties'); // Endpoints de especialidades
+        setEspecialidades(response.data); // Ahora TypeScript sabrá que response.data es de tipo Especialidad[]
       } catch (error) {
-        console.error('Error al obtener los tipos:', error);
+        console.error('Error al obtener las especialidades:', error);
       }
     };
-  
-    fetchTipos();
+
+    fetchEspecialidades();
   }, []);
-  
 
   // Manejador para los cambios en los campos del formulario
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -51,13 +49,13 @@ const CreateService: React.FC = () => {
   // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Verificar que se haya seleccionado un tipo válido
-    if (!formData.tipo_tipo_ID || formData.tipo_tipo_ID === "") {
-      alert("Por favor, selecciona un tipo válido.");
+
+    // Verificar que se haya seleccionado una especialidad válida
+    if (!formData.especialidad_ID || formData.especialidad_ID === "") {
+      alert("Por favor, selecciona una especialidad válida.");
       return;
     }
-  
+
     try {
       // Enviar la solicitud POST
       await axios.post('http://localhost:3000/servicio', { ...formData, estado: 1 });
@@ -66,7 +64,6 @@ const CreateService: React.FC = () => {
       console.error('Error al crear el servicio:', error);
     }
   };
-  
 
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -84,6 +81,18 @@ const CreateService: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+          <label className="block text-gray-700">Código del Servicio</label>
+          <input
+            type="text"
+            name="codigo"
+            value={formData.codigo}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+
+        <div>
           <label className="block text-gray-700">Nombre del Servicio</label>
           <input
             type="text"
@@ -95,49 +104,23 @@ const CreateService: React.FC = () => {
           />
         </div>
 
+        {/* Select para la Especialidad */}
         <div>
-          <label className="block text-gray-700">Descripción</label>
-          <textarea
-            name="descripcion"
-            value={formData.descripcion}
+          <label className="block text-gray-700">Especialidad</label>
+          <select
+            name="especialidad_ID"
+            value={formData.especialidad_ID}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
-          ></textarea>
-        </div>
-
-        <div>
-          <label className="block text-gray-700">Costo</label>
-          <input
-            type="number"
-            name="costo"
-            value={formData.costo}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-            step="0.01" // Permite decimales
-            min="0"
-          />
-        </div>
-
-        {/* Select para el Tipo */}
-        <div>
-          <label className="block text-gray-700">Tipo</label>
-<select
-  name="tipo_tipo_ID"
-  value={formData.tipo_tipo_ID}
-  onChange={handleChange}
-  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-  required
->
-  <option value="">Selecciona un tipo</option>
-  {tipos.map((tipo) => (
-    <option key={tipo.tipo_ID} value={tipo.tipo_ID}>
-      {tipo.nombre}
-    </option>
-  ))}
-</select>
-
+          >
+            <option value="">Selecciona una especialidad</option>
+            {especialidades.map((especialidad) => (
+              <option key={especialidad.id} value={especialidad.id}>
+                {especialidad.nombre}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Botones */}

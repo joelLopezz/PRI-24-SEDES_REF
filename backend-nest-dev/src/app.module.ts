@@ -8,6 +8,8 @@ import { ServicioModule } from './servicio/servicio.module';
 import { TipoModule } from './tipo/tipo.module';
 import { EstablecimientoModule } from './establecimiento/establecimiento.module';
 import { RedCordinacionModule } from './red-cordinacion/red-cordinacion.module';
+import { MunicipioModule } from './municipio/municipio.module';
+import { EstabEspecialidadModule } from './estab_especialidad/estab_especialidad.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { RedCordinacionModule } from './red-cordinacion/red-cordinacion.module';
     TipoModule,
     EstablecimientoModule,
     RedCordinacionModule,
+    MunicipioModule,
+    EstabEspecialidadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

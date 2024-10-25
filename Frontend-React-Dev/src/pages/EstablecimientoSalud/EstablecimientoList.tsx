@@ -4,6 +4,11 @@ import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y elimin
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Modal para confirmación
 
 // Definir las interfaces para los datos
+interface Municipio {
+  municipio_ID: number;
+  nombre: string;
+}
+
 interface RedCordinacion {
   red_ID: number;
   nombre: string;
@@ -15,10 +20,13 @@ interface Establecimiento {
   nombre: string;
   nivel: string;
   telefono: string;
-  latitud: number; // Añadir latitud
-  longitud: number; // Añadir longitud
+  latitud: number;
+  longitud: number;
+  rues: string; // Añadir el campo rues
+  municipio: Municipio; // Añadir la relación con municipio
   redCordinacion: RedCordinacion; // Relación con Red de Coordinación
 }
+
 
 const EstablecimientoList: React.FC = () => {
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
@@ -45,9 +53,10 @@ const EstablecimientoList: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     fetchEstablecimientos();
   }, []);
+  
 
   const handleDeleteClick = (id: number) => {
     setSelectedEstablecimientoId(id);
@@ -117,60 +126,67 @@ const EstablecimientoList: React.FC = () => {
 
       {/* Tabla de establecimientos */}
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-lg rounded-lg">
-          <thead>
-            <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-              <th className="py-4 px-6 text-left font-semibold">Nombre</th>
-              <th className="py-4 px-6 text-left font-semibold">Nivel</th>
-              <th className="py-4 px-6 text-left font-semibold">Teléfono</th>
-              <th className="py-4 px-6 text-left font-semibold">Latitud</th>
-              <th className="py-4 px-6 text-left font-semibold">Longitud</th>
-              <th className="py-4 px-6 text-left font-semibold">Red de Coordinación</th>
-              <th className="py-4 px-6 text-left font-semibold">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {establecimientos.map((establecimiento, index) => (
-              <tr
-                key={establecimiento.id}
-                className={`${
-                  index % 2 === 0 ? 'bg-white' : 'bg-white'
-                } hover:bg-gray-200 transition-colors duration-200`}
-              >
-                <td className="py-4 px-6">{establecimiento.nombre}</td>
-                <td className="py-4 px-6">{establecimiento.nivel}</td>
-                <td className="py-4 px-6">{establecimiento.telefono}</td>
-                <td className="py-4 px-6">{establecimiento.latitud}</td>
-                <td className="py-4 px-6">{establecimiento.longitud}</td>
-                <td className="py-4 px-6">
-                  {establecimiento.redCordinacion ? (
-                    <>
-                      {establecimiento.redCordinacion.nombre} -{' '}
-                      <strong>{establecimiento.redCordinacion.numeracion}</strong>
-                    </>
-                  ) : (
-                    'No asignada'
-                  )}
-                </td>
-                <td className="py-4 px-6 flex space-x-4">
-                  <button
-                    onClick={() => handleEdit(establecimiento.id)}
-                    className="text-blue-500 hover:text-blue-700 transition-transform transform hover:scale-110"
-                  >
-                    <FaEdit className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(establecimiento.id)}
-                    className="text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
-                  >
-                    <FaTrash className="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  <table className="min-w-full bg-white shadow-lg rounded-lg">
+    <thead>
+      <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <th className="py-4 px-6 text-left font-semibold">Nombre</th>
+        <th className="py-4 px-6 text-left font-semibold">Nivel</th>
+        <th className="py-4 px-6 text-left font-semibold">Teléfono</th>
+        <th className="py-4 px-6 text-left font-semibold">Latitud</th>
+        <th className="py-4 px-6 text-left font-semibold">Longitud</th>
+        <th className="py-4 px-6 text-left font-semibold">RUES</th> {/* Nueva columna RUES */}
+        <th className="py-4 px-6 text-left font-semibold">Municipio</th> {/* Nueva columna Municipio */}
+        <th className="py-4 px-6 text-left font-semibold">Red de Coordinación</th>
+        <th className="py-4 px-6 text-left font-semibold">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {establecimientos.map((establecimiento, index) => (
+        <tr
+          key={establecimiento.id}
+          className={`${
+            index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
+          } hover:bg-gray-200 transition-colors duration-200`}
+        >
+          <td className="py-4 px-6">{establecimiento.nombre}</td>
+          <td className="py-4 px-6">{establecimiento.nivel}</td>
+          <td className="py-4 px-6">{establecimiento.telefono}</td>
+          <td className="py-4 px-6">{establecimiento.latitud}</td>
+          <td className="py-4 px-6">{establecimiento.longitud}</td>
+          <td className="py-4 px-6">{establecimiento.rues}</td> {/* Mostrar RUES */}
+          <td className="py-4 px-6">
+            {establecimiento.municipio ? establecimiento.municipio.nombre : 'Sin municipio'} {/* Mostrar Municipio */}
+          </td>
+          <td className="py-4 px-6">
+            {establecimiento.redCordinacion ? (
+              <>
+                {establecimiento.redCordinacion.nombre} -{' '}
+                <strong>{establecimiento.redCordinacion.numeracion}</strong>
+              </>
+            ) : (
+              'No asignada'
+            )}
+          </td>
+          <td className="py-4 px-6 flex space-x-4">
+            <button
+              onClick={() => handleEdit(establecimiento.id)}
+              className="text-blue-500 hover:text-blue-700 transition-transform transform hover:scale-110"
+            >
+              <FaEdit className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => handleDeleteClick(establecimiento.id)}
+              className="text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
+            >
+              <FaTrash className="w-5 h-5" />
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 };

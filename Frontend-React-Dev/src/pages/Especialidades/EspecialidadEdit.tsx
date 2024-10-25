@@ -3,12 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 
-
 interface Especialidad {
   id: number;
   nombre: string;
-  descripcion: string;
-  status: number;
+  estado: number;
 }
 
 const EspecialidadEdit: React.FC = () => {
@@ -18,8 +16,7 @@ const EspecialidadEdit: React.FC = () => {
   const [formData, setFormData] = useState<Especialidad>({
     id: 0,
     nombre: '',
-    descripcion: '',
-    status: 1,
+    estado: 1, // Manteniendo estado en 1 (activo)
   });
 
   const [loading, setLoading] = useState(true);
@@ -40,7 +37,7 @@ const EspecialidadEdit: React.FC = () => {
     fetchEspecialidad();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -68,7 +65,7 @@ const EspecialidadEdit: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Cargando datos...</div>;
+    return <div className="text-center text-lg text-gray-600">Cargando datos...</div>;
   }
 
   return (
@@ -86,17 +83,6 @@ const EspecialidadEdit: React.FC = () => {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-        </div>
-
-        <div>
-          <label className="block text-gray-700">Descripción</label>
-          <textarea
-            name="descripcion"
-            value={formData.descripcion}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          ></textarea>
         </div>
 
         {/* Botones */}

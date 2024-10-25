@@ -3,20 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 
-
 const EspecialidadCreate: React.FC = () => {
   const navigate = useNavigate();
 
   // Estado del formulario con nombres correctos según el backend
   const [formData, setFormData] = useState({
-    nombre: '', // Cambiado de "name" a "nombre"
-    descripcion: '', // Cambiado de "description" a "descripcion"
+    nombre: '', // Solo el campo "nombre"
   });
 
   const [isModalOpen, setModalOpen] = useState(false); // Controlamos la apertura del modal de éxito
 
   // Al cambiar el valor de un campo
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -31,7 +29,7 @@ const EspecialidadCreate: React.FC = () => {
       // Log para verificar datos antes de enviar
       console.log('Enviando datos:', formData);
 
-      // Enviar la solicitud POST con el status=1 por defecto
+      // Enviar la solicitud POST con el estado=1 por defecto
       await axios.post('http://localhost:3000/specialties', { ...formData, estado: 1 });
       setModalOpen(true); // Abrimos el modal de éxito al completar la creación
     } catch (error) {
@@ -66,17 +64,6 @@ const EspecialidadCreate: React.FC = () => {
           />
         </div>
 
-        <div>
-          <label className="block text-gray-700">Descripción</label>
-          <textarea
-            name="descripcion" // Asegúrate de que el name sea "descripcion"
-            value={formData.descripcion}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          ></textarea>
-        </div>
-
         {/* Botones */}
         <div className="flex space-x-4">
           <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
@@ -91,6 +78,7 @@ const EspecialidadCreate: React.FC = () => {
           </button>
         </div>
       </form>
+
       {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}

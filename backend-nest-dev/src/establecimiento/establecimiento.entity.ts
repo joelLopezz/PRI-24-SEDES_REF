@@ -1,4 +1,5 @@
-import { RedCordinacion } from '../red-cordinacion/red-cordinacion.entity'; // Importa la entidad RedCordinacion
+import { RedCordinacion } from '../red-cordinacion/red-cordinacion.entity';
+import { Municipio } from '../municipio/municipio.entity';
 import {
   Entity,
   Column,
@@ -23,9 +24,6 @@ export class EstablecimientoSalud {
   @Column({ type: 'varchar', length: 12 })
   telefono: string;
 
-  @Column({ type: 'varchar', length: 60, nullable: true })
-  sello: string;
-
   @Column({ type: 'decimal', precision: 10, scale: 8 })
   latitud: number;
 
@@ -33,7 +31,13 @@ export class EstablecimientoSalud {
   longitud: number;
 
   @Column({ type: 'tinyint' })
-  red_cordinacion_red_ID: number; // Campo que sigue existiendo
+  red_cordinacion_red_ID: number;
+
+  @Column({ type: 'smallint' })
+  municipio_ID: number;
+
+  @Column({ type: 'varchar', length: 50 }) // Aquí agregamos el campo RUES
+  rues: string;
 
   @Column({ type: 'tinyint', default: 1 })
   estado: number;
@@ -44,10 +48,13 @@ export class EstablecimientoSalud {
   @UpdateDateColumn({ type: 'datetime', nullable: true })
   fecha_modificacion: Date;
 
-  // Relación con la entidad RedCordinacion
   @ManyToOne(() => RedCordinacion, (red) => red.red_ID)
-  @JoinColumn({ name: 'red_cordinacion_red_ID' }) // Vincula esta columna con red_ID
+  @JoinColumn({ name: 'red_cordinacion_red_ID' })
   redCordinacion: RedCordinacion;
+
+  @ManyToOne(() => Municipio, (municipio) => municipio.municipio_ID)
+  @JoinColumn({ name: 'municipio_ID' })
+  municipio: Municipio;
 
   @Column({ type: 'mediumint', nullable: false })
   usuario_creacion: number;

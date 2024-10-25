@@ -25,13 +25,13 @@ export class ServicioController {
     return this.servicioService.create(servicioData);
   }
 
-  // Obtener todos los servicios
+  // Obtener todos los servicios (incluye la relación con Especialidad)
   @Get()
   findAll() {
     return this.servicioService.findAll();
   }
 
-  // Obtener un servicio por su ID
+  // Obtener un servicio por su ID (incluye la relación con Especialidad)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.servicioService.findOne(+id);

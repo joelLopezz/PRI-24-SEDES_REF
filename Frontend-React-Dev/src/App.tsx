@@ -12,6 +12,8 @@ import EspecialidadEdit from './pages/Especialidades/EspecialidadEdit';
 import ServiceList from './pages/Servicio/ServiceList';
 import CreateService from './pages/Servicio/CreateService'; // Para la creación de un servicio
 import EditService from './pages/Servicio/EditService'; // Para la edición de un servicio
+import MiHospital from './pages/Mi_Hospital/Mi_Hospital'; // Página "Mi Hospital"
+import AgregarEspecialidades from './pages/Mi_Hospital/add_specialtys';
 
 const App: React.FC = () => {
   return (
@@ -32,6 +34,10 @@ const App: React.FC = () => {
           <Route path="/servicios" element={<ServiceList />} />
           <Route path="/servicios/crear" element={<CreateService />} />
           <Route path="/servicios/editar/:id" element={<EditService />} />
+
+          <Route path="/miHospital" element={<MiHospital />} /> {/* Nueva ruta para "Mi Hospital" */}
+          <Route path="/miHospital/agregar-especialidades" element={<AgregarEspecialidades />} />
+
         </Routes>
       </Layout>
     </Router>

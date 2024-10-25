@@ -1,7 +1,9 @@
+import { Servicio } from '../servicio/servicio.entity'; // Importa la entidad Servicio
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -14,9 +16,6 @@ export class Specialty {
   @Column({ type: 'varchar', length: 60 })
   nombre: string;
 
-  @Column({ type: 'text', nullable: true })
-  descripcion: string;
-
   @Column({ type: 'tinyint', default: 1 })
   estado: number;
 
@@ -26,11 +25,13 @@ export class Specialty {
   @UpdateDateColumn({ type: 'datetime', nullable: true })
   fecha_modificacion: Date;
 
-  // Usuario que crea el registro (se establece como 1 por defecto temporalmente)
-  @Column({ type: 'mediumint', nullable: false, default: 1 }) //borra el deafult cuando tengas el currwent user
+  @Column({ type: 'mediumint', nullable: false })
   usuario_creacion: number;
 
-  // Usuario que modifica el registro (puede ser null inicialmente)
   @Column({ type: 'mediumint', nullable: true })
   usuario_modificacion: number;
+
+  // Relación inversa con la entidad Servicio
+  @OneToMany(() => Servicio, (servicio) => servicio.especialidad)
+  servicios: Servicio[];
 }

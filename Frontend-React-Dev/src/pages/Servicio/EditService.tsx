@@ -3,19 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 
-// Definir la interfaz para el tipo
-interface Tipo {
-  tipo_ID: number;
+// Definir la interfaz para las especialidades
+interface Especialidad {
+  id: number;
   nombre: string;
 }
 
 // Definir la interfaz para el servicio
 interface Servicio {
   servicio_ID: number;
+  codigo: string;
   nombre: string;
-  descripcion: string;
-  costo: number | null;
-  tipo_tipo_ID: number; // Relación con el tipo
+  especialidad_ID: number; // Relación con la especialidad
 }
 
 const EditService: React.FC = () => {
@@ -25,27 +24,25 @@ const EditService: React.FC = () => {
   // Estados para el formulario y los datos relacionados
   const [formData, setFormData] = useState<Servicio>({
     servicio_ID: 0,
+    codigo: '',
     nombre: '',
-    descripcion: '',
-    costo: null,
-    tipo_tipo_ID: 0, // ID del tipo seleccionado
+    especialidad_ID: 0, // ID de la especialidad seleccionada
   });
 
-  const [tipos, setTipos] = useState<Tipo[]>([]); // Estado para almacenar los tipos
+  const [especialidades, setEspecialidades] = useState<Especialidad[]>([]); // Estado para almacenar las especialidades
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
   const [loading, setLoading] = useState(true); // Estado para la carga de datos
   const [error, setError] = useState<string | null>(null); // Estado para errores
 
-  // Efecto para cargar los datos del servicio y los tipos
+  // Efecto para cargar los datos del servicio y las especialidades
   useEffect(() => {
-    const fetchService = async () => {
+    const fetchServiceAndEspecialidades = async () => {
       try {
-        // Tipamos las respuestas de Axios explícitamente
-        const serviceResponse = await axios.get<Servicio>(`http://localhost:3000/servicio/${id}`); // Tipamos la respuesta como Servicio
-        const tiposResponse = await axios.get<Tipo[]>('http://localhost:3000/tipo/activos'); // Tipamos la respuesta como un array de Tipo
-  
+        const serviceResponse = await axios.get<Servicio>(`http://localhost:3000/servicio/${id}`);
+        const especialidadesResponse = await axios.get<Especialidad[]>('http://localhost:3000/specialties');
+        
         setFormData(serviceResponse.data); // Asignar los datos del servicio al estado
-        setTipos(tiposResponse.data); // Asignar los tipos
+        setEspecialidades(especialidadesResponse.data); // Asignar las especialidades
       } catch (error) {
         console.error('Error al cargar los datos del servicio:', error);
         setError('Error al cargar los datos del servicio');
@@ -53,13 +50,12 @@ const EditService: React.FC = () => {
         setLoading(false);
       }
     };
-  
-    fetchService();
+
+    fetchServiceAndEspecialidades();
   }, [id]);
-  
 
   // Manejador de cambios en los campos del formulario
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -70,7 +66,15 @@ const EditService: React.FC = () => {
   // Enviar el formulario para actualizar el servicio
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
+      // Verificamos que se esté enviando el especialidad_ID correctamente
+      if (!formData.especialidad_ID) {
+        alert("Por favor, selecciona una especialidad válida.");
+        return;
+      }
+
+      // Enviamos la solicitud de actualización al backend
       await axios.patch(`http://localhost:3000/servicio/${id}`, formData);
       setModalOpen(true); // Mostrar el modal de éxito después de actualizar
     } catch (error) {
@@ -96,6 +100,18 @@ const EditService: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+          <label className="block text-gray-700">Código del Servicio</label>
+          <input
+            type="text"
+            name="codigo"
+            value={formData.codigo}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+
+        <div>
           <label className="block text-gray-700">Nombre del Servicio</label>
           <input
             type="text"
@@ -107,45 +123,20 @@ const EditService: React.FC = () => {
           />
         </div>
 
+        {/* Select para la Especialidad */}
         <div>
-          <label className="block text-gray-700">Descripción</label>
-          <textarea
-            name="descripcion"
-            value={formData.descripcion}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          ></textarea>
-        </div>
-
-        <div>
-          <label className="block text-gray-700">Costo</label>
-          <input
-            type="number"
-            name="costo"
-            value={formData.costo ?? ''} // Mostrar el costo o una cadena vacía
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-            step="0.01" // Permitir decimales
-            min="0"
-          />
-        </div>
-
-        {/* Select para el Tipo */}
-        <div>
-          <label className="block text-gray-700">Tipo</label>
+          <label className="block text-gray-700">Especialidad</label>
           <select
-            name="tipo_tipo_ID"
-            value={formData.tipo_tipo_ID}
+            name="especialidad_ID"
+            value={formData.especialidad_ID}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
-            <option value="">Selecciona un tipo</option>
-            {tipos.map((tipo) => (
-              <option key={tipo.tipo_ID} value={tipo.tipo_ID}>
-                {tipo.nombre}
+            <option value="">Selecciona una especialidad</option>
+            {especialidades.map((especialidad) => (
+              <option key={especialidad.id} value={especialidad.id}>
+                {especialidad.nombre}
               </option>
             ))}
           </select>
@@ -177,3 +168,6 @@ const EditService: React.FC = () => {
 };
 
 export default EditService;
+
+
+

@@ -1,14 +1,16 @@
-// src/servicio/servicio.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Servicio } from './servicio.entity';
+import { Specialty } from '../specialty/specialty.entity'; // Importar la entidad Especialidad
 
 @Injectable()
 export class ServicioService {
   constructor(
     @InjectRepository(Servicio)
     private servicioRepository: Repository<Servicio>,
+    @InjectRepository(Specialty)
+    private specialtyRepository: Repository<Specialty>, // Repositorio para Especialidad
   ) {}
 
   // Crear un nuevo servicio
@@ -17,10 +19,10 @@ export class ServicioService {
     return await this.servicioRepository.save(newServicio);
   }
 
-  // Obtener todos los servicios e incluir la información del tipo relacionado
+  // Obtener todos los servicios (relacionado con especialidad si es necesario)
   async findAll(): Promise<Servicio[]> {
     return await this.servicioRepository.find({
-      relations: ['tipo'], // Incluir la relación con Tipo
+      relations: ['especialidad'], // Incluir la relación con Especialidad
     });
   }
 
@@ -28,28 +30,45 @@ export class ServicioService {
   async findOne(id: number): Promise<Servicio> {
     const servicio = await this.servicioRepository.findOne({
       where: { servicio_ID: id },
+      relations: ['especialidad'], // Incluir la relación con Especialidad
     });
     if (!servicio) {
-      throw new NotFoundException(`Servicio with ID ${id} not found`);
+      throw new NotFoundException(`Servicio con ID ${id} no encontrado`);
     }
     return servicio;
   }
 
   // Actualizar un servicio
   async updateServicio(id: number, data: Partial<Servicio>): Promise<Servicio> {
-    // Actualizar la fecha de modificación y asignar el usuario de modificación
-    data.fecha_modificacion = new Date();
+    if (data.especialidad_ID) {
+      // Si se envía especialidad_ID, verificar que exista la especialidad
+      const especialidad = await this.specialtyRepository.findOne({
+        where: { id: data.especialidad_ID },
+      });
+      if (!especialidad) {
+        throw new NotFoundException(
+          `Especialidad con ID ${data.especialidad_ID} no encontrada`,
+        );
+      }
+      data.especialidad = especialidad; // Asignar la especialidad al servicio
+    }
+
+    data.fecha_modificacion = new Date(); // Actualizar la fecha de modificación
     await this.servicioRepository.update(id, data);
-    return this.servicioRepository.findOne({ where: { servicio_ID: id } });
+
+    // Retornar el servicio actualizado con las relaciones
+    return this.servicioRepository.findOne({
+      where: { servicio_ID: id },
+      relations: ['especialidad'], // Incluir la especialidad en la respuesta
+    });
   }
 
-  // Eliminar un servicio
+  // Eliminar un servicio (eliminación lógica)
   async deleteServicio(id: number): Promise<void> {
-    // Establecer estado = 0 para eliminación lógica y actualizar los campos relevantes
     await this.servicioRepository.update(id, {
       estado: 0,
       fecha_modificacion: new Date(),
-      usuario_modificacion: 1, // Temporalmente 1, reemplazar con el ID del usuario de sesión en el futuro
+      usuario_modificacion: 1, // Temporalmente 1, reemplazar con el ID del usuario de sesión
     });
   }
 }

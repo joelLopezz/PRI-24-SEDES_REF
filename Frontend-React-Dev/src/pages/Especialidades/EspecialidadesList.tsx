@@ -6,7 +6,6 @@ import ConfirmationModal from '../../Components/ConfirmationModal'; // Importamo
 interface Especialidad {
   id: number;
   nombre: string;
-  descripcion: string;
 }
 
 const EspecialidadesList: React.FC = () => {
@@ -112,7 +111,6 @@ const EspecialidadesList: React.FC = () => {
             <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
               <th className="py-4 px-6 text-left font-semibold hidden">ID</th> {/* Ocultar la columna ID */}
               <th className="py-4 px-6 text-left font-semibold">Nombre</th>
-              <th className="py-4 px-6 text-left font-semibold">Descripción</th>
               <th className="py-4 px-6 text-left font-semibold">Acciones</th>
             </tr>
           </thead>
@@ -126,7 +124,6 @@ const EspecialidadesList: React.FC = () => {
               >
                 <td className="py-4 px-6 hidden">{especialidad.id}</td> {/* Ocultar la celda de ID */}
                 <td className="py-4 px-6">{especialidad.nombre}</td>
-                <td className="py-4 px-6">{especialidad.descripcion || 'Sin descripción'}</td>
                 <td className="py-4 px-6 flex space-x-4">
                   <button
                     onClick={() => handleEdit(especialidad.id)}

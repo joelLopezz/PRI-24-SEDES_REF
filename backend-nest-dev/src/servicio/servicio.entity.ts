@@ -1,4 +1,4 @@
-import { Tipo } from '../tipo/tipo.entity'; // Importa la entidad Tipo
+import { Specialty } from '../specialty/specialty.entity'; // Importar la entidad Especialidad
 import {
   Entity,
   Column,
@@ -14,17 +14,20 @@ export class Servicio {
   @PrimaryGeneratedColumn({ name: 'servicio_ID', type: 'smallint' })
   servicio_ID: number;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'varchar', length: 500 }) // Ajuste del tamaño del campo "nombre"
   nombre: string;
 
-  @Column({ type: 'text' })
-  descripcion: string;
+  @Column({ type: 'varchar', length: 15 })
+  codigo: string; // Campo nuevo para el código del servicio
 
-  @Column({ type: 'decimal', precision: 7, scale: 2 })
-  costo: number;
+  @Column({ type: 'tinyint', default: 1 })
+  equipo_instrumental: number; // Campo nuevo para equipo instrumental (1 o 0)
 
-  @Column({ type: 'smallint' })
-  tipo_tipo_ID: number; // Este campo debe seguir existiendo
+  @Column({ type: 'tinyint', default: 1 })
+  medicamentos_reactivos: number; // Campo nuevo para medicamentos o reactivos (1 o 0)
+
+  @Column({ type: 'tinyint', default: 1 })
+  insumos: number; // Campo nuevo para insumos (1 o 0)
 
   @Column({ type: 'tinyint', default: 1 })
   estado: number;
@@ -35,11 +38,6 @@ export class Servicio {
   @UpdateDateColumn({ type: 'datetime', nullable: true })
   fecha_modificacion: Date;
 
-  // Relación con la entidad Tipo
-  @ManyToOne(() => Tipo, (tipo) => tipo.tipo_ID)
-  @JoinColumn({ name: 'tipo_tipo_ID' }) // Vincula esta columna con el tipo_ID
-  tipo: Tipo;
-
   // Usuario que crea el registro
   @Column({ type: 'mediumint', nullable: false })
   usuario_creacion: number;
@@ -47,4 +45,14 @@ export class Servicio {
   // Usuario que modifica el registro
   @Column({ type: 'mediumint', nullable: true })
   usuario_modificacion: number;
+
+  // Relación con la Especialidad
+  @Column({ type: 'smallint' })
+  especialidad_ID: number; // Relación con especialidad
+
+  // Puede añadirse una relación ManyToOne para incluir la entidad `Especialidad` si deseas obtener los nombres en las consultas
+  // Relación con la entidad Especialidad
+  @ManyToOne(() => Specialty, (especialidad) => especialidad.servicios)
+  @JoinColumn({ name: 'especialidad_ID' }) // Vincula esta columna con el ID de Especialidad
+  especialidad: Specialty;
 }

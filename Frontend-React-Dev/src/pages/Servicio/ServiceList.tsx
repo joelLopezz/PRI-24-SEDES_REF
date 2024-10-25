@@ -4,17 +4,15 @@ import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y elimin
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Importamos el modal
 
 // Definir la interfaz para los servicios
-interface Tipo {
-  tipo_ID: number;
-  nombre: string;
+interface Especialidad {
+  nombre: string; // Asegúrate de tener el nombre de la especialidad
 }
 
 interface Servicio {
   servicio_ID: number;
+  codigo: string; // Añadimos el campo código
   nombre: string;
-  descripcion: string;
-  costo: number | null;
-  tipo: Tipo; // Incluimos el tipo
+  especialidad: Especialidad; // Relación con la entidad Especialidad
 }
 
 const ServiceList: React.FC = () => {
@@ -122,10 +120,9 @@ const ServiceList: React.FC = () => {
           <thead>
             <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
               <th className="py-4 px-6 text-left font-semibold hidden">ID</th> {/* Ocultar la columna ID */}
+              <th className="py-4 px-6 text-left font-semibold">Código</th> {/* Mostrar el código */}
               <th className="py-4 px-6 text-left font-semibold">Nombre</th>
-              <th className="py-4 px-6 text-left font-semibold">Descripción</th>
-              <th className="py-4 px-6 text-left font-semibold">Costo</th>
-              <th className="py-4 px-6 text-left font-semibold">Tipo</th>
+              <th className="py-4 px-6 text-left font-semibold">Especialidad</th> {/* Mostrar el nombre de la especialidad */}
               <th className="py-4 px-6 text-left font-semibold">Acciones</th>
             </tr>
           </thead>
@@ -138,12 +135,9 @@ const ServiceList: React.FC = () => {
                 } hover:bg-gray-200 transition-colors duration-200`}
               >
                 <td className="py-4 px-6 hidden">{servicio.servicio_ID}</td>
-                <td className="py-4 px-6">{servicio.nombre}</td>
-                <td className="py-4 px-6">{servicio.descripcion || 'Sin descripción'}</td>
-                <td className="py-4 px-6">
-                  {servicio.costo ? `Bs. ${Number(servicio.costo).toFixed(2)}` : 'Costo no disponible'}
-                </td>
-                <td className="py-4 px-6">{servicio.tipo?.nombre || 'Tipo no disponible'}</td>
+                <td className="py-4 px-6">{servicio.codigo}</td> {/* Código */}
+                <td className="py-4 px-6">{servicio.nombre}</td> {/* Nombre */}
+                <td className="py-4 px-6">{servicio.especialidad?.nombre || 'Especialidad no disponible'}</td> {/* Nombre de la especialidad */}
                 <td className="py-4 px-6 flex space-x-4">
                   <button
                     onClick={() => handleEdit(servicio.servicio_ID)}
