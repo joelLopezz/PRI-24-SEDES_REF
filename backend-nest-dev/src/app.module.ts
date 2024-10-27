@@ -5,11 +5,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SpecialtyModule } from './specialty/specialty.module'; // Importar el módulo de Specialty
 import { ServicioModule } from './servicio/servicio.module';
-import { TipoModule } from './tipo/tipo.module';
 import { EstablecimientoModule } from './establecimiento/establecimiento.module';
 import { RedCordinacionModule } from './red-cordinacion/red-cordinacion.module';
 import { MunicipioModule } from './municipio/municipio.module';
 import { EstabEspecialidadModule } from './estab_especialidad/estab_especialidad.module';
+import { EstabServicioModule } from './estab_servicio/estab_servicio.module';
 
 @Module({
   imports: [
@@ -32,11 +32,11 @@ import { EstabEspecialidadModule } from './estab_especialidad/estab_especialidad
     }),
     SpecialtyModule, // Ahora Specialty está encapsulado en su propio módulo
     ServicioModule,
-    TipoModule,
     EstablecimientoModule,
     RedCordinacionModule,
     MunicipioModule,
     EstabEspecialidadModule,
+    EstabServicioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

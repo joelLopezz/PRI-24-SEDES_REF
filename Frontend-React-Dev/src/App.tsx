@@ -14,6 +14,8 @@ import CreateService from './pages/Servicio/CreateService'; // Para la creación
 import EditService from './pages/Servicio/EditService'; // Para la edición de un servicio
 import MiHospital from './pages/Mi_Hospital/Mi_Hospital'; // Página "Mi Hospital"
 import AgregarEspecialidades from './pages/Mi_Hospital/add_specialtys';
+import ServiciosEspecialidad from './pages/Mi_Hospital/ServiciosEspecialidad';
+import AgregarServicios from './pages/Mi_Hospital/AgregarServicios'; // Importa la página de agregar servicios
 
 const App: React.FC = () => {
   return (
@@ -37,7 +39,8 @@ const App: React.FC = () => {
 
           <Route path="/miHospital" element={<MiHospital />} /> {/* Nueva ruta para "Mi Hospital" */}
           <Route path="/miHospital/agregar-especialidades" element={<AgregarEspecialidades />} />
-
+          <Route path="/miHospital/especialidad/:especialidadId/servicios" element={<ServiciosEspecialidad />}/>
+          <Route path="/miHospital/especialidad/:especialidadId/agregar-servicios" element={<AgregarServicios />} />
         </Routes>
       </Layout>
     </Router>

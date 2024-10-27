@@ -21,15 +21,6 @@ export class Servicio {
   codigo: string; // Campo nuevo para el código del servicio
 
   @Column({ type: 'tinyint', default: 1 })
-  equipo_instrumental: number; // Campo nuevo para equipo instrumental (1 o 0)
-
-  @Column({ type: 'tinyint', default: 1 })
-  medicamentos_reactivos: number; // Campo nuevo para medicamentos o reactivos (1 o 0)
-
-  @Column({ type: 'tinyint', default: 1 })
-  insumos: number; // Campo nuevo para insumos (1 o 0)
-
-  @Column({ type: 'tinyint', default: 1 })
   estado: number;
 
   @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })

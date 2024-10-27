@@ -1,20 +1,17 @@
+// servicio.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Servicio } from './servicio.entity';
 import { ServicioService } from './servicio.service';
 import { ServicioController } from './servicio.controller';
-import { Specialty } from '../specialty/specialty.entity'; // Importa la entidad Specialty
-import { SpecialtyModule } from '../specialty/specialty.module'; // Importa el módulo Specialty
-import { Tipo } from '../tipo/tipo.entity';
-import { TipoModule } from '../tipo/tipo.module';
+import { Specialty } from '../specialty/specialty.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Servicio, Tipo, Specialty]), // Asegúrate de que Specialty esté incluido aquí
-    SpecialtyModule, // Importar el SpecialtyModule
-    TipoModule,
+    TypeOrmModule.forFeature([Servicio, Specialty]), // Asegúrate de incluir la entidad Specialty
   ],
   controllers: [ServicioController],
   providers: [ServicioService],
+  exports: [ServicioService, TypeOrmModule], // Exporta el servicio y el módulo TypeOrm para otros módulos
 })
 export class ServicioModule {}

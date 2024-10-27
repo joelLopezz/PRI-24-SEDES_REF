@@ -53,4 +53,12 @@ export class ServicioController {
   remove(@Param('id') id: string) {
     return this.servicioService.deleteServicio(+id);
   }
+
+  // Nuevo endpoint para obtener servicios por especialidad
+  @Get('especialidad/:especialidadId')
+  async getServiciosByEspecialidad(
+    @Param('especialidadId') especialidadId: number,
+  ): Promise<Servicio[]> {
+    return this.servicioService.findByEspecialidad(especialidadId);
+  }
 }

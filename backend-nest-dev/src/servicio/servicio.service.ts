@@ -71,4 +71,12 @@ export class ServicioService {
       usuario_modificacion: 1, // Temporalmente 1, reemplazar con el ID del usuario de sesión
     });
   }
+
+  // Nuevo método para obtener servicios por especialidad
+  async findByEspecialidad(especialidadId: number): Promise<Servicio[]> {
+    return this.servicioRepository.find({
+      where: { especialidad_ID: especialidadId },
+      select: ['servicio_ID', 'codigo', 'nombre'], // Seleccionamos solo los campos necesarios
+    });
+  }
 }
