@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import hospitalIcon from '../../assets/Images/hospital.png';
 import especialidadesIcon from '../../assets/Images/especialista.png';
 import serviciosIcon from '../../assets/Images/servicio.png';
+import miHospitalIcon from '../../assets/Images/MyHospital.png';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -73,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             >
               <div className="flex items-center space-x-2">
                 {/* Usamos el icono personalizado */}
-                <img src={serviciosIcon} alt="Servicios" className="w-6 h-6 group-hover:opacity-80 transition-opacity duration-300" />
+                <img src={miHospitalIcon} alt="Servicios" className="w-6 h-6 group-hover:opacity-80 transition-opacity duration-300" />
                 <span className="group-hover:font-bold">Mi Hospital</span>
               </div>
             </Link>

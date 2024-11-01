@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Patch, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Param,
+  Body,
+  Delete,
+} from '@nestjs/common';
 import { EstabServicioService } from './estab_servicio.service';
 import { EstablecimientoSaludServicio } from './estab_servicio.entity';
 
@@ -63,14 +71,18 @@ export class EstabServicioController {
   }
 
   // Actualizar atributos específicos de un servicio en un establecimiento
-  @Patch(':relacionId')
+  @Patch(':id')
   async updateServicioAttributes(
-    @Param('relacionId') relacionId: number,
+    @Param('id') id: number,
     @Body() attributes: Partial<EstablecimientoSaludServicio>,
   ): Promise<EstablecimientoSaludServicio> {
-    return this.estabServicioService.updateServicioAttributes(
-      relacionId,
-      attributes,
-    );
+    return this.estabServicioService.updateServicioAttributes(id, attributes);
+  }
+
+  // Eliminar un servicio de un establecimiento de salud
+  @Delete(':id')
+  async deleteServicio(@Param('id') id: number): Promise<{ message: string }> {
+    await this.estabServicioService.deleteServicio(id);
+    return { message: 'Servicio eliminado correctamente' };
   }
 }

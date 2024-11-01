@@ -75,6 +75,11 @@ const AgregarEspecialidades: React.FC = () => {
     }
   };
 
+  const handleCancelar = () => {
+    setSelectedEspecialidades([]); // Limpiar los checkboxes seleccionados
+    navigate('/miHospital'); // Regresar a la página principal
+  };
+
   const handleCloseModal = () => {
     setModalOpen(false);
     navigate('/miHospital'); // Redirigir a la página de "Mi Hospital" después de cerrar el modal
@@ -112,7 +117,13 @@ const AgregarEspecialidades: React.FC = () => {
       )}
 
       {/* Botón para guardar las especialidades seleccionadas */}
-      <div className="mt-8">
+      <div className="mt-8 justify-end space-x-4">
+      <button
+          onClick={handleCancelar}
+          className="bg-gray-500 text-white px-5 py-2 rounded-md hover:bg-gray-600 transition duration-300"
+        >
+          Cancelar
+        </button>
         <button
           onClick={handleGuardar}
           className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition duration-300"
