@@ -7,6 +7,16 @@ async function bootstrap() {
   
   // Habilitar la validación global de DTOs
   app.useGlobalPipes(new ValidationPipe());
+  
+  // Habilitar CORS
+  app.enableCors({
+    origin: '*', // Reemplaza esto con la URL de tu frontend si es necesario
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  // Iniciar la aplicación en el puerto 3000
   await app.listen(3000);
 }
+
 bootstrap();

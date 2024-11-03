@@ -23,7 +23,7 @@ export class EspecialidadService {
 
   // Obtener una especialidad por ID
   async getSpecialtyById(id: number): Promise<Especialidad> {
-    return this.specialtyRepository.findOne({ where: { id } });
+    return this.specialtyRepository.findOne({ where: { especialidad_ID: id} });
   }
 
   // Actualizar una especialidad
@@ -34,7 +34,7 @@ export class EspecialidadService {
     // Asegurarnos de que se actualice `usuario_modificacion` y `fecha_modificacion`
     data.fecha_modificacion = new Date();
     await this.specialtyRepository.update(id, data);
-    return this.specialtyRepository.findOne({ where: { id } });
+    return this.specialtyRepository.findOne({ where: { especialidad_ID: id } });
   }
 
   // Eliminar una especialidad (Eliminación lógica)
@@ -43,7 +43,17 @@ export class EspecialidadService {
     await this.specialtyRepository.update(id, {
       estado: 0,
       fecha_modificacion: new Date(),
-      usuario_modificacion: 1, // Temporalmente 1, reemplazar por el ID del usuario en sesión en el futuro
     });
+  }
+
+
+
+
+  //cargado de combox
+  async findAllEspecialidades(): Promise<{ especialidad_ID: number; nombre: string }[]> {
+    return await this.specialtyRepository
+      .createQueryBuilder('especialidad')
+      .select(['especialidad.especialidad_ID', 'especialidad.nombre'])
+      .getRawMany();
   }
 }

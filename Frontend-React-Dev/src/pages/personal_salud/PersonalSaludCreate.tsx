@@ -10,20 +10,22 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
     nombres: '',
     primer_apellido: '',
     segundo_nombre: '',
+    nacionalidad: '',
     ci: '',
+    telefono: '',
     matricula_profesional: '',
-    sexo: '',
-    cargo: '',
     correo_electronico: '',
+    especialidad: '',
+    genero: '',
+    establecimiento_salud_idestablecimiento_ID: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // Para obtener el ID del personal a editar
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     if (isEditing && id) {
-      // Cargar los datos existentes para editar
       fetch(`http://localhost:3000/personal-salud/${id}`)
         .then(response => response.json())
         .then(data => setFormData(data))
@@ -31,7 +33,7 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
     }
   }, [isEditing, id]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -39,9 +41,31 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
     });
   };
 
+  const handleClearForm = () => {
+    setFormData({
+      nombres: '',
+      primer_apellido: '',
+      segundo_nombre: '',
+      nacionalidad: '',
+      ci: '',
+      telefono: '',
+      matricula_profesional: '',
+      correo_electronico: '',
+      especialidad: '',
+      genero: '',
+      establecimiento_salud_idestablecimiento_ID: '',
+    });
+    setErrorMessage('');
+    setSuccessMessage('');
+  };
+
+  const handleCancel = () => {
+    navigate('/personal-salud');
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    console.log('FormData antes del envío:', formData); // Verifica que el género esté presente
     const url = isEditing ? `http://localhost:3000/personal-salud/${id}` : 'http://localhost:3000/personal-salud';
     const method = isEditing ? 'PUT' : 'POST';
 
@@ -57,85 +81,198 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
           throw new Error('Error al guardar los datos');
         }
         setSuccessMessage(isEditing ? 'Personal de salud actualizado correctamente' : 'Personal de salud creado correctamente');
-        setTimeout(() => navigate('/personal-salud'), 1500); // Redirigir después de 1.5 segundos
+        setTimeout(() => navigate('/personal-salud'), 1500);
       })
       .catch(() => setErrorMessage('Error al guardar los datos'));
   };
 
   return (
-    <div className="container">
-      <h2>{isEditing ? 'Editar Personal de Salud' : 'Registrar Personal de Salud'}</h2>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>
-          Nombres:
+    <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9', padding: '20px' }}>
+  <div style={{ width: '100%', maxWidth: '800px', backgroundColor: '#ffffff', padding: '30px', borderRadius: '12px', boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)' }}>
+    <h2 className="text-center" style={{ marginBottom: '20px', fontWeight: 'bold', color: '#333', fontSize: '1.75rem' }}>{isEditing ? 'Editar Personal de Salud' : 'Registrar Personal de Salud'}</h2>
+    {errorMessage && <div className="alert alert-danger" style={{ marginBottom: '15px', color: '#721c24', backgroundColor: '#f8d7da', padding: '15px', borderRadius: '8px', border: '1px solid #f5c6cb', fontWeight: 'bold', textAlign: 'center' }}>{errorMessage}</div>}
+    {successMessage && <div className="alert alert-success" style={{ marginBottom: '15px', color: '#155724', backgroundColor: '#d4edda', padding: '15px', borderRadius: '8px', border: '1px solid #c3e6cb', fontWeight: 'bold', textAlign: 'center' }}>{successMessage}</div>}
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div className="form-group">
+          <label htmlFor="nombres" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Nombres:</label>
           <input
             type="text"
+            id="nombres"
             name="nombres"
             value={formData.nombres}
             onChange={handleInputChange}
+            className="form-control"
+            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+            required
           />
-        </label>
-        <label>
-          Primer Apellido:
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="ci" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>C.I.:</label>
           <input
             type="text"
-            name="primer_apellido"
-            value={formData.primer_apellido}
-            onChange={handleInputChange}
-          />
-        </label>
-        <label>
-          Segundo Nombre:
-          <input
-            type="text"
-            name="segundo_nombre"
-            value={formData.segundo_nombre}
-            onChange={handleInputChange}
-          />
-        </label>
-        <label>
-          CI:
-          <input
-            type="text"
+            id="ci"
             name="ci"
             value={formData.ci}
             onChange={handleInputChange}
+            className="form-control"
+            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+            required
           />
-        </label>
-        <label>
-          Matrícula Profesional:
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="primer_apellido" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Primer Apellido:</label>
           <input
             type="text"
-            name="matricula_profesional"
-            value={formData.matricula_profesional}
+            id="primer_apellido"
+            name="primer_apellido"
+            value={formData.primer_apellido}
             onChange={handleInputChange}
+            className="form-control"
+            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+            required
           />
-        </label>
-        <label>
-          Cargo:
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="segundo_apellido" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Segundo Apellido:</label>
           <input
             type="text"
-            name="cargo"
-            value={formData.cargo}
+            id="segundo_nombre"
+            name="segundo_nombre"
+            value={formData.segundo_nombre}
             onChange={handleInputChange}
+            className="form-control"
+            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
           />
-        </label>
-        <label>
-          Correo Electrónico:
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="correo_electronico" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Correo Electrónico:</label>
           <input
             type="email"
+            id="correo_electronico"
             name="correo_electronico"
             value={formData.correo_electronico}
             onChange={handleInputChange}
+            className="form-control"
+            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+            required
           />
-        </label>
-        <button type="submit" className="btn">
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="matricula_profesional" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Matrícula Profesional:</label>
+          <input
+            type="text"
+            id="matricula_profesional"
+            name="matricula_profesional"
+            value={formData.matricula_profesional}
+            onChange={handleInputChange}
+            className="form-control"
+            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="especialidad" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Especialidad:</label>
+          <select
+            id="especialidad"
+            name="especialidad"
+            value={formData.especialidad}
+            onChange={handleInputChange}
+            className="form-control"
+            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+          >
+            <option value="">Seleccione una opción</option>
+            <option value="oftalmologia">Oftalmología</option>
+            <option value="cardiologia">Cardiología</option>
+            <option value="pediatria">Pediatría</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Género:</label>
+          <div className="gender-options" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="radio"
+                id="generoM"
+                name="genero"
+                value="M"
+                checked={formData.genero === 'M'}
+                onChange={handleInputChange}
+                style={{ marginRight: '10px' }}
+                required
+              />
+              <label htmlFor="generoM" style={{ color: '#555' }}>Masculino</label>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="radio"
+                id="generoF"
+                name="genero"
+                value="F"
+                checked={formData.genero === 'F'}
+                onChange={handleInputChange}
+                style={{ marginRight: '10px' }}
+                required
+              />
+              <label htmlFor="generoF" style={{ color: '#555' }}>Femenino</label>
+            </div>
+          </div><div className="gender-options" style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="radio"
+                id="generoM"
+                name="genero"
+                value="M"
+                checked={formData.genero === 'M'}
+                onChange={handleInputChange}
+                required
+              />
+              <label htmlFor="generoM" style={{ color: '#555', fontWeight: 'bold' }}>Masculino</label>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="radio"
+                id="generoF"
+                name="genero"
+                value="F"
+                checked={formData.genero === 'F'}
+                onChange={handleInputChange}
+                required
+              />
+              <label htmlFor="generoF" style={{ color: '#555', fontWeight: 'bold' }}>Femenino</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="button-group" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
+        <button type="submit" className="btn-primary" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0056b3')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#007bff')}>
           {isEditing ? 'Actualizar' : 'Registrar'}
         </button>
-      </form>
-    </div>
+        <button type="reset" className="btn-secondary" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#6c757d', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#5a6268')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#6c757d')}>
+          Limpiar
+        </button>
+        <button type="button" className="btn-danger" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#dc3545', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+          onClick={() => navigate('/personal-salud')}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#c82333')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#dc3545')}>
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
   );
 };
 

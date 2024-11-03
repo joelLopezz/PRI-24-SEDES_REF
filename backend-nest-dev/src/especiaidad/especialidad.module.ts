@@ -8,5 +8,8 @@ import { Especialidad } from './especialidad.entity';
   imports: [TypeOrmModule.forFeature([Especialidad])], // Importamos el repositorio de la entidad Cama
   providers: [EspecialidadService], // Registramos el servicio de Cama
   controllers: [EspecialidadController], // Registramos el controlador de Cama
+ //exports: [TypeOrmModule],
+ exports:  [EspecialidadService],
+
 })
-export class CamaModule {}
+export class DatosEspecialidadModule {}

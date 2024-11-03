@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button } from 'react-bootstrap';
+import '../personal_salud/style/personal-saludlLit.css';
 
 interface PersonalSalud {
   personal_ID: number;
@@ -33,19 +33,33 @@ const PersonalSaludList: React.FC = () => {
 
   // Función para eliminar un personal de salud
   const handleDelete = (id: number) => {
-    fetch(`http://localhost:3000/personal-salud/${id}`, {
-      method: 'DELETE',
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al eliminar el personal de salud');
-        }
-        fetchPersonalesSalud(); // Refrescar la lista
+    console.log('Intentando eliminar el ID:', id);
+    if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+      fetch(`http://localhost:3000/personal-salud/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .catch(() => setErrorMessage('No se pudo eliminar el personal de salud'));
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error al eliminar el personal de salud');
+          }
+          // Filtra el registro eliminado directamente en el estado
+          setPersonalesSalud(prevPersonales => prevPersonales.filter(personal => personal.personal_ID !== id));
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          setErrorMessage('No se pudo eliminar el personal de salud');
+        });
+    }
   };
+  
+  
+  
 
-  // Redirigir a la página de creación
+
+  // Redirigir a la página de creacion
   const handleCreate = () => {
     navigate('/personal-salud/create');
   };
@@ -56,60 +70,55 @@ const PersonalSaludList: React.FC = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container">
       {/* Botón para registrar nuevo personal */}
-      <div className="mb-4">
-        <Button variant="success" onClick={handleCreate}>
+      <div className="button-insertar">
+        <button onClick={handleCreate}>
           Insertar nuevo personal
-        </Button>
+        </button>
       </div>
 
       {/* Tabla de personal de salud */}
-      <Table striped bordered hover responsive>
-        <thead className="thead-dark">
+      <table className="table-container">
+        <thead>
           <tr>
-            <th>ID</th>
             <th>Nombre</th>
-            <th>Primer Apellido</th>
-            <th>Segundo Nombre</th>
+            <th>Apellido</th>
             <th>CI</th>
             <th>Matrícula Profesional</th>
             <th>Cargo</th>
-            <th>Acciones</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
           </tr>
         </thead>
         <tbody>
           {personalesSalud.map((personal) => (
             <tr key={personal.personal_ID}>
-              <td>{personal.personal_ID}</td>
               <td>{personal.nombres}</td>
-              <td>{personal.primer_apellido}</td>
-              <td>{personal.segundo_nombre}</td>
+              <td>{personal.primer_apellido} {personal.segundo_nombre}</td>
               <td>{personal.ci}</td>
               <td>{personal.matricula_profesional}</td>
               <td>{personal.cargo}</td>
+              <td className="botones">
+                <button
+                  className="button-editar"
+                  onClick={() => handleEdit(personal.personal_ID)}>
+                  <i className="fas fa-edit"></i> Editar
+                </button>
+              </td>
               <td>
-                <Button
-                  variant="primary"
-                  className="me-2"
-                  onClick={() => handleEdit(personal.personal_ID)}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={() => handleDelete(personal.personal_ID)}
-                >
-                  Eliminar
-                </Button>
+                <button
+                  className="button-eliminar"
+                  onClick={() => handleDelete(personal.personal_ID)}>
+                  <i className="fas fa-trash"></i> Eliminar
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
-      </Table>
+      </table>
 
-      {/* Mostrar mensaje de error si existe */}
-      {errorMessage && <p className="text-danger">{errorMessage}</p>}
+      {errorMessage && <p className="text-error">{errorMessage}</p>}
     </div>
   );
 };

@@ -1,20 +1,25 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, BadRequestException } from '@nestjs/common';
 import { CamaService } from './cama.service';
-import { Cama } from './cama.entity';
 
-@Controller('camas')
+@Controller('cama')
 export class CamaController {
   constructor(private readonly camaService: CamaService) {}
 
-  // Obtener todas las camas
-  @Get()
-  async findAll(): Promise<Cama[]> {
-    return await this.camaService.findAll();
+  // Endpoint para obtener todas las especialidades con atributos de camas de un hospital específico
+  @Get('especialidades')
+  async getEspecialidadesPorHospital() {
+    return await this.camaService.getEspecialidadesPorHospital();
   }
 
-  // Obtener una cama por su número
-  @Get(':numero')
-  async findOne(@Param('numero') numero: number): Promise<Cama> {
-    return await this.camaService.findOne(numero);
+  // Endpoint para obtener todas las especialidades (combo de especialidades)
+  @Get('comboEspecialidad')
+  async getEspecialidades() {
+    return await this.camaService.findAllEspecialidades();
+  }
+
+  // Endpoint para obtener todos los servicios (combo de servicios)
+  @Get('comboServicio')
+  async getServicios() {
+    return await this.camaService.findAllServicios();
   }
 }

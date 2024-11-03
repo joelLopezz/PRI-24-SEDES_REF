@@ -1,0 +1,81 @@
+
+/* CSS para CamaList, usando puro CSS sin Bootstrap */
+  .container {
+    width: 90%;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+  }
+
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .button-container {
+    text-align: right;
+    margin-bottom: 20px;
+  }
+
+  .add-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .add-button:hover {
+    background-color: #45a049;
+  }
+
+  .cama-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .cama-table th, .cama-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+
+  .cama-table th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+
+  .cama-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  .cama-table tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .edit-button, .delete-button {
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .edit-button {
+    background-color: #008CBA;
+    color: white;
+  }
+
+  .edit-button:hover {
+    background-color: #007bb5;
+  }
+
+  .delete-button {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .delete-button:hover {
+    background-color: #da190b;
+  }

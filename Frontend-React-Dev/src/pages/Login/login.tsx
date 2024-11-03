@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Login.css';
+import './login.css';
 import { useNavigate } from 'react-router-dom'; // Importar useNavigate para redirigir al usuario después del login
 
 const Login: React.FC = () => {
@@ -35,6 +35,8 @@ const Login: React.FC = () => {
       contrasenia: formData.password,
     };
 
+    console.log('Datos enviados al backend:', loginData);
+
     // Enviar los datos al backend
     fetch('http://localhost:3000/usuario/login', {
       method: 'POST',
@@ -50,12 +52,13 @@ const Login: React.FC = () => {
         return response.json();
       })
       .then(data => {
-        // Si la autenticación es exitosa
+        // Si la autenticación es exitosa 
         setSuccessMessage('Inicio de sesión exitoso'); // Mostrar mensaje de éxito
 
         // Redirigir al usuario a la página protegida (EstablecimientoList)
         setTimeout(() => {
-          navigate('/establecimientos'); // Cambia esto según la página a la que quieras redirigir
+          //navigate('/cama'); // Cambia esto según la página a la que quieras redirigir
+          navigate('/especialidad'); // Cambia esto según la página a la que quieras
         }, 1500); // Espera 1.5 segundos antes de redirigir
       })
       .catch(error => {
@@ -66,13 +69,13 @@ const Login: React.FC = () => {
 
   return (
     <div className="App">
-      <div className="container">
+      <div className="container_login">
         <div className="img">
-          <img src="img/Medico.svg" alt="background illustration" />
+          <img src="src/assets/Images/Medico.svg" alt="background illustration" />
         </div>
-        <div className="login-content">
+        <div className="login_content">
           <form onSubmit={handleSubmit}>
-            <img src="img/logo-sedes.svg" alt="avatar" />
+            <img src="src/assets/Images/logo-sedes.svg" alt="avatar" />
             <h2 className="title">Inicio de sesión</h2>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} {/* Mostrar mensaje de error */}
             {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>} {/* Mostrar mensaje de éxito */}

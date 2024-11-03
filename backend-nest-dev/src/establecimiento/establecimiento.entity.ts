@@ -13,8 +13,8 @@ import {
 
 @Entity('establecimiento_salud')
 export class EstablecimientoSalud {
-  @PrimaryGeneratedColumn({ name: 'idestablecimiento_ID', type: 'smallint' })
-  id: number;
+  @PrimaryGeneratedColumn()
+  idestablecimiento_ID: number;
 
   @Column({ type: 'varchar', length: 65 })
   nombre: string;
@@ -46,19 +46,13 @@ export class EstablecimientoSalud {
   @UpdateDateColumn({ type: 'datetime', nullable: true })
   fecha_modificacion: Date;
 
+  // Relación con la entidad Cama (relación inversa)
+  @OneToMany(() => Cama, (cama) => cama.establecimientoSalud)
+  camas: Cama[];
+
   // Relación con la entidad RedCordinacion
 //   @ManyToOne(() => RedCordinacion, (red) => red.red_ID)
 //   @JoinColumn({ name: 'red_cordinacion_red_ID' }) // Vincula esta columna con red_ID
 //   redCordinacion: RedCordinacion;
 
-
-  // Relación con la entidad Cama (relación inversa)
-  @OneToMany(() => Cama, (cama) => cama.servicio)
-  camas: Cama[];
-
-  @Column({ type: 'mediumint', nullable: false })
-  usuario_creacion: number;
-
-  @Column({ type: 'mediumint', nullable: true })
-  usuario_modificacion: number;
 }

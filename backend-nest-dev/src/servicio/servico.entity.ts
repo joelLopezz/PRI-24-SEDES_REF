@@ -23,9 +23,6 @@ export class Servicio {
   @Column({ type: 'text' })
   descripcion: string;
 
-  @Column({ type: 'decimal', precision: 7, scale: 2 })
-  costo: number;
-
   @Column({ type: 'smallint' })
   tipo_tipo_ID: number; // Este campo debe seguir existiendo
 
@@ -46,13 +43,4 @@ export class Servicio {
   // Relación con la entidad Cama (relación inversa)
   @OneToMany(() => Cama, (cama) => cama.servicio)
   camas: Cama[];
-
-
-  // Usuario que crea el registro
-  @Column({ type: 'mediumint', nullable: false })
-  usuario_creacion: number;
-
-  // Usuario que modifica el registro
-  @Column({ type: 'mediumint', nullable: true })
-  usuario_modificacion: number;
 }

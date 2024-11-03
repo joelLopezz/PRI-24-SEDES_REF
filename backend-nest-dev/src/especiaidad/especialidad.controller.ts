@@ -6,6 +6,7 @@ import {
     Param,
     Put,
     Delete,
+    Patch,
   } from '@nestjs/common';
   import { EspecialidadService } from './especialidad.service';
   import { Especialidad } from './especialidad.entity';
@@ -19,8 +20,6 @@ import {
     async createSpecialty(
       @Body() specialtyData: Partial<Especialidad>,
     ): Promise<Especialidad> {
-      // Simulación: asignar el ID del usuario actual (en este caso "1") a usuario_creacion
-      specialtyData.usuario_creacion = 1;
       return this.specialtyService.createSpecialty(specialtyData);
     }
   
@@ -29,6 +28,13 @@ import {
     async getAllSpecialties(): Promise<Especialidad[]> {
       return this.specialtyService.getAllSpecialties();
     }
+
+
+    //cargar combo
+    @Get('combo')
+    async getEspecialidades() {
+      return await this.specialtyService.findAllEspecialidades();
+  }
   
     // Obtener una especialidad por ID
     @Get(':id')
@@ -37,13 +43,11 @@ import {
     }
   
     // Actualizar una especialidad por ID
-    @Put(':id')
+    @Patch(':id')
     async updateSpecialty(
       @Param('id') id: number,
       @Body() specialtyData: Partial<Especialidad>,
     ): Promise<Especialidad> {
-      // Simulación: asignar el ID del usuario actual (en este caso "1") a usuario_modificacion
-      specialtyData.usuario_modificacion = 1;
       return this.specialtyService.updateSpecialty(id, specialtyData);
     }
   

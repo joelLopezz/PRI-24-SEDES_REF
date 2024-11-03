@@ -10,6 +10,7 @@ import { CamaController} from './cama/cama.controller';
 import { CamaService } from './cama/cama.service';
 
 
+
 // Módulos
 import { ReferenciaModule } from './referencias/referencia.module';
 import { DatosPacienteModule } from './pacientes/paciente.module';
@@ -20,7 +21,7 @@ import { DatosTransferenciaModule } from './transferencias/transferencia.module'
 import { DatosAntecedenteObstetricoModule } from './antecedentesobstetricos/antecedentesobstetrico.module';
 import {UsuarioModule} from  './usuario/usuario.module';
 import { MailModule } from './correo_electronico/correo.electronico.module';
-import { DatosCamaModule } from './cama/cama.module';
+import { CamaModule } from './cama/cama.module';
 
 
 
@@ -28,6 +29,11 @@ import { DatosCamaModule } from './cama/cama.module';
 // Entidades
 import { PersonalSalud } from './personal_salud/personal_salud.entity';
 import { PersonalSaludModule } from './personal_salud/personal_salud.module';
+import { Especialidad } from './especiaidad/especialidad.entity';
+import { DatosEspecialidadModule } from './especiaidad/especialidad.module';
+import { DatosServicioModule } from './servicio/servicio.module';
+import  { HistoriaCamaModule } from './historial_cama/hostoria_cama.module';
+
 
 @Module({
   imports: [
@@ -37,7 +43,7 @@ import { PersonalSaludModule } from './personal_salud/personal_salud.module';
       port: 3306,
       username: 'root',
       password: 'kowalski',
-      database: 'sedesref',
+      database: 'sedes',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
     }),
@@ -48,11 +54,15 @@ import { PersonalSaludModule } from './personal_salud/personal_salud.module';
     DatosClinicoModule,
     DatosTransferenciaModule,
     DatosAntecedenteObstetricoModule,
-    DatosCamaModule,
+    CamaModule,
 
     PersonalSaludModule,
     UsuarioModule,
     MailModule,
+    
+    DatosEspecialidadModule,
+    DatosServicioModule,
+    HistoriaCamaModule,
 
     TypeOrmModule.forFeature([PersonalSalud]), 
   ],

@@ -23,13 +23,16 @@ export class UsuarioController {
     };
   }
 
+
+
   // Actualizar la contraseña
   @Put(':usuario_ID/contrasenia')
   async updatePassword(
     @Param('usuario_ID') usuario_ID: number,
+    @Body('contraseniaActual') contraseniaActual: string, // Incluye la contraseña actual
     @Body('nuevaContrasenia') nuevaContrasenia: string,
   ) {
-    const usuario = await this.usuarioService.updatePassword(usuario_ID, nuevaContrasenia);
+    const usuario = await this.usuarioService.updatePassword(usuario_ID, contraseniaActual, nuevaContrasenia); // Pasa los tres parámetros
 
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
@@ -37,5 +40,22 @@ export class UsuarioController {
 
     return { mensaje: 'Contraseña actualizada exitosamente' };
   }
+
+
+
+  // // Actualizar la contraseña
+  // @Put(':usuario_ID/contrasenia')
+  // async updatePassword(
+  //   @Param('usuario_ID') usuario_ID: number,
+  //   @Body('nuevaContrasenia') nuevaContrasenia: string,
+  // ) {
+  //   const usuario = await this.usuarioService.updatePassword(usuario_ID, nuevaContrasenia);
+
+  //   if (!usuario) {
+  //     throw new NotFoundException('Usuario no encontrado');
+  //   }
+
+  //   return { mensaje: 'Contraseña actualizada exitosamente' };
+  // }
   
 }

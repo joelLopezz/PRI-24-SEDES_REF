@@ -1,0 +1,233 @@
+/* Archivo: personal_salud.css */
+
+/* Estilo general para el contenedor principal */
+.container {
+  margin-top: 2rem;
+  width: 90%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+}
+
+/* Estilo del título del formulario */
+.container h2 {
+  text-align: center;
+  color: #2f4fbb;
+  font-weight: bold;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+/* Estilo para los mensajes de error y éxito */
+.text-error {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.text-success {
+  color: green;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* Estilo del formulario */
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 0 0 48%;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #2f4fbb;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.form-group input:focus, .form-group select:focus {
+  border-color: #1e3a8a;
+  outline: none;
+  box-shadow: 0 0 8px rgba(47, 79, 187, 0.4);
+}
+
+/* Estilo para las opciones de género */
+.gender-options {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.gender-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+}
+
+/* Estilo para los botones del formulario */
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.form-buttons .btn {
+  padding: 12px 25px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+}
+
+.form-buttons .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form-buttons .btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-buttons .btn-registrar {
+  background-color: #2f4fbb;
+}
+
+.form-buttons .btn-registrar:hover {
+  background-color: #1e3a8a;
+}
+
+.form-buttons .btn-limpiar {
+  background-color: #f0ad4e;
+}
+
+.form-buttons .btn-limpiar:hover {
+  background-color: #ec9a3c;
+}
+
+.form-buttons .btn-cancelar {
+  background-color: #d9534f;
+}
+
+.form-buttons .btn-cancelar:hover {
+  background-color: #c9302c;
+}
+
+/* Estilo del botón para insertar nuevo personal */
+.button-insertar button {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.button-insertar button:hover {
+  background-color: #218838;
+}
+
+/* Estilos personalizados para la tabla */
+.table-container {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-container th, .table-container td {
+  border: 1px solid #ddd;
+  padding: 15px;
+  text-align: left;
+  font-size: 1rem;
+}
+
+.table-container th {
+  background-color: #343a40;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.table-container tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table-container tr:hover {
+  background-color: #ddd;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Estilo común para botones */
+.button {
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Estilo para los botones de editar y eliminar */
+.button-editar {
+  background-color: #007bff;
+  margin-right: 1rem;
+}
+
+.button-editar:hover {
+  background-color: #0056b3;
+}
+
+.button-eliminar {
+  background-color: #dc3545;
+}
+
+.button-eliminar:hover {
+  background-color: #c82333;
+}
+
+/* Estilo para mensajes de error */
+.text-error {
+  color: red;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}

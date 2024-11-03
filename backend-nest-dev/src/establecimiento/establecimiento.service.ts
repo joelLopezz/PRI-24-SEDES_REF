@@ -13,7 +13,6 @@ export class EstablecimientoService {
   // Crear un nuevo establecimiento
   async create(data: Partial<EstablecimientoSalud>): Promise<EstablecimientoSalud> {
     // Asignamos temporalmente el ID del usuario de creación
-    data.usuario_creacion = 1;
     const newEstablecimiento = this.establecimientoRepository.create(data);
     return this.establecimientoRepository.save(newEstablecimiento);
   }
@@ -28,7 +27,7 @@ export class EstablecimientoService {
   // Obtener un establecimiento por su ID
   async findOne(id: number): Promise<EstablecimientoSalud> {
     const establecimiento = await this.establecimientoRepository.findOne({
-      where: { id },
+      where: { idestablecimiento_ID:id },
       relations: ['redCordinacion'], // Incluir la relación con RedCordinacion
     });
     if (!establecimiento) {
@@ -41,9 +40,8 @@ export class EstablecimientoService {
   async update(id: number, data: Partial<EstablecimientoSalud>): Promise<EstablecimientoSalud> {
     // Actualizamos la fecha de modificación y asignamos el usuario que modifica
     data.fecha_modificacion = new Date();
-    data.usuario_modificacion = 1; // Temporalmente 1
     await this.establecimientoRepository.update(id, data);
-    return this.establecimientoRepository.findOne({ where: { id } });
+    return this.establecimientoRepository.findOne({ where: { idestablecimiento_ID:id } });
   }
 
   // Eliminar un establecimiento (eliminación lógica)
@@ -51,7 +49,6 @@ export class EstablecimientoService {
     await this.establecimientoRepository.update(id, {
       estado: 0,
       fecha_modificacion: new Date(),
-      usuario_modificacion: 1, // Temporalmente 1
     });
   }
 }

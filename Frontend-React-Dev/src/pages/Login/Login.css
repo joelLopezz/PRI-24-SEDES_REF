@@ -25,8 +25,8 @@
     z-index: -1;
   }
  
-  .container {
-    width: 70vw;
+  .container_login {
+    width: 60vw;
     height: 70vh;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -41,7 +41,7 @@
     border-radius: 40px 0px 0px 40px;
   }
  
-  .login-content {
+  .login_content{
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -59,18 +59,18 @@
     width: 360px;
   }
  
-  .login-content img {
+  .login_content img {
     height: 100px;
   }
  
-  .login-content h2 {
+  .login_content h2 {
     margin: 15px 0;
     color: #333;
     text-transform: uppercase;
     font-size: 1.9rem;
   }
  
-  .login-content .input-div {
+  .login_content .input-div {
     position: relative;
     display: grid;
     grid-template-columns: 7% 93%;
@@ -79,7 +79,7 @@
     border-bottom: 2px solid #d9d9d9;
   }
  
-  .login-content .input-div.one {
+  .login_content .input-div.one {
     margin-top: 0;
   }
  
@@ -205,7 +205,7 @@
         width: 290px;
     }
  
-    .login-content h2 {
+    .login_content h2 {
         font-size: 2.4rem;
         margin: 8px 0;
     }
@@ -216,7 +216,7 @@
   }
  
   @media screen and (max-width: 900px) {
-    .container {
+    .container_login {
         grid-template-columns: 1fr;
     }
  
@@ -228,7 +228,7 @@
         display: none;
     }
  
-    .login-content {
+    .login_content {
         justify-content: center;
     }
   }

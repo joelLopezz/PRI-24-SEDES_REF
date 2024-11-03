@@ -75,7 +75,8 @@ export class PersonalSaludService {
 
   // Método para obtener todos los registros
   async getAllPersonalSalud(): Promise<PersonalSalud[]> {
-    return this.personalSaludRepository.find();
+    return this.personalSaludRepository.find({where: {estado: 1}});
+
   }
 
  

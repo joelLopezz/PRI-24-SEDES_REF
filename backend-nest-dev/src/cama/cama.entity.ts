@@ -1,31 +1,37 @@
-import { Entity, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+// Cama Entity
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn } from 'typeorm';
+import { Especialidad } from '../especiaidad/especialidad.entity';
+import { Servicio } from '../servicio/servico.entity';
 import { EstablecimientoSalud } from 'src/establecimiento/establecimiento.entity';
-import { Especialidad } from 'src/especiaidad/especialidad.entity';
-import { Servicio } from 'src/servicio/servico.entity';
+import { HistoriaCama } from '../historial_cama/historial_cama.entity';
 
 @Entity('cama')
 export class Cama {
-  @Column({ type: 'tinyint' })
-  numero: number;
+  @PrimaryGeneratedColumn()
+  cama_ID: number;
+
 
   @Column({ type: 'tinyint' })
   estado: number;
 
-  @ManyToOne(() => EstablecimientoSalud, (establecimientoSalud) => establecimientoSalud.camas)
-  @JoinColumn({ name: 'establecimiento_salud_idestablecimiento_ID' })
+  @ManyToOne(() => EstablecimientoSalud, (establecimiento) => establecimiento.camas)
+  @JoinColumn({ name: 'establecimiento_salud_ID' })
   establecimientoSalud: EstablecimientoSalud;
 
   @ManyToOne(() => Especialidad, (especialidad) => especialidad.camas)
-  @JoinColumn({ name: 'especialidad_especialidad_ID' })
+  @JoinColumn({ name: 'especialidad_ID' })
   especialidad: Especialidad;
 
   @ManyToOne(() => Servicio, (servicio) => servicio.camas)
-  @JoinColumn({ name: 'servicio_servicio_ID' })
+  @JoinColumn({ name: 'servicio_ID' })
   servicio: Servicio;
 
-  @CreateDateColumn({ type: 'datetime' })
+  @OneToMany(() => HistoriaCama, (historiaCama) => historiaCama.cama)
+  historial: HistoriaCama[];
+
+  @CreateDateColumn()
   fecha_creacion: Date;
 
-  @UpdateDateColumn({ type: 'datetime' })
+  @UpdateDateColumn()
   fecha_modificacion: Date;
-}
+}  
