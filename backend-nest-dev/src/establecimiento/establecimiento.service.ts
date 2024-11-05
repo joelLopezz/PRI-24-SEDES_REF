@@ -23,6 +23,19 @@ export class EstablecimientoService {
       relations: ['redCordinacion'], // Incluir la relación con RedCordinacion
     });
   }
+
+
+
+// Método para obtener todos los establecimientos de salud con ID y nombre
+  async obtenerNombresEstablecimientos(): Promise<{ idestablecimiento_ID: number; nombre: string }[]> {
+    return await this.establecimientoRepository.find({
+      select: ['idestablecimiento_ID', 'nombre'], // Selecciona solo los campos requeridos
+      where: { estado: 1 }, // Opcional: filtra por estado activo si es necesario
+    });
+  }
+
+
+
   //prettier-ignore
   // Obtener un establecimiento por su ID
   async findOne(id: number): Promise<EstablecimientoSalud> {

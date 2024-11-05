@@ -29,6 +29,12 @@ import {
     async findAll(): Promise<EstablecimientoSalud[]> {
       return this.establecimientoService.findAll();
     }
+
+    // Endpoint para obtener todos los establecimientos de salud
+    @Get('nombres')
+    async obtenerNombresEstablecimientos() {
+      return await this.establecimientoService.obtenerNombresEstablecimientos();
+    }
   
     // Obtener un establecimiento por su ID
     @Get(':id')

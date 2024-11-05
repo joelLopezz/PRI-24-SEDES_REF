@@ -9,8 +9,8 @@ export class Especialidad {
   @Column({ type: 'varchar', length: 60 })
   nombre: string;
 
-  @Column({ type: 'text' })
-  descripcion: string;
+  // @Column({ type: 'text' })
+  // descripcion: string;
 
   @Column({ type: 'tinyint' })
   estado: number;
@@ -24,6 +24,21 @@ export class Especialidad {
   @UpdateDateColumn()
   fecha_modificacion: Date;
 
-  @Column({type: 'mediumint', nullable: false})
-  eliminado: number
+  // @Column({type: 'mediumint', nullable: false})
+  // eliminado: number
+
+  @Column({ type: 'mediumint' })
+  usuario_creacion: number;
+
+  @Column({ type: 'mediumint' })
+  usuario_modificacion: number;
+
+  @Column({ type: 'tinyint' })
+  emergencias: number;
+
+  @Column({ type: 'tinyint' })
+  medicina_interna: number;
+
+  @Column({ type: 'tinyint' })
+  consulta_externa: number;
 }

@@ -1,70 +1,41 @@
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+/* src/pages/Cama/style/camaList.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
   height: 100vh;
-  background: #f7f7f7;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-dialog-centered {
+  max-width: 500px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modal-content {
   padding: 20px;
 }
 
-.form {
-  max-width: 600px;
-  width: 100%;
-  padding: 40px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
-}
-
-.form-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 28px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-.form-group.text-center {
+.modal-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 }
 
-.btn {
-  padding: 5px 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+.modal-body {
+  margin: 20px 0;
 }
 
-.btn:hover {
-  background-color: #45a049;
-  transform: scale(1.05);
-}
-
-.btn-small {
-  font-size: 12px;
-  padding: 5px 10px;
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }

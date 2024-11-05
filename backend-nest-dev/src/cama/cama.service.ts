@@ -34,20 +34,23 @@ export class CamaService {
       .leftJoin('especialidad.camas', 'cama')
       .leftJoin('cama.historial', 'historiaCama')
       .where('cama.establecimiento_salud_ID = :hospital_id', { hospital_id })
+      .andWhere('historiaCama.es_actual = :es_actual', { es_actual: 1 }) // Condición para es_actual = 1
       .select([
         'especialidad.nombre AS nombre',
+        'historiaCama.historia_ID AS historia_ID', // Añadimos el historia_ID
         'SUM(historiaCama.instalada) AS instaladas',
         'SUM(historiaCama.ofertada) AS ofertadas',
         'SUM(historiaCama.disponible) AS disponibles',
         'SUM(historiaCama.ocupada) AS ocupadas',
         'SUM(historiaCama.alta) AS alta',
       ])
-      .groupBy('especialidad.especialidad_ID')
+      .groupBy('especialidad.especialidad_ID, historiaCama.historia_ID')
       .getRawMany();
   
     // Convertimos los valores de las sumas a enteros
     return especialidades.map((especialidad) => ({
       nombre: especialidad.nombre,
+      historia_ID: parseInt(especialidad.historia_ID, 10), // Añadir historia_ID al resultado
       instaladas: parseInt(especialidad.instaladas, 10),
       ofertadas: parseInt(especialidad.ofertadas, 10),
       disponibles: parseInt(especialidad.disponibles, 10),
@@ -57,55 +60,6 @@ export class CamaService {
   }
   
 
-
-
-
-  // async getEspecialidadesPorHospital(): Promise<{ nombre: string }[]> {
-  //   const hospital_id = 1; // ID fijo del hospital para el filtro
-  
-  //   const especialidades = await this.especialidadRepository
-  //     .createQueryBuilder('especialidad')
-  //     .leftJoin('especialidad.camas', 'cama')
-  //     .where('cama.establecimiento_salud_ID = :hospital_id', { hospital_id })
-  //     .select('especialidad.nombre', 'nombre')
-  //     .groupBy('especialidad.nombre')
-  //     .getRawMany();
-  
-  //   return especialidades;
-  // }
-
-
-
-
-  // // Método para obtener todas las especialidades con sus atributos de camas en un hospital específico
-  // async getEspecialidadesPorHospital(): Promise<any[]> {
-  //   const hospital_id = 2; // ID fijo del hospital para el filtro
-
-  //   const especialidades = await this.especialidadRepository
-  //     .createQueryBuilder('especialidad')
-  //     .leftJoinAndSelect('especialidad.camas', 'cama')
-  //     .where('cama.establecimiento_salud_ID = :hospital_id', { hospital_id })
-  //     .select([
-  //       'especialidad.nombre',
-  //       'SUM(cama.instalada) AS instaladas',
-  //       'SUM(cama.ofertada) AS ofertadas',
-  //       'SUM(cama.ocupada) AS ocupadas',
-  //       'SUM(cama.disponible) AS disponibles',
-  //       'SUM(cama.alta) AS alta',
-  //     ])
-  //     .groupBy('especialidad.especialidad_ID')
-  //     .getRawMany();
-
-  //   // Convertimos los valores de las sumas a enteros
-  //   return especialidades.map((especialidad) => ({
-  //     nombre: especialidad.nombre,
-  //     instaladas: parseInt(especialidad.instaladas, 10),
-  //     ofertadas: parseInt(especialidad.ofertadas, 10),
-  //     ocupadas: parseInt(especialidad.ocupadas, 10),
-  //     disponibles: parseInt(especialidad.disponibles, 10),
-  //     alta: parseInt(especialidad.alta, 10),
-  //   }));
-  // }
 
   // Método para obtener especialidades    ======> nada que  wer xd
   async findAllEspecialidades(): Promise<{ especialidad_ID: number, nombre: string }[]> {

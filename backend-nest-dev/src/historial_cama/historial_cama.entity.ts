@@ -13,7 +13,7 @@ export class HistoriaCama {
 
   @Column({ type: 'mediumint' })
   instalada: number;
-
+  
   @Column({ type: 'mediumint' })
   ofertada: number;
 

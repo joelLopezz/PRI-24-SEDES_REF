@@ -22,6 +22,10 @@ import { DatosAntecedenteObstetricoModule } from './antecedentesobstetricos/ante
 import {UsuarioModule} from  './usuario/usuario.module';
 import { MailModule } from './correo_electronico/correo.electronico.module';
 import { CamaModule } from './cama/cama.module';
+import  { ReporteModule } from './reporrte/reporte.module'
+import { DatoSEstablecimientoModule } from './establecimiento/establecimiento.module'; 
+
+
 
 
 
@@ -55,6 +59,7 @@ import  { HistoriaCamaModule } from './historial_cama/hostoria_cama.module';
     DatosTransferenciaModule,
     DatosAntecedenteObstetricoModule,
     CamaModule,
+    DatoSEstablecimientoModule,
 
     PersonalSaludModule,
     UsuarioModule,
@@ -63,6 +68,7 @@ import  { HistoriaCamaModule } from './historial_cama/hostoria_cama.module';
     DatosEspecialidadModule,
     DatosServicioModule,
     HistoriaCamaModule,
+    ReporteModule,
 
     TypeOrmModule.forFeature([PersonalSalud]), 
   ],

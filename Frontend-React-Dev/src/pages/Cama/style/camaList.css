@@ -79,3 +79,31 @@
   .delete-button:hover {
     background-color: #da190b;
   }
+
+
+
+
+
+
+
+
+  .icon-green {
+    color: #5dd58d; /* Verde suave */
+  }
+  
+  .icon-blue {
+    color: #6697c9; /* Azul suave */
+  }
+  
+  .icon-red {
+    color: #ec7a7a; /* Rojo suave */
+  }
+  
+  .icon-yellow {
+    color: #faea83; /* Amarillo suave */
+  }
+  
+  .icon-gray {
+    color: #a3a0a0; /* Gris suave para "Actualizado" */
+  }
+  
