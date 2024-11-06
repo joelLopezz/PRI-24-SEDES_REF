@@ -5,6 +5,7 @@ import L, { LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Importar estilos de Leaflet
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
+import { validateNombre } from '../../Components/validations/Validations'; // Importar la validación
 
 // Definir la interfaz para RedCordinacion
 interface RedCordinacion {
@@ -25,8 +26,9 @@ const EstablecimientoRegister: React.FC = () => {
   });
 
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
+  const [error, setError] = useState('');
   const [redCordinaciones, setRedCordinaciones] = useState<RedCordinacion[]>([]); // Estado para almacenar las redes de coordinación
-
+  
   // Opciones para el select de niveles
   const niveles = ['Primer Nivel', 'Segundo Nivel', 'Tercer Nivel'];
 
@@ -45,13 +47,24 @@ const EstablecimientoRegister: React.FC = () => {
   }, []);
   
   // Manejador de cambios en los inputs
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
+
+  // Validar el valor solo para el campo "nombre"
+  if (name === "nombre") {
+    if (validateNombre(value) || value === '') {
+      setFormData({ ...formData, [name]: value });
+      setError(''); // Limpiar el error si la validación es exitosa
+    } else {
+      setError('El nombre del Establecimiento no es válido.');
+    }
+  } else {
+   
+    setFormData({ ...formData, [name]: value });
+    setError('');
+  }
+};
+
 
   // Función para manejar los eventos del mapa
   const MapClickHandler = () => {
@@ -77,6 +90,12 @@ const EstablecimientoRegister: React.FC = () => {
   // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const nombreTrimmed = formData.nombre.trimEnd();
+
+    if (!validateNombre(nombreTrimmed)) {
+      setError('El nombre del establecimiento no es válido.');
+      return;
+    }
     try {
       // Enviar los datos al backend
       await axios.post('http://localhost:3000/establecimiento', {
@@ -104,6 +123,8 @@ const EstablecimientoRegister: React.FC = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Registro de Establecimiento</h1>
+
+      {/* {error && <div className="text-red-500 mb-4">{error}</div>} Mostrar error si existe */}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Nombre */}
@@ -142,7 +163,7 @@ const EstablecimientoRegister: React.FC = () => {
         <div>
           <label className="block text-gray-700">Teléfono</label>
           <input
-            type="text"
+            type="number"
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}

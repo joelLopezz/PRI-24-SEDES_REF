@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import { validateNombreServicio, validateCodigoServicio } from '../../Components/validations/Validations'; // Importar la validación
 
 // Definir la interfaz para las especialidades
 interface Especialidad {
@@ -54,19 +55,30 @@ const EditService: React.FC = () => {
     fetchServiceAndEspecialidades();
   }, [id]);
 
-  // Manejador de cambios en los campos del formulario
+  // Manejador para los cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (name === "codigo") {
+      // Permitir la entrada de cadenas vacías para poder borrar el texto
+      if (validateCodigoServicio(value) || value === '') {
+        setFormData({ ...formData, [name]: value });
+        setError('');
+      } 
+    } else if (name === "nombre") {
+      if (validateNombreServicio(value) || value === '') {
+        setFormData({ ...formData, [name]: value });
+        setError('');
+      } 
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setError('');
+    }
   };
-
+  
   // Enviar el formulario para actualizar el servicio
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     try {
       // Verificamos que se esté enviando el especialidad_ID correctamente
       if (!formData.especialidad_ID) {

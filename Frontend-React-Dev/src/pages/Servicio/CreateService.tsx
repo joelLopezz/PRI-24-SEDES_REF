@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import { validateNombreServicio, validateCodigoServicio } from '../../Components/validations/Validations'; // Importar la validación
+
 
 // Definir la interfaz para las especialidades
 interface Especialidad {
@@ -22,7 +24,7 @@ const CreateService: React.FC = () => {
   // Estado para almacenar las especialidades
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
-
+  const [error, setError] = useState('');
   // Efecto para cargar las especialidades desde el backend
   useEffect(() => {
     const fetchEspecialidades = async () => {
@@ -40,16 +42,34 @@ const CreateService: React.FC = () => {
   // Manejador para los cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    // Permitir que la validación pase si el valor es una cadena vacía
+    if (name === "codigo") {
+      // Permitir la entrada de cadenas vacías para poder borrar el texto
+      if (validateCodigoServicio(value) || value === '') {
+        setFormData({ ...formData, [name]: value });
+        setError('');
+      } else {
+        setError('El código del Servicio no puede contener espacios.');
+      }
+    } else if (name === "nombre") {
+      if (validateNombreServicio(value) || value === '') {
+        setFormData({ ...formData, [name]: value });
+        setError('');
+      } else {
+        setError('El nombre del Servicio no es válido.');
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setError('');
+    }
   };
+  
 
   // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     // Verificar que se haya seleccionado una especialidad válida
     if (!formData.especialidad_ID || formData.especialidad_ID === "") {
       alert("Por favor, selecciona una especialidad válida.");
