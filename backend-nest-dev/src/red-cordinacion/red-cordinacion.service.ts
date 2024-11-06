@@ -18,8 +18,11 @@ export class RedCordinacionService {
   }
 
   // Obtener todas las redes de coordinación
+  // Obtener todas las redes de coordinación activas
   async findAll(): Promise<RedCordinacion[]> {
-    return this.redCordinacionRepository.find();
+    return this.redCordinacionRepository.find({
+      where: { estado: 1 }, // Solo traer redes con estado = 1
+    });
   }
 
   // Obtener solo ID, nombre y numeración de las redes activas (estado = 1)
