@@ -67,6 +67,7 @@ export class EstabServicioService {
         'relacion.equipo_instrumental',
         'relacion.medicamentos_reactivos',
         'relacion.insumos',
+        'relacion.fecha_actualizacion',
       ])
       .getMany();
   }
@@ -90,14 +91,28 @@ export class EstabServicioService {
       .getMany();
   }
 
-  // Actualizar los atributos de un servicio para un establecimiento
+  // Método para eliminar un servicio de un establecimiento
+  async deleteServicio(id: number): Promise<void> {
+    await this.relacionRepository.delete(id);
+  }
+
+  // Actualizar los atributos de un servicio para un establecimiento y registrar la fecha de actualización
   async updateServicioAttributes(
-    relacionId: number,
+    id: number,
     attributes: Partial<EstablecimientoSaludServicio>,
   ): Promise<EstablecimientoSaludServicio> {
-    await this.relacionRepository.update(relacionId, attributes);
+    const { equipo_instrumental, medicamentos_reactivos, insumos } = attributes;
+
+    const fieldsToUpdate = {
+      equipo_instrumental,
+      medicamentos_reactivos,
+      insumos,
+      fecha_actualizacion: new Date(), // Actualiza la fecha solo si algún campo se modifica
+    };
+
+    await this.relacionRepository.update(id, fieldsToUpdate);
     return this.relacionRepository.findOne({
-      where: { id: relacionId },
+      where: { id },
       relations: ['servicio'],
     });
   }

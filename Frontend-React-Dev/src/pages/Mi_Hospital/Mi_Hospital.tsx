@@ -37,6 +37,10 @@ const MiHospital: React.FC = () => {
     navigate('/miHospital/agregar-especialidades');
   };
 
+  const handleVerDisponibilidad = () => {
+    navigate('/miHospital/ver-disponibilidad', { state: { especialidades } });
+  };
+
   const handleVerServicios = (especialidadId: number, especialidadNombre: string) => {
     navigate(`/miHospital/especialidad/${especialidadId}/servicios`, { state: { especialidadNombre } });
   };
@@ -48,12 +52,18 @@ const MiHospital: React.FC = () => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Especialidades de Mi Hospital</h1>
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex justify-end space-x-4">
+        <button
+          onClick={handleVerDisponibilidad}
+          className="bg-indigo-500 text-white px-5 py-2 rounded-md hover:bg-indigo-600 transition duration-300"
+        >
+          Ver Disponibilidad
+        </button>
         <button
           onClick={handleAgregarEspecialidades}
           className="bg-blue-500 text-white px-5 py-2 rounded-md hover:bg-blue-600 transition duration-300"
         >
-          Agregar Especialidades y Servicios
+          Agregar Especialidades
         </button>
       </div>
 

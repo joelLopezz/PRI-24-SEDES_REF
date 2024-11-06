@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
 
@@ -12,6 +12,8 @@ interface Servicio {
 
 const AgregarServicios: React.FC = () => {
   const { especialidadId } = useParams<{ especialidadId: string }>();
+  const { state } = useLocation();
+  const { especialidadNombre } = state as { especialidadNombre: string }; // Capturar el nombre dinámicamente
   const navigate = useNavigate();
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [selectedServicios, setSelectedServicios] = useState<number[]>([]);
@@ -47,6 +49,21 @@ const AgregarServicios: React.FC = () => {
     );
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // Redirigir a la página `ServiciosEspecialidad` después de cerrar el modal con el nombre dinámico
+    navigate(`/miHospital/especialidad/${especialidadId}/servicios`, {
+      state: { especialidadNombre }, // Usar el nombre dinámico pasado desde `ServiciosEspecialidad`
+    });
+  };
+
+  const handleCancelar = () => {
+    setSelectedServicios([]); // Limpiar las selecciones de checkboxes
+    navigate(`/miHospital/especialidad/${especialidadId}/servicios`, {
+      state: { especialidadNombre }, // Usar el nombre dinámico en caso de cancelar
+    });
+  };
+
   const handleGuardar = async () => {
     try {
       const serviciosData = selectedServicios.map((servicioId) => ({
@@ -63,13 +80,6 @@ const AgregarServicios: React.FC = () => {
     }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    // Redirigir a la página `ServiciosEspecialidad` después de cerrar el modal
-    navigate(`/miHospital/especialidad/${especialidadId}/servicios`, {
-      state: { especialidadNombre: "EMERGENCIA" }, // Ajustar según el valor real
-    });
-  };
 
   if (loading) {
     return <div className="text-center mt-8">Cargando servicios...</div>;
@@ -96,7 +106,13 @@ const AgregarServicios: React.FC = () => {
         ))}
       </ul>
 
-      <div className="mt-8">
+      <div className="mt-8 flex justify-end space-x-4">
+        <button
+          onClick={handleCancelar}
+          className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300"
+        >
+          Cancelar
+        </button>
         <button
           onClick={handleGuardar}
           className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition duration-300"

@@ -17,8 +17,11 @@ export class SpecialtyService {
   }
 
   // Obtener todas las especialidades
+  // En el servicio (SpecialtyService)
   async getAllSpecialties(): Promise<Specialty[]> {
-    return this.specialtyRepository.find();
+    return this.specialtyRepository.find({
+      where: { estado: 1 }, // Filtrar solo las especialidades activas con estado = 1
+    });
   }
 
   // Obtener todas las especialidades para un select, devolviendo solo id y nombre

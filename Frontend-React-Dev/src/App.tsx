@@ -1,6 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Layout from './Components/Layout/Layout';
+import HomePage from './pages/HomePage/HomePage'; // Importa la nueva página de inicio
+
+
 import EstablecimientoList from './pages/EstablecimientoSalud/EstablecimientoList'; // Cambiar el nombre
 import EstablecimientoRegister from './pages/EstablecimientoSalud/EstablecimientoRegister'; // Cambiar el nombre
 import EstablecimientoEdit from './pages/EstablecimientoSalud/EstablecimientoEdit'; // Cambiar el nombre
@@ -16,12 +19,27 @@ import MiHospital from './pages/Mi_Hospital/Mi_Hospital'; // Página "Mi Hospita
 import AgregarEspecialidades from './pages/Mi_Hospital/add_specialtys';
 import ServiciosEspecialidad from './pages/Mi_Hospital/ServiciosEspecialidad';
 import AgregarServicios from './pages/Mi_Hospital/AgregarServicios'; // Importa la página de agregar servicios
+import EstablecerDisponible from './pages/Mi_Hospital/EstablecerDisponible';
+import VerDisponibilidadPorMes from './pages/Mi_Hospital/VerDisponibilidadPorMes';
+import EspecialidadesSemana from './pages/Mi_Hospital/EspecialidadesSemana';
+import RedesList from './pages/Red_Cordinacion/RedesList';
+import RedCreate from './pages/Red_Cordinacion/RedCreate';
+import RedEdit from './pages/Red_Cordinacion/RedEdit';
+import HospitalesList from './pages/Hospitales/HospitalesList';
+import HospitalInfo from './pages/Hospitales/HospitalInfo';
+import ServiciosEspInfo from './pages/Hospitales/ServiciosEspInfo';
+
+
 
 const App: React.FC = () => {
   return (
     <Router>
       <Layout>
         <Routes>
+          {/* Ruta para la página de inicio */}
+          <Route path="/" element={<HomePage />} />
+
+
           {/* Rutas de establecimientos de salud */}
           <Route path="/establecimientos" element={<EstablecimientoList />} />
           <Route path="/establecimientos/crear" element={<EstablecimientoRegister />} />
@@ -41,6 +59,19 @@ const App: React.FC = () => {
           <Route path="/miHospital/agregar-especialidades" element={<AgregarEspecialidades />} />
           <Route path="/miHospital/especialidad/:especialidadId/servicios" element={<ServiciosEspecialidad />}/>
           <Route path="/miHospital/especialidad/:especialidadId/agregar-servicios" element={<AgregarServicios />} />
+          <Route path="/miHospital/especialidad/:especialidadId/establecer-disponibilidad" element={<EstablecerDisponible />} />
+          <Route path="/miHospital/especialidad/:especialidadId/ver-disponibilidad" element={<VerDisponibilidadPorMes />} />
+          <Route path="/miHospital/ver-disponibilidad" element={<EspecialidadesSemana />} />
+          {/* Nueva ruta para Redes de Coordinación */}
+          <Route path="/red-coordinacion" element={<RedesList />} />
+          <Route path="/red-cordinacion/crear" element={<RedCreate />} />
+          <Route path="/red-cordinacion/editar/:id" element={<RedEdit />} />
+          {/* Nueva ruta para INFO DE HOSPIATLES */}
+          <Route path="/hospitales-info" element={<HospitalesList />} />
+          <Route path="/hospitales-info/:id" element={<HospitalInfo />} />
+          <Route path="/hospitales-info/servicios-especialidad/:especialidadId" element={<ServiciosEspInfo />} />
+
+
         </Routes>
       </Layout>
     </Router>

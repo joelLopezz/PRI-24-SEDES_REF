@@ -1,4 +1,3 @@
-// src/estab_servicio/estab_servicio.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -29,11 +28,18 @@ export class EstablecimientoSaludServicio {
   @Column({ type: 'tinyint', default: 0 })
   insumos: number;
 
-  @ManyToOne(() => EstablecimientoSalud, { eager: false }) // Puedes ajustar eager según tus necesidades
+  @Column({
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  fecha_actualizacion: Date;
+
+  @ManyToOne(() => EstablecimientoSalud, { eager: false })
   @JoinColumn({ name: 'establecimiento_salud_id' })
   establecimiento: EstablecimientoSalud;
 
-  @ManyToOne(() => Servicio, { eager: true }) // Eager true si deseas que cargue el servicio automáticamente
+  @ManyToOne(() => Servicio, { eager: true })
   @JoinColumn({ name: 'servicio_id' })
   servicio: Servicio;
 }

@@ -22,6 +22,7 @@ export class ServicioService {
   // Obtener todos los servicios (relacionado con especialidad si es necesario)
   async findAll(): Promise<Servicio[]> {
     return await this.servicioRepository.find({
+      where: { estado: 1 },
       relations: ['especialidad'], // Incluir la relación con Especialidad
     });
   }

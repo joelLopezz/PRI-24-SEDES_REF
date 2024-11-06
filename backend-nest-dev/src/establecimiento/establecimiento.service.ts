@@ -22,6 +22,7 @@ export class EstablecimientoService {
   // Obtener todos los establecimientos
   async findAll(): Promise<EstablecimientoSalud[]> {
     return this.establecimientoRepository.find({
+      where: { estado: 1 },
       relations: ['redCordinacion', 'municipio'], // Incluir la relación con RedCordinacion y Municipio
     });
   }

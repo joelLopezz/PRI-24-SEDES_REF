@@ -2,71 +2,97 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L, { LeafletMouseEvent } from 'leaflet';
-import 'leaflet/dist/leaflet.css'; // Importar estilos de Leaflet
+import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
-import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
-import { validateNombre } from '../../Components/validations/Validations'; // Importar la validación
+import SuccessModal from '../../Components/SuccessModal';
 
-// Definir la interfaz para RedCordinacion
 interface RedCordinacion {
   red_ID: number;
   nombre: string;
   numeracion: string;
 }
 
+interface Municipio {
+  municipio_ID: number;
+  nombre: string;
+}
+
 const EstablecimientoRegister: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
-    nivel: '', // Selección del nivel (Primer Nivel, Segundo Nivel, Tercer Nivel)
+    nivel: '',
     telefono: '',
-    latitud: -17.3935, // Coordenada inicial (ejemplo)
-    longitud: -66.1570, // Coordenada inicial (ejemplo)
-    red_cordinacion_red_ID: '', // ID de la red de coordinación seleccionada
+    latitud: -17.3935,
+    longitud: -66.1570,
+    red_cordinacion_red_ID: '',
+    rues: '',
+    municipio: '', // Almacena el nombre del municipio
+    municipio_ID: '', // Aquí se guarda el ID del municipio
   });
-
-  const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
-  const [error, setError] = useState('');
-  const [redCordinaciones, setRedCordinaciones] = useState<RedCordinacion[]>([]); // Estado para almacenar las redes de coordinación
   
-  // Opciones para el select de niveles
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [redCordinaciones, setRedCordinaciones] = useState<RedCordinacion[]>([]);
+  const [municipios, setMunicipios] = useState<Municipio[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
   const niveles = ['Primer Nivel', 'Segundo Nivel', 'Tercer Nivel'];
 
-  // Obtener las redes de coordinación al montar el componente
   useEffect(() => {
     const fetchRedesCordinacion = async () => {
       try {
         const response = await axios.get<RedCordinacion[]>('http://localhost:3000/red-cordinacion');
-        setRedCordinaciones(response.data); // Ahora TypeScript sabe que `response.data` es un array de `RedCordinacion`
+        setRedCordinaciones(response.data);
       } catch (error) {
         console.error('Error al cargar las redes de coordinación:', error);
       }
     };
-  
+
+    const fetchMunicipios = async () => {
+      try {
+        const response = await axios.get<Municipio[]>('http://localhost:3000/municipio');
+        setMunicipios(response.data);
+      } catch (error) {
+        console.error('Error al cargar los municipios:', error);
+      }
+    };
+
     fetchRedesCordinacion();
+    fetchMunicipios();
   }, []);
-  
-  // Manejador de cambios en los inputs
-const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = e.target;
 
-  // Validar el valor solo para el campo "nombre"
-  if (name === "nombre") {
-    if (validateNombre(value) || value === '') {
-      setFormData({ ...formData, [name]: value });
-      setError(''); // Limpiar el error si la validación es exitosa
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleMunicipioBlur = () => {
+    // Verificar si el municipio ingresado corresponde a un municipio válido de la lista
+    const selectedMunicipio = municipios.find(
+      (municipio) => municipio.nombre.toLowerCase() === formData.municipio.toLowerCase()
+    );
+
+    if (selectedMunicipio) {
+      // Municipio válido
+      setFormData({
+        ...formData,
+        municipio: selectedMunicipio.nombre,
+        municipio_ID: selectedMunicipio.municipio_ID.toString(),
+      });
+      setError(null); // Limpiar error si la selección es válida
     } else {
-      setError('El nombre del Establecimiento no es válido.');
+      // Municipio no válido
+      setFormData({
+        ...formData,
+        municipio_ID: '', // Limpiar el ID si no es válido
+      });
+      setError('Por favor selecciona un municipio válido de la lista.');
     }
-  } else {
-   
-    setFormData({ ...formData, [name]: value });
-    setError('');
-  }
-};
+  };
 
-
-  // Función para manejar los eventos del mapa
   const MapClickHandler = () => {
     useMapEvents({
       click(event: LeafletMouseEvent) {
@@ -80,51 +106,43 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     return null;
   };
 
-  // Personalizar el icono del marcador
   const customMarker = new L.Icon({
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
   });
 
-  // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const nombreTrimmed = formData.nombre.trimEnd();
-
-    if (!validateNombre(nombreTrimmed)) {
-      setError('El nombre del establecimiento no es válido.');
+    if (!formData.municipio_ID) {
+      setError('Por favor selecciona un municipio válido de la lista.');
       return;
     }
+
     try {
-      // Enviar los datos al backend
       await axios.post('http://localhost:3000/establecimiento', {
         ...formData,
-        estado: 1, // Estado por defecto
-        usuario_creacion: 1, // Temporalmente asignamos el ID del usuario 1
+        estado: 1,
+        usuario_creacion: 1,
       });
-      setModalOpen(true); // Abrir el modal de éxito
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al registrar el establecimiento:', error);
     }
   };
 
-  // Cerrar el modal de éxito
   const handleCloseModal = () => {
     setModalOpen(false);
-    navigate('/establecimientos'); // Redirigir a la lista de establecimientos
+    navigate('/establecimientos');
   };
 
-  // Cancelar la operación
   const handleCancel = () => {
-    navigate('/establecimientos'); // Redirigir a la lista si se cancela
+    navigate('/establecimientos');
   };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Registro de Establecimiento</h1>
-
-      {/* {error && <div className="text-red-500 mb-4">{error}</div>} Mostrar error si existe */}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Nombre */}
@@ -163,7 +181,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
         <div>
           <label className="block text-gray-700">Teléfono</label>
           <input
-            type="number"
+            type="text"
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}
@@ -171,6 +189,45 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
             required
           />
         </div>
+
+        {/* RUES */}
+        <div>
+          <label className="block text-gray-700">RUES</label>
+          <input
+            type="text"
+            name="rues"
+            value={formData.rues}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        {/* Municipio con autocompletar */}
+<div>
+  <label className="block text-gray-700">Municipio</label>
+  <input
+    type="text"
+    name="municipio"
+    value={formData.municipio}
+    onChange={handleChange}
+    onBlur={handleMunicipioBlur}
+    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    list="municipios"
+    required
+  />
+  <datalist id="municipios">
+    {municipios
+      .filter((value, index, self) =>
+        index === self.findIndex((t) => t.nombre === value.nombre)
+      )
+      .sort((a, b) => a.nombre.localeCompare(b.nombre))
+      .map((mun) => (
+        <option key={mun.municipio_ID} value={mun.nombre} />
+      ))}
+  </datalist>
+  {error && <div className="text-red-500">{error}</div>}
+</div>
+
 
         {/* Select para Red de Coordinación */}
         <div>
@@ -210,7 +267,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
           </div>
         </div>
 
-        {/* Inputs para mostrar la latitud y longitud */}
+        {/* Latitud y Longitud */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700">Latitud</label>
@@ -245,7 +302,6 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
         </div>
       </form>
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
