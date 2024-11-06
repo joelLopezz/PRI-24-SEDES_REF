@@ -1,4 +1,4 @@
-import { Servicio } from '../servicio/servicio.entity'; // Importa la entidad Servicio
+import { Servicio } from '../servicio/servicio.entity';
 import {
   Entity,
   Column,
@@ -30,6 +30,16 @@ export class Specialty {
 
   @Column({ type: 'mediumint', nullable: true })
   usuario_modificacion: number;
+
+  // Nuevos campos añadidos
+  @Column({ type: 'tinyint', nullable: true })
+  emergencias: number | null;
+
+  @Column({ type: 'tinyint', nullable: true })
+  medicina_interna: number | null;
+
+  @Column({ type: 'tinyint', nullable: true })
+  consulta_externa: number | null;
 
   // Relación inversa con la entidad Servicio
   @OneToMany(() => Servicio, (servicio) => servicio.especialidad)
