@@ -28,6 +28,7 @@ import RedEdit from './pages/Red_Cordinacion/RedEdit';
 import HospitalesList from './pages/Hospitales/HospitalesList';
 import HospitalInfo from './pages/Hospitales/HospitalInfo';
 import ServiciosEspInfo from './pages/Hospitales/ServiciosEspInfo';
+import Credits from './pages/HomePage/Credits';
 
 
 
@@ -70,6 +71,10 @@ const App: React.FC = () => {
           <Route path="/hospitales-info" element={<HospitalesList />} />
           <Route path="/hospitales-info/:id" element={<HospitalInfo />} />
           <Route path="/hospitales-info/servicios-especialidad/:especialidadId" element={<ServiciosEspInfo />} />
+          
+          {/* RUTAS PAGIAN DE CREDITOS */}
+          <Route path="/credits" element={<Credits />} />
+
 
 
         </Routes>

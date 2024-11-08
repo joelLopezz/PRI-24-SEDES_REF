@@ -40,7 +40,7 @@ const HomePage: React.FC = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Mapa de Hospitales</h1>
       
-      <MapContainer center={[-17.3935, -66.1570]} zoom={12} style={{ height: '800px', width: '100%' }}>
+      <MapContainer center={[-17.3935, -66.1570]} zoom={12} style={{ height: '600px', width: '100%' }}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
