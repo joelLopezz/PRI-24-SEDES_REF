@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import SuccessModal from '../../Components/SuccessModal';
+import { validateNombreServicio, validateCodigoServicio } from '../../Components/validations/Validations';
 
 // Definir la interfaz para las especialidades
 interface Especialidad {
@@ -22,13 +23,14 @@ const CreateService: React.FC = () => {
   // Estado para almacenar las especialidades
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
+  const [error, setError] = useState('');
 
   // Efecto para cargar las especialidades desde el backend
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get<Especialidad[]>('http://localhost:3000/specialties'); // Endpoints de especialidades
-        setEspecialidades(response.data); // Ahora TypeScript sabrá que response.data es de tipo Especialidad[]
+        const response = await axios.get<Especialidad[]>('http://localhost:3000/specialties');
+        setEspecialidades(response.data);
       } catch (error) {
         console.error('Error al obtener las especialidades:', error);
       }
@@ -40,26 +42,43 @@ const CreateService: React.FC = () => {
   // Manejador para los cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    if (name === "codigo") {
+      const codigoValidado = validateCodigoServicio(value);
+      if (codigoValidado !== null) {
+        setFormData({ ...formData, [name]: codigoValidado });
+        setError('');
+      } else {
+        setError('El código del Servicio no puede contener espacios.');
+      }
+    } else if (name === "nombre") {
+      const nombreValidado = validateNombreServicio(value);
+      if (nombreValidado !== null) {
+        setFormData({ ...formData, [name]: nombreValidado });
+        setError('');
+      } else {
+        setError('El nombre del Servicio no es válido.');
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setError('');
+    }
   };
 
   // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     // Verificar que se haya seleccionado una especialidad válida
     if (!formData.especialidad_ID || formData.especialidad_ID === "") {
-      alert("Por favor, selecciona una especialidad válida.");
+      setError("Por favor, selecciona una especialidad válida.");
       return;
     }
 
     try {
       // Enviar la solicitud POST
       await axios.post('http://localhost:3000/servicio', { ...formData, estado: 1 });
-      setModalOpen(true); // Abrimos el modal de éxito al completar la creación
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al crear el servicio:', error);
     }
@@ -67,12 +86,12 @@ const CreateService: React.FC = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    navigate('/servicios'); // Redirigir después de cerrar el modal
+    navigate('/servicios');
   };
 
   // Cancelar la operación
   const handleCancel = () => {
-    navigate('/servicios'); // Redirigir a la lista si se cancela
+    navigate('/servicios');
   };
 
   return (

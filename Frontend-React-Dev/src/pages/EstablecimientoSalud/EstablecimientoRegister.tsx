@@ -2,49 +2,65 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L, { LeafletMouseEvent } from 'leaflet';
-import 'leaflet/dist/leaflet.css'; // Importar estilos de Leaflet
+import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
-import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
+import SuccessModal from '../../Components/SuccessModal';
 
-// Definir la interfaz para RedCordinacion
 interface RedCordinacion {
   red_ID: number;
   nombre: string;
   numeracion: string;
 }
 
+interface Municipio {
+  municipio_ID: number;
+  nombre: string;
+}
+
 const EstablecimientoRegister: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
-    nivel: '', // Selección del nivel (Primer Nivel, Segundo Nivel, Tercer Nivel)
+    nivel: '',
     telefono: '',
-    latitud: -17.3935, // Coordenada inicial (ejemplo)
-    longitud: -66.1570, // Coordenada inicial (ejemplo)
-    red_cordinacion_red_ID: '', // ID de la red de coordinación seleccionada
+    latitud: -17.3935,
+    longitud: -66.1570,
+    red_cordinacion_red_ID: '',
+    rues: '',
+    municipio: '', // Almacena el nombre del municipio
+    municipio_ID: '', // Aquí se guarda el ID del municipio
   });
+  
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [redCordinaciones, setRedCordinaciones] = useState<RedCordinacion[]>([]);
+  const [municipios, setMunicipios] = useState<Municipio[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
-  const [redCordinaciones, setRedCordinaciones] = useState<RedCordinacion[]>([]); // Estado para almacenar las redes de coordinación
-
-  // Opciones para el select de niveles
   const niveles = ['Primer Nivel', 'Segundo Nivel', 'Tercer Nivel'];
 
-  // Obtener las redes de coordinación al montar el componente
   useEffect(() => {
     const fetchRedesCordinacion = async () => {
       try {
         const response = await axios.get<RedCordinacion[]>('http://localhost:3000/red-cordinacion');
-        setRedCordinaciones(response.data); // Ahora TypeScript sabe que `response.data` es un array de `RedCordinacion`
+        setRedCordinaciones(response.data);
       } catch (error) {
         console.error('Error al cargar las redes de coordinación:', error);
       }
     };
-  
+
+    const fetchMunicipios = async () => {
+      try {
+        const response = await axios.get<Municipio[]>('http://localhost:3000/municipio');
+        setMunicipios(response.data);
+      } catch (error) {
+        console.error('Error al cargar los municipios:', error);
+      }
+    };
+
     fetchRedesCordinacion();
+    fetchMunicipios();
   }, []);
-  
-  // Manejador de cambios en los inputs
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -53,7 +69,30 @@ const EstablecimientoRegister: React.FC = () => {
     });
   };
 
-  // Función para manejar los eventos del mapa
+  const handleMunicipioBlur = () => {
+    // Verificar si el municipio ingresado corresponde a un municipio válido de la lista
+    const selectedMunicipio = municipios.find(
+      (municipio) => municipio.nombre.toLowerCase() === formData.municipio.toLowerCase()
+    );
+
+    if (selectedMunicipio) {
+      // Municipio válido
+      setFormData({
+        ...formData,
+        municipio: selectedMunicipio.nombre,
+        municipio_ID: selectedMunicipio.municipio_ID.toString(),
+      });
+      setError(null); // Limpiar error si la selección es válida
+    } else {
+      // Municipio no válido
+      setFormData({
+        ...formData,
+        municipio_ID: '', // Limpiar el ID si no es válido
+      });
+      setError('Por favor selecciona un municipio válido de la lista.');
+    }
+  };
+
   const MapClickHandler = () => {
     useMapEvents({
       click(event: LeafletMouseEvent) {
@@ -67,38 +106,38 @@ const EstablecimientoRegister: React.FC = () => {
     return null;
   };
 
-  // Personalizar el icono del marcador
   const customMarker = new L.Icon({
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
   });
 
-  // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.municipio_ID) {
+      setError('Por favor selecciona un municipio válido de la lista.');
+      return;
+    }
+
     try {
-      // Enviar los datos al backend
       await axios.post('http://localhost:3000/establecimiento', {
         ...formData,
-        estado: 1, // Estado por defecto
-        usuario_creacion: 1, // Temporalmente asignamos el ID del usuario 1
+        estado: 1,
+        usuario_creacion: 1,
       });
-      setModalOpen(true); // Abrir el modal de éxito
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al registrar el establecimiento:', error);
     }
   };
 
-  // Cerrar el modal de éxito
   const handleCloseModal = () => {
     setModalOpen(false);
-    navigate('/establecimientos'); // Redirigir a la lista de establecimientos
+    navigate('/establecimientos');
   };
 
-  // Cancelar la operación
   const handleCancel = () => {
-    navigate('/establecimientos'); // Redirigir a la lista si se cancela
+    navigate('/establecimientos');
   };
 
   return (
@@ -151,6 +190,45 @@ const EstablecimientoRegister: React.FC = () => {
           />
         </div>
 
+        {/* RUES */}
+        <div>
+          <label className="block text-gray-700">RUES</label>
+          <input
+            type="text"
+            name="rues"
+            value={formData.rues}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        {/* Municipio con autocompletar */}
+<div>
+  <label className="block text-gray-700">Municipio</label>
+  <input
+    type="text"
+    name="municipio"
+    value={formData.municipio}
+    onChange={handleChange}
+    onBlur={handleMunicipioBlur}
+    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    list="municipios"
+    required
+  />
+  <datalist id="municipios">
+    {municipios
+      .filter((value, index, self) =>
+        index === self.findIndex((t) => t.nombre === value.nombre)
+      )
+      .sort((a, b) => a.nombre.localeCompare(b.nombre))
+      .map((mun) => (
+        <option key={mun.municipio_ID} value={mun.nombre} />
+      ))}
+  </datalist>
+  {error && <div className="text-red-500">{error}</div>}
+</div>
+
+
         {/* Select para Red de Coordinación */}
         <div>
           <label className="block text-gray-700">Red de Coordinación</label>
@@ -189,7 +267,7 @@ const EstablecimientoRegister: React.FC = () => {
           </div>
         </div>
 
-        {/* Inputs para mostrar la latitud y longitud */}
+        {/* Latitud y Longitud */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700">Latitud</label>
@@ -224,7 +302,6 @@ const EstablecimientoRegister: React.FC = () => {
         </div>
       </form>
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

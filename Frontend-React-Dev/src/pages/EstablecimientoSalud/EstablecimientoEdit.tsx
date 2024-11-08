@@ -5,12 +5,19 @@ import L, { LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Importar estilos de Leaflet
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
+import { validateNombre } from '../../Components/validations/Validations'; // Importar la validación
 
-// Definir la interfaz para RedCordinacion
+
+// Definir la interfaz para RedCordinacion y Municipio
 interface RedCordinacion {
   red_ID: number;
   nombre: string;
   numeracion: string;
+}
+
+interface Municipio {
+  municipio_ID: number;
+  nombre: string;
 }
 
 interface Establecimiento {
@@ -20,6 +27,8 @@ interface Establecimiento {
   latitud: number;
   longitud: number;
   red_cordinacion_red_ID: number;
+  municipio_ID: number;
+  rues: string;
 }
 
 const EstablecimientoEdit: React.FC = () => {
@@ -29,23 +38,30 @@ const EstablecimientoEdit: React.FC = () => {
     nombre: '',
     nivel: '',
     telefono: '',
-    latitud: -17.3935, // Coordenada inicial
-    longitud: -66.1570, // Coordenada inicial
+    latitud: -17.3935,
+    longitud: -66.1570,
     red_cordinacion_red_ID: 0,
+    municipio_ID: 0,
+    rues: '',
   });
 
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de éxito
-  const [redCordinaciones, setRedCordinaciones] = useState<RedCordinacion[]>([]); // Estado para almacenar las redes de coordinación
+  const [, setError] = useState('');
+  const [redCordinaciones, setRedCordinaciones] = useState<RedCordinacion[]>([]);
+  const [municipios, setMunicipios] = useState<Municipio[]>([]);
 
-  // Opciones para el select de niveles
+
   const niveles = ['Primer Nivel', 'Segundo Nivel', 'Tercer Nivel'];
 
-  // Obtener los datos del establecimiento por su ID al cargar la página
   useEffect(() => {
     const fetchEstablecimiento = async () => {
       try {
         const response = await axios.get<Establecimiento>(`http://localhost:3000/establecimiento/${id}`);
-        setFormData(response.data); // Asignar los datos del establecimiento al estado
+        setFormData({
+          ...response.data,
+          red_cordinacion_red_ID: response.data.red_cordinacion_red_ID,
+          municipio_ID: response.data.municipio_ID,
+        });
       } catch (error) {
         console.error('Error al cargar el establecimiento:', error);
       }
@@ -60,68 +76,110 @@ const EstablecimientoEdit: React.FC = () => {
       }
     };
 
+    const fetchMunicipios = async () => {
+      try {
+        const response = await axios.get<Municipio[]>('http://localhost:3000/municipio');
+        setMunicipios(response.data);
+      } catch (error) {
+        console.error('Error al cargar los municipios:', error);
+      }
+    };
+
     fetchEstablecimiento();
     fetchRedesCordinacion();
+    fetchMunicipios();
   }, [id]);
 
-  // Manejador de cambios en los inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (name === "nombre") {
+      if (validateNombre(value) || value === '') {
+        setFormData({ ...formData, [name]: value });
+        setError(''); // Limpiar el error si la validación es exitosa
+      } else {
+        setError('El nombre del Establecimiento no es válido.');
+      }
+    } else {
+     
+      setFormData({ ...formData, [name]: value });
+      setError('');
+    }
   };
 
-  // Función para manejar los eventos del mapa
+  const handleMunicipioSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const municipioID = parseInt(e.target.value, 10);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      municipio_ID: municipioID,
+    }));
+  };
+
+  const handleRedCordinacionSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const redID = parseInt(e.target.value, 10);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      red_cordinacion_red_ID: redID,
+    }));
+  };
+
   const MapClickHandler = () => {
     useMapEvents({
       click(event: LeafletMouseEvent) {
-        setFormData({
-          ...formData,
+        setFormData((prevFormData) => ({
+          ...prevFormData,
           latitud: event.latlng.lat,
           longitud: event.latlng.lng,
-        });
+        }));
       },
     });
     return null;
   };
 
-  // Personalizar el icono del marcador
   const customMarker = new L.Icon({
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
   });
 
-  // Enviar los datos actualizados del establecimiento
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:3000/establecimiento/${id}`, {
-        ...formData,
+      // Verificar que estamos enviando solo los IDs necesarios y los campos actualizados
+      const updatedData = {
+        nombre: formData.nombre,
+        nivel: formData.nivel,
+        telefono: formData.telefono,
+        latitud: formData.latitud,
+        longitud: formData.longitud,
+        red_cordinacion_red_ID: formData.red_cordinacion_red_ID,
+        municipio_ID: formData.municipio_ID,
+        rues: formData.rues,
         usuario_modificacion: 1, // Temporalmente asignamos el ID del usuario 1
-      });
-      setModalOpen(true); // Abrir el modal de éxito
+      };
+
+      console.log("Datos enviados para la actualización:", updatedData);
+
+      await axios.patch(`http://localhost:3000/establecimiento/${id}`, updatedData);
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al actualizar el establecimiento:', error);
     }
   };
 
-  // Cerrar el modal de éxito
   const handleCloseModal = () => {
     setModalOpen(false);
-    navigate('/establecimientos'); // Redirigir a la lista de establecimientos
+    navigate('/establecimientos');
   };
 
-  // Cancelar la operación
   const handleCancel = () => {
-    navigate('/establecimientos'); // Redirigir a la lista si se cancela
+    navigate('/establecimientos');
   };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Editar Establecimiento</h1>
+      {/* {error && <div className="text-red-500 mb-4">{error}</div>} Mostrar error si existe */}
+
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Nombre */}
@@ -160,7 +218,7 @@ const EstablecimientoEdit: React.FC = () => {
         <div>
           <label className="block text-gray-700">Teléfono</label>
           <input
-            type="text"
+            type="number"
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}
@@ -169,20 +227,60 @@ const EstablecimientoEdit: React.FC = () => {
           />
         </div>
 
-        {/* Select para Red de Coordinación */}
+        {/* RUES */}
+        <div>
+          <label className="block text-gray-700">RUES</label>
+          <input
+            type="text"
+            name="rues"
+            value={formData.rues}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        {/* Municipio */}
+        <div>
+          <label className="block text-gray-700">Municipio</label>
+          <select
+            name="municipio_ID"
+            value={formData.municipio_ID}
+            onChange={handleMunicipioSelect}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          >
+            <option value="">Seleccione el municipio</option>
+            {municipios
+              // Eliminar duplicados basados en el nombre
+              .filter((value, index, self) =>
+                index === self.findIndex((t) => t.nombre === value.nombre)
+              )
+              // Ordenar alfabéticamente por nombre
+              .sort((a, b) => a.nombre.localeCompare(b.nombre))
+              .map((mun) => (
+                <option key={mun.municipio_ID} value={mun.municipio_ID}>
+                  {mun.nombre}
+                </option>
+              ))}
+          </select>
+        </div>
+
+
+
+        {/* Red de Coordinación */}
         <div>
           <label className="block text-gray-700">Red de Coordinación</label>
           <select
             name="red_cordinacion_red_ID"
             value={formData.red_cordinacion_red_ID}
-            onChange={handleChange}
+            onChange={handleRedCordinacionSelect}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
             <option value="">Seleccione la Red de Coordinación</option>
             {redCordinaciones.map((red) => (
               <option key={red.red_ID} value={red.red_ID}>
-                {red.nombre} - <strong>{red.numeracion}</strong>
+                {red.nombre} - {red.numeracion}
               </option>
             ))}
           </select>
@@ -207,7 +305,7 @@ const EstablecimientoEdit: React.FC = () => {
           </div>
         </div>
 
-        {/* Inputs para mostrar la latitud y longitud */}
+        {/* Latitud y Longitud */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700">Latitud</label>
@@ -242,7 +340,6 @@ const EstablecimientoEdit: React.FC = () => {
         </div>
       </form>
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

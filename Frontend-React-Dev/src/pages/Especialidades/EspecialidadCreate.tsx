@@ -1,37 +1,43 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import SuccessModal from '../../Components/SuccessModal';
+import { validateNombre } from '../../Components/validations/Validations'; // Importar la validación
 
 const EspecialidadCreate: React.FC = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ nombre: '' });
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState('');
 
-  // Estado del formulario con nombres correctos según el backend
-  const [formData, setFormData] = useState({
-    nombre: '', // Solo el campo "nombre"
-  });
-
-  const [isModalOpen, setModalOpen] = useState(false); // Controlamos la apertura del modal de éxito
-
-  // Al cambiar el valor de un campo
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    // Validar el valor antes de actualizar el estado
+    if (validateNombre(value) || value === '') {
+      setFormData({ ...formData, [name]: value });
+      setError(''); // Limpiar el error si la validación es exitosa
+    } else {
+      setError('El nombre de la especialidad no es válido.');
+    }
   };
 
-  // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      // Log para verificar datos antes de enviar
-      console.log('Enviando datos:', formData);
 
-      // Enviar la solicitud POST con el estado=1 por defecto
-      await axios.post('http://localhost:3000/specialties', { ...formData, estado: 1 });
-      setModalOpen(true); // Abrimos el modal de éxito al completar la creación
+    // Eliminar espacios al final antes de validar
+    // const nombreTrimmed = formData.nombre.trimEnd();
+    const nombreTrimmed = formData.nombre.trimEnd().toUpperCase(); 
+
+    // Validar el nombre de la especialidad al enviar
+    if (!validateNombre(nombreTrimmed)) {
+      setError('El nombre de la especialidad no es válido.');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:3000/specialties', { ...formData, nombre: nombreTrimmed, estado: 1 });
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al crear la especialidad:', error);
     }
@@ -39,24 +45,25 @@ const EspecialidadCreate: React.FC = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    navigate('/especialidades'); // Redirigimos después de cerrar el modal
+    navigate('/especialidades');
   };
 
-  // Cancelar la operación
   const handleCancel = () => {
-    navigate('/especialidades'); // Redirigir a la lista si se cancela
+    navigate('/especialidades');
   };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Crear Nueva Especialidad</h1>
 
+      {/* {error && <div className="text-red-500 mb-4">{error}</div>} Mostrar error si existe */}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-gray-700">Nombre de la Especialidad</label>
           <input
             type="text"
-            name="nombre" // Asegúrate de que el name sea "nombre"
+            name="nombre"
             value={formData.nombre}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -64,7 +71,6 @@ const EspecialidadCreate: React.FC = () => {
           />
         </div>
 
-        {/* Botones */}
         <div className="flex space-x-4">
           <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
             Crear Especialidad
@@ -79,7 +85,6 @@ const EspecialidadCreate: React.FC = () => {
         </div>
       </form>
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

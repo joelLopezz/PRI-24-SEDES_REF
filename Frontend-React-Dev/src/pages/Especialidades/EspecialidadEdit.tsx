@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import SuccessModal from '../../Components/SuccessModal';
+import { validateNombre } from '../../Components/validations/Validations';
 
 interface Especialidad {
   id: number;
@@ -18,9 +19,9 @@ const EspecialidadEdit: React.FC = () => {
     nombre: '',
     estado: 1, // Manteniendo estado en 1 (activo)
   });
-
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setModalOpen] = useState(false); // Controlamos la apertura del modal de éxito
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchEspecialidad = async () => {
@@ -33,23 +34,37 @@ const EspecialidadEdit: React.FC = () => {
         setLoading(false);
       }
     };
-  
+
     fetchEspecialidad();
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    // Validar el valor antes de actualizar el estado
+    if (validateNombre(value) || value === '') {
+      setFormData({ ...formData, [name]: value });
+      setError(''); // Limpiar el error si la validación es exitosa
+    } else {
+      setError('El nombre de la especialidad no es válido.');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Eliminar espacios al final antes de validar
+    // const nombreTrimmed = formData.nombre.trimEnd();
+    const nombreTrimmed = formData.nombre.trimEnd().toUpperCase(); 
+
+    if (!validateNombre(nombreTrimmed)) {
+      setError('El nombre de la especialidad no es válido.');
+      return;
+    }
+
     try {
-      await axios.put(`http://localhost:3000/specialties/${id}`, formData);
-      setModalOpen(true); // Abrimos el modal de éxito al completar la edición
+      await axios.put(`http://localhost:3000/specialties/${id}`, { ...formData, nombre: nombreTrimmed });
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al actualizar la especialidad:', error);
     }
@@ -57,7 +72,7 @@ const EspecialidadEdit: React.FC = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    navigate('/especialidades'); // Redirigimos después de cerrar el modal
+    navigate('/especialidades');
   };
 
   const handleCancel = () => {
@@ -71,6 +86,8 @@ const EspecialidadEdit: React.FC = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Editar Especialidad</h1>
+
+      {/* {error && <div className="text-red-500 mb-4">{error}</div>} Mostrar error si existe */}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
