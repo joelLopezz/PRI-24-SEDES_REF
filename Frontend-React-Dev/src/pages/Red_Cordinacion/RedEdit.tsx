@@ -2,6 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
+import { validateNombre, validateNumeracion, toRoman } from '../../Components/validations/Validations';
+
+const romanToNumber = (roman: string): number => {
+  const romanNumerals: { [key: string]: number } = {
+    I: 1,
+    V: 5,
+    X: 10,
+    L: 50,
+    C: 100,
+    D: 500,
+    M: 1000,
+  };
+  
+  let sum = 0;
+  for (let i = 0; i < roman.length; i++) {
+    const current = romanNumerals[roman[i]];
+    const next = romanNumerals[roman[i + 1]];
+
+    if (next && current < next) {
+      sum -= current;
+    } else {
+      sum += current;
+    }
+  }
+  return sum;
+};
 
 interface RedCordinacionData {
   nombre: string;
@@ -9,7 +35,7 @@ interface RedCordinacionData {
 }
 
 const RedEdit: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Obtener el ID de la URL
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<RedCordinacionData>({
@@ -17,18 +43,17 @@ const RedEdit: React.FC = () => {
     numeracion: '',
   });
 
-  // Estado para controlar el modal de éxito
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchRed = async () => {
       try {
         const response = await axios.get<RedCordinacionData>(`http://localhost:3000/red-cordinacion/${id}`);
-        const data = response.data as RedCordinacionData; // Aplicar 'type assertion' para especificar el tipo de response.data
+        const data = response.data;
 
         setFormData({
           nombre: data.nombre,
-          numeracion: data.numeracion,
+          numeracion: String(romanToNumber(data.numeracion)), // Convertir a número normal
         });
       } catch (error) {
         console.error('Error al cargar la red de coordinación:', error);
@@ -40,28 +65,48 @@ const RedEdit: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    if (name === "nombre") {
+      if (validateNombre(value) || value === '') {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      } else {
+        alert("El nombre solo debe contener letras, sin espacios al inicio y solo un espacio entre palabras.");
+      }
+    } else if (name === "numeracion") {
+      if (validateNumeracion(value) || value === '') {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      } else {
+        alert("La numeración debe ser solo números, sin espacios al inicio o al final.");
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      await axios.patch(`http://localhost:3000/red-cordinacion/${id}`, {
+      const formDataWithRomanNumeration = {
         ...formData,
-        usuario_modificacion: 1, // Temporalmente asignamos el ID del usuario de modificación
-      });
-      setModalOpen(true); // Abrir el modal de éxito
+        numeracion: toRoman(parseInt(formData.numeracion, 10)), // Convertimos el número a romano
+        usuario_modificacion: 1,
+      };
+
+      await axios.patch(`http://localhost:3000/red-cordinacion/${id}`, formDataWithRomanNumeration);
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al actualizar la red de coordinación:', error);
     }
   };
 
   const handleCloseModal = () => {
-    setModalOpen(false); // Cerrar el modal
-    navigate('/red-coordinacion'); // Redirigir a la lista de redes de coordinación
+    setModalOpen(false);
+    navigate('/red-coordinacion');
   };
 
   return (
@@ -81,11 +126,15 @@ const RedEdit: React.FC = () => {
         </div>
         <div>
           <label className="block text-gray-700">Numeración</label>
+          <p className="text-sm text-gray-500 mb-2">
+            Número original en romano, convertido a número normal. Modifíquelo en número normal y se guardará como romano.
+          </p>
           <input
             type="text"
             name="numeracion"
             value={formData.numeracion}
             onChange={handleChange}
+            placeholder="Escribe un número y será convertido a romano"
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
@@ -100,7 +149,6 @@ const RedEdit: React.FC = () => {
         </div>
       </form>
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

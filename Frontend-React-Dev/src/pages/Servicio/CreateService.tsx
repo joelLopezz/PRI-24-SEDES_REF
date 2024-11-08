@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import { validateCodigo, validateNombreServicio } from '../../Components/validations/Validations';
+
 
 // Definir la interfaz para las especialidades
 interface Especialidad {
@@ -40,30 +42,62 @@ const CreateService: React.FC = () => {
   // Manejador para los cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    if (name === "codigo") {
+      // Convertir a mayúsculas y aplicar la validación
+      const upperCaseValue = value.toUpperCase();
+      if (validateCodigo(upperCaseValue) || upperCaseValue === '') {
+        setFormData({
+          ...formData,
+          [name]: upperCaseValue,
+        });
+      } else {
+        alert('El código solo debe contener letras y números, sin espacios al inicio o final.');
+      }
+    } else if (name === "nombre") {
+      // Convertir a mayúsculas y aplicar la validación para el campo "nombre"
+      const upperCaseValue = value.toUpperCase();
+      if (validateNombreServicio(upperCaseValue) || upperCaseValue === '') {
+        setFormData({
+          ...formData,
+          [name]: upperCaseValue,
+        });
+      } else {
+        alert('El nombre solo debe contener letras (con acentos), signos de puntuación y paréntesis, sin espacios al inicio y un solo espacio entre palabras.');
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
+  
+  
 
   // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Verificar que se haya seleccionado una especialidad válida
+  
     if (!formData.especialidad_ID || formData.especialidad_ID === "") {
       alert("Por favor, selecciona una especialidad válida.");
       return;
     }
-
+  
     try {
-      // Enviar la solicitud POST
-      await axios.post('http://localhost:3000/servicio', { ...formData, estado: 1 });
-      setModalOpen(true); // Abrimos el modal de éxito al completar la creación
+      const formDataUpperCase = {
+        ...formData,
+        nombre: formData.nombre.toUpperCase(), // Convertir a mayúsculas antes de enviar
+        estado: 1,
+      };
+  
+      await axios.post('http://localhost:3000/servicio', formDataUpperCase);
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al crear el servicio:', error);
     }
   };
+  
 
   const handleCloseModal = () => {
     setModalOpen(false);

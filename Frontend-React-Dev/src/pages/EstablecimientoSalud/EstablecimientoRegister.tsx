@@ -6,6 +6,9 @@ import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 
+import { validateNombre, validateTelefono, validateNoStartingSpace } from '../../Components/validations/Validations';
+
+
 interface RedCordinacion {
   red_ID: number;
   nombre: string;
@@ -63,32 +66,65 @@ const EstablecimientoRegister: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    switch (name) {
+      case 'nombre':
+        if (validateNombre(value) || value === '') {
+          setFormData({ ...formData, nombre: value });
+          setError(null);
+        } else {
+          setError('El nombre del establecimiento no es válido.');
+        }
+        break;
+      
+      case 'telefono':
+          if (validateTelefono(value) || value === '') {
+            setFormData({ ...formData, telefono: value });
+            setError(null);
+          } else {
+            setError('El teléfono solo debe contener números y no puede comenzar con un espacio.');
+          }
+        break;
+      
+      case 'rues':
+        if (validateNoStartingSpace(value) || value === '') {
+          setFormData({ ...formData, rues: value });
+          setError(null);
+        } else {
+          setError('El campo RUES no debe comenzar con un espacio.');
+        }
+        break;
+
+      case 'municipio':
+        if (validateNoStartingSpace(value) || value === '') {
+          setFormData({ ...formData, municipio: value });
+          setError(null);
+        } else {
+          setError('El campo Municipio no debe comenzar con un espacio.');
+        }
+        break;
+
+      default:
+        setFormData({ ...formData, [name]: value });
+        setError(null);
+        break;
+    }
   };
 
   const handleMunicipioBlur = () => {
-    // Verificar si el municipio ingresado corresponde a un municipio válido de la lista
     const selectedMunicipio = municipios.find(
       (municipio) => municipio.nombre.toLowerCase() === formData.municipio.toLowerCase()
     );
 
     if (selectedMunicipio) {
-      // Municipio válido
       setFormData({
         ...formData,
         municipio: selectedMunicipio.nombre,
         municipio_ID: selectedMunicipio.municipio_ID.toString(),
       });
-      setError(null); // Limpiar error si la selección es válida
+      setError(null);
     } else {
-      // Municipio no válido
-      setFormData({
-        ...formData,
-        municipio_ID: '', // Limpiar el ID si no es válido
-      });
+      setFormData({ ...formData, municipio_ID: '' });
       setError('Por favor selecciona un municipio válido de la lista.');
     }
   };
@@ -114,6 +150,7 @@ const EstablecimientoRegister: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!formData.municipio_ID) {
       setError('Por favor selecciona un municipio válido de la lista.');
       return;
@@ -130,6 +167,7 @@ const EstablecimientoRegister: React.FC = () => {
       console.error('Error al registrar el establecimiento:', error);
     }
   };
+  
 
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -145,6 +183,7 @@ const EstablecimientoRegister: React.FC = () => {
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Registro de Establecimiento</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+
         {/* Nombre */}
         <div>
           <label className="block text-gray-700">Nombre de Establecimiento</label>
@@ -200,33 +239,34 @@ const EstablecimientoRegister: React.FC = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          
         </div>
 
         {/* Municipio con autocompletar */}
-<div>
-  <label className="block text-gray-700">Municipio</label>
-  <input
-    type="text"
-    name="municipio"
-    value={formData.municipio}
-    onChange={handleChange}
-    onBlur={handleMunicipioBlur}
-    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-    list="municipios"
-    required
-  />
-  <datalist id="municipios">
-    {municipios
-      .filter((value, index, self) =>
-        index === self.findIndex((t) => t.nombre === value.nombre)
-      )
-      .sort((a, b) => a.nombre.localeCompare(b.nombre))
-      .map((mun) => (
-        <option key={mun.municipio_ID} value={mun.nombre} />
-      ))}
-  </datalist>
-  {error && <div className="text-red-500">{error}</div>}
-</div>
+        <div>
+          <label className="block text-gray-700">Municipio</label>
+          <input
+            type="text"
+            name="municipio"
+            value={formData.municipio}
+            onChange={handleChange}
+            onBlur={handleMunicipioBlur}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            list="municipios"
+            required
+          />
+          <datalist id="municipios">
+            {municipios
+              .filter((value, index, self) =>
+                index === self.findIndex((t) => t.nombre === value.nombre)
+              )
+              .sort((a, b) => a.nombre.localeCompare(b.nombre))
+              .map((mun) => (
+                <option key={mun.municipio_ID} value={mun.nombre} />
+              ))}
+          </datalist>
+          {error && <div className="text-red-500">{error}</div>}
+        </div>
 
 
         {/* Select para Red de Coordinación */}

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import { validateNombre } from '../../Components/validations/Validations';
+
 
 const EspecialidadCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -16,26 +18,43 @@ const EspecialidadCreate: React.FC = () => {
   // Al cambiar el valor de un campo
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    // Aplicar la validación y convertir a mayúsculas si es válido
+    if (name === "nombre") {
+      const upperCaseValue = value.toUpperCase();
+  
+      if (validateNombre(upperCaseValue) || upperCaseValue === '') {
+        setFormData({
+          ...formData,
+          [name]: upperCaseValue, // Actualizar en mayúsculas
+        });
+      } else {
+        alert('El nombre no debe comenzar con un espacio ni contener múltiples espacios consecutivos.');
+      }
+    }
   };
+  
 
   // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Log para verificar datos antes de enviar
-      console.log('Enviando datos:', formData);
-
-      // Enviar la solicitud POST con el estado=1 por defecto
-      await axios.post('http://localhost:3000/specialties', { ...formData, estado: 1 });
-      setModalOpen(true); // Abrimos el modal de éxito al completar la creación
+      // Convertir el nombre a mayúsculas antes de enviar
+      const upperCaseData = {
+        ...formData,
+        nombre: formData.nombre.toUpperCase(), // Asegurarse de enviar en mayúsculas
+        estado: 1,
+      };
+  
+      console.log('Enviando datos:', upperCaseData);
+  
+      await axios.post('http://localhost:3000/specialties', upperCaseData);
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al crear la especialidad:', error);
     }
   };
+  
 
   const handleCloseModal = () => {
     setModalOpen(false);

@@ -5,6 +5,8 @@ import L, { LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Importar estilos de Leaflet
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
+import { validateNombre, validateTelefono, validateNoStartingSpace } from '../../Components/validations/Validations';
+
 
 // Definir la interfaz para RedCordinacion y Municipio
 interface RedCordinacion {
@@ -88,11 +90,38 @@ const EstablecimientoEdit: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    switch (name) {
+      case 'nombre':
+        if (validateNombre(value) || value === '') {
+          setFormData({ ...formData, nombre: value });
+        } else {
+          alert('El nombre no debe comenzar con un espacio ni contener múltiples espacios consecutivos.');
+        }
+        break;
+  
+      case 'telefono':
+        if (validateTelefono(value) || value === '') {
+          setFormData({ ...formData, telefono: value });
+        } else {
+          alert('El teléfono solo debe contener números y no debe comenzar con un espacio.');
+        }
+        break;
+  
+      case 'rues':
+        if (validateNoStartingSpace(value) || value === '') {
+          setFormData({ ...formData, rues: value });
+        } else {
+          alert('El campo RUES no debe comenzar con un espacio.');
+        }
+        break;
+  
+      default:
+        setFormData({ ...formData, [name]: value });
+        break;
+    }
   };
+  
 
   const handleMunicipioSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const municipioID = parseInt(e.target.value, 10);

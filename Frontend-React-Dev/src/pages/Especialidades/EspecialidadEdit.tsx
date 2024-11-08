@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import { validateNombre } from '../../Components/validations/Validations';
+
 
 interface Especialidad {
   id: number;
@@ -39,21 +41,37 @@ const EspecialidadEdit: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    if (name === "nombre") {
+      const upperCaseValue = value.toUpperCase();
+  
+      if (validateNombre(upperCaseValue) || upperCaseValue === '') {
+        setFormData({
+          ...formData,
+          [name]: upperCaseValue,
+        });
+      } else {
+        alert('El nombre no debe comenzar con un espacio ni contener múltiples espacios consecutivos.');
+      }
+    }
   };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3000/specialties/${id}`, formData);
-      setModalOpen(true); // Abrimos el modal de éxito al completar la edición
+      const upperCaseData = {
+        ...formData,
+        nombre: formData.nombre.toUpperCase(), // Asegurarse de enviar en mayúsculas
+      };
+  
+      await axios.put(`http://localhost:3000/specialties/${id}`, upperCaseData);
+      setModalOpen(true); // Abrimos el modal de éxito
     } catch (error) {
       console.error('Error al actualizar la especialidad:', error);
     }
   };
+  
 
   const handleCloseModal = () => {
     setModalOpen(false);

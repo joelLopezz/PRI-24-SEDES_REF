@@ -2,6 +2,33 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
+import { validateNombre, validateNumeracion } from '../../Components/validations/Validations';
+
+const toRoman = (num: number): string => {
+  const romanNumerals: { [key: number]: string } = {
+    1000: "M",
+    900: "CM",
+    500: "D",
+    400: "CD",
+    100: "C",
+    90: "XC",
+    50: "L",
+    40: "XL",
+    10: "X",
+    9: "IX",
+    5: "V",
+    4: "IV",
+    1: "I",
+  };
+  let roman = "";
+  for (const value of Object.keys(romanNumerals).map(Number).sort((a, b) => b - a)) {
+    while (num >= value) {
+      roman += romanNumerals[value];
+      num -= value;
+    }
+  }
+  return roman;
+};
 
 const RedCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -10,34 +37,53 @@ const RedCreate: React.FC = () => {
     numeracion: '',
   });
 
-  // Estado para controlar el modal de éxito
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    if (name === "nombre") {
+      if (validateNombre(value) || value === '') {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      } else {
+        alert("El nombre solo debe contener letras, sin espacios al inicio y solo un espacio entre palabras.");
+      }
+    } else if (name === "numeracion") {
+      if (validateNumeracion(value) || value === '') {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      } else {
+        alert("La numeración debe ser solo números, sin espacios al inicio o al final.");
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      await axios.post('http://localhost:3000/red-cordinacion', {
+      const formDataWithRomanNumeration = {
         ...formData,
+        numeracion: toRoman(parseInt(formData.numeracion, 10)), // Convertimos el número a romano
         estado: 1,
         usuario_creacion: 1, // Cambiar según el usuario actual
-      });
-      setModalOpen(true); // Abrir el modal de éxito
+      };
+
+      await axios.post('http://localhost:3000/red-cordinacion', formDataWithRomanNumeration);
+      setModalOpen(true);
     } catch (error) {
       console.error('Error al crear la red de coordinación:', error);
     }
   };
 
   const handleCloseModal = () => {
-    setModalOpen(false); // Cerrar el modal
-    navigate('/red-coordinacion'); // Redirigir a la lista de redes de coordinación
+    setModalOpen(false);
+    navigate('/red-coordinacion');
   };
 
   return (
@@ -62,6 +108,7 @@ const RedCreate: React.FC = () => {
             name="numeracion"
             value={formData.numeracion}
             onChange={handleChange}
+            placeholder="Escribe un número y será convertido a romano para su guardado"
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
@@ -76,7 +123,6 @@ const RedCreate: React.FC = () => {
         </div>
       </form>
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

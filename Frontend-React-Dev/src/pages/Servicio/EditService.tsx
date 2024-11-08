@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
+import { validateCodigo, validateNombreServicio } from '../../Components/validations/Validations';
+
 
 // Definir la interfaz para las especialidades
 interface Especialidad {
@@ -57,30 +59,61 @@ const EditService: React.FC = () => {
   // Manejador de cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  
+    if (name === "codigo") {
+      // Convertir a mayúsculas y aplicar la validación para el campo "codigo"
+      const upperCaseValue = value.toUpperCase();
+      if (validateCodigo(upperCaseValue) || upperCaseValue === '') {
+        setFormData({
+          ...formData,
+          [name]: upperCaseValue,
+        });
+      } else {
+        alert('El código solo debe contener letras y números, sin espacios al inicio o final.');
+      }
+    } else if (name === "nombre") {
+      // Aplicar la validación para el campo "nombre" sin conversión a mayúsculas
+      if (validateNombreServicio(value) || value === '') {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      } else {
+        alert('El nombre solo debe contener letras (con acentos), signos de puntuación y paréntesis, sin espacios al inicio y un solo espacio entre palabras.');
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
+  
+  
 
   // Enviar el formulario para actualizar el servicio
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    if (!formData.especialidad_ID) {
+      alert("Por favor, selecciona una especialidad válida.");
+      return;
+    }
+  
     try {
-      // Verificamos que se esté enviando el especialidad_ID correctamente
-      if (!formData.especialidad_ID) {
-        alert("Por favor, selecciona una especialidad válida.");
-        return;
-      }
-
-      // Enviamos la solicitud de actualización al backend
-      await axios.patch(`http://localhost:3000/servicio/${id}`, formData);
-      setModalOpen(true); // Mostrar el modal de éxito después de actualizar
+      const formDataWithUpperCaseCode = {
+        ...formData,
+        codigo: formData.codigo.toUpperCase(), // Asegurarse de enviar "codigo" en mayúsculas
+      };
+  
+      await axios.patch(`http://localhost:3000/servicio/${id}`, formDataWithUpperCaseCode);
+      setModalOpen(true); // Mostrar el modal de éxito
     } catch (error) {
       console.error('Error al actualizar el servicio:', error);
     }
   };
+  
+  
 
   const handleCloseModal = () => {
     setModalOpen(false);
