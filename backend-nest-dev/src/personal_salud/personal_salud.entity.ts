@@ -1,14 +1,9 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Usuario } from '../usuario/usuario.entity';
 
 @Entity('personal_salud')
 export class PersonalSalud {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn() // Clave primaria autogenerada
   personal_ID: number;
 
   @Column({ type: 'varchar', length: 70 })
@@ -18,7 +13,7 @@ export class PersonalSalud {
   primer_apellido: string;
 
   @Column({ type: 'varchar', length: 45 })
-  segundo_nombre: string;
+  segundo_apellido: string;
 
   @Column({ type: 'varchar', length: 12 })
   ci: string;
@@ -32,13 +27,10 @@ export class PersonalSalud {
   @Column({ type: 'varchar', length: 50 })
   cargo: string;
 
-  @Column({type: 'varchar', length: 100})
+  @Column({ type: 'varchar', length: 100 })
   correo_electronico: string;
 
-  @Column({ type: 'int' })
-  usuario_usuario_ID: number;
-
-  @Column({ type: 'int' })
+  @Column({ type: 'smallint' })
   establecimiento_salud_idestablecimiento_ID: number;
 
   @Column({ type: 'tinyint', default: 1 })
@@ -47,10 +39,15 @@ export class PersonalSalud {
   @CreateDateColumn({ type: 'datetime' })
   fecha_creacion: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', nullable: true })
+  @UpdateDateColumn({ type: 'datetime', nullable: true })
   fecha_modificacion: Date;
 
-  // @Column({ type: 'timestamp', nullable: true })
-  // fecha_modificacion: Date;
+  @Column({ type: 'mediumint', nullable: true })
+  usuario_creacion: number;
 
+  @Column({ type: 'mediumint', nullable: true })
+  usuario_modificacion: number;
+
+  @OneToMany(() => Usuario, (usuario) => usuario.personal)
+  usuarios: Usuario[];
 }

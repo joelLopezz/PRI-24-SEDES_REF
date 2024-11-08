@@ -7,8 +7,6 @@ import { UsuarioService } from '../usuario/usuario.service';
 import { MailService } from '../correo_electronico/correo_electronico.service';
 import { Usuario } from '../usuario/usuario.entity';  
 import { CreatePersonalSaludDto } from './dto/personal_salud.dto';
- 
-
 
 @Injectable()
 export class PersonalSaludService {
@@ -20,69 +18,143 @@ export class PersonalSaludService {
     private dataSource: DataSource, 
   ) {}
 
+  // Crear un registro de personal de salud y usuario
+  // async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
+  //   const { rol, ...personalSaludData } = createPersonalSaludDto;
+
+  //   const queryRunner = this.dataSource.createQueryRunner();
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
+
+  //   try {
+  //     // Crear el personal de salud
+  //     const personalSalud = this.personalSaludRepository.create(personalSaludData);
+  //     const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
+
+  //     // Generar nombre de usuario y contraseña
+  //     const nombreUsuario = this.generarNombreUsuario(
+  //       personalSaludData.nombres, 
+  //       personalSaludData.primer_apellido, 
+  //       personalSaludData.segundo_apellido
+  //     );
+  //     const contrasenia = this.generarContrasenia();
+
+  //     // Crear el usuario asociado al personal de salud creado
+  //     const usuarioData: Partial<Usuario> = {
+  //       nombre_usuario: nombreUsuario,
+  //       contrasenia,
+  //       rol,
+  //       estado: 1,
+  //       personal: savedPersonalSalud, // Relación directa con personalSalud
+  //       establecimiento_id: personalSaludData.establecimiento_salud_idestablecimiento_ID,
+  //       fecha_creacion: new Date(),
+  //     };
+
+  //     const nuevoUsuario = await this.usuarioService.createUsuario(usuarioData, queryRunner);
+
+  //     await queryRunner.commitTransaction();
+
+  //     // Enviar las credenciales por correo electrónico
+  //     await this.mailService.sendUserCredentials(
+  //       personalSaludData.nombres,
+  //       personalSaludData.primer_apellido,
+  //       personalSaludData.segundo_apellido,
+  //       personalSaludData.correo_electronico,
+  //       nombreUsuario,
+  //       contrasenia,
+  //     );
+
+  //     return savedPersonalSalud;
+  //   } catch (error) {
+  //     await queryRunner.rollbackTransaction();
+  //     throw error;
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  // }
+
+
+
+
 
   // Crear un registro de personal de salud y usuario
-  async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
-    const { rol, ...personalSaludData } = createPersonalSaludDto;
+async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
+  const { rol, ...personalSaludData } = createPersonalSaludDto;
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  const queryRunner = this.dataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
 
-    try {
-      // Crear el personal de salud
-      const personalSalud = this.personalSaludRepository.create(personalSaludData);
-      const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
+  try {
+    // Variables adicionales para el usuario de creación
+    const usuarioCreacionId = 1; // Por defecto 1, se puede cambiar según la lógica del negocio
 
-      // Generar nombre de usuario y contraseña
-      const nombreUsuario = this.generarNombreUsuario(personalSaludData.nombres, personalSaludData.primer_apellido, personalSaludData.segundo_nombre);
-      const contrasenia = this.generarContrasenia();
+    // Añadir la fecha de creación y el usuario que está creando este registro
+    personalSaludData.fecha_creacion = new Date();
+    personalSaludData.usuario_creacion = usuarioCreacionId;
 
-      // Crear el usuario asociado
-      const usuarioData: Partial<Usuario> = {
-        nombre_usuario: nombreUsuario,
-        contrasenia,
-        rol,
-        estado: 1,
-      };
+    // Crear el registro de personal de salud
+    const personalSalud = this.personalSaludRepository.create(personalSaludData);
+    const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
 
-      const nuevoUsuario = await this.usuarioService.createUsuario(usuarioData, queryRunner);
-      savedPersonalSalud.usuario_usuario_ID = nuevoUsuario.usuario_ID;
+    // Generar nombre de usuario y contraseña
+    const nombreUsuario = this.generarNombreUsuario(
+      personalSaludData.nombres, 
+      personalSaludData.primer_apellido, 
+      personalSaludData.segundo_apellido
+    );
+    const contrasenia = this.generarContrasenia();
 
-      // Guardar la relación de personal_salud con el usuario
-      await queryRunner.manager.save(savedPersonalSalud);
-      await queryRunner.commitTransaction();
+    // Crear el usuario asociado al personal de salud creado
+    const usuarioData: Partial<Usuario> = {
+      nombre_usuario: nombreUsuario,
+      contrasenia,
+      rol,
+      estado: 1,
+      personal: savedPersonalSalud, // Relación directa con personalSalud
+      establecimiento_id: personalSaludData.establecimiento_salud_idestablecimiento_ID,
+      fecha_creacion: new Date(),
+    };
 
-      // Enviar las credenciales por correo electrónico
-      await this.mailService.sendUserCredentials(
-        personalSaludData.nombres,
-        personalSaludData.primer_apellido,
-        personalSaludData.segundo_nombre,
-        personalSaludData.correo_electronico,
-        nombreUsuario,
-        contrasenia,
-      );
+    const nuevoUsuario = await this.usuarioService.createUsuario(usuarioData, queryRunner);
 
-      return savedPersonalSalud;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    // Confirmar la transacción
+    await queryRunner.commitTransaction();
+
+    // Enviar las credenciales por correo electrónico
+    await this.mailService.sendUserCredentials(
+      personalSaludData.nombres,
+      personalSaludData.primer_apellido,
+      personalSaludData.segundo_apellido,
+      personalSaludData.correo_electronico,
+      nombreUsuario,
+      contrasenia,
+    );
+
+    return savedPersonalSalud;
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    throw error;
+  } finally {
+    await queryRunner.release();
   }
- 
+}
+
+
+
+
 
   // Método para obtener todos los registros
   async getAllPersonalSalud(): Promise<PersonalSalud[]> {
-    return this.personalSaludRepository.find({where: {estado: 1}});
-
+    return this.personalSaludRepository.find({ where: { estado: 1 }, relations: ['usuarios'] });
   }
 
- 
   // Método para obtener el personal de salud por ID
   async getPersonalSaludById(id: number): Promise<PersonalSalud> {
-    const personalSalud = await this.personalSaludRepository.findOne({ where: { personal_ID: id } });
+    const personalSalud = await this.personalSaludRepository.findOne({
+      where: { personal_ID: id },
+      relations: ['usuarios'],  // Incluir la relación con usuarios
+    });
     if (!personalSalud) {
       throw new NotFoundException(`Personal de salud con ID ${id} no encontrado`);
     }
@@ -94,10 +166,8 @@ export class PersonalSaludService {
     const personalSalud = await this.getPersonalSaludById(id);
     Object.assign(personalSalud, updatePersonalSaludDto);
     personalSalud.fecha_modificacion = new Date();
-    //console.log('Fecha de modificación:', updatePersonalSalud.fecha_modificacion);  
     return this.personalSaludRepository.save(personalSalud);
   }
-
 
   // Método para realizar una eliminación lógica
   async deletePersonalSalud(id: number): Promise<PersonalSalud> {
@@ -109,13 +179,11 @@ export class PersonalSaludService {
     return this.personalSaludRepository.save(personalSalud);
   }
 
-
-
   // Función para generar el nombre de usuario
   generarNombreUsuario(nombres: string, primerApellido: string, segundoApellido: string): string {
     const nombreInicial = nombres.charAt(0).toLowerCase();
     const apellidoPaterno = primerApellido.toLowerCase();
-    const apellidoMaternoInicial = segundoApellido.charAt(0).toLowerCase();
+    const apellidoMaternoInicial = segundoApellido ? segundoApellido.charAt(0).toLowerCase() : '';
     return `${nombreInicial}${apellidoPaterno}${apellidoMaternoInicial}`;
   }
 
@@ -123,10 +191,7 @@ export class PersonalSaludService {
   generarContrasenia(): string {
     return Math.random().toString(36).slice(-8);
   }
-
-
-  
-
+}
 
 
 
@@ -134,121 +199,268 @@ export class PersonalSaludService {
 
 
 
+// import { Injectable, NotFoundException } from '@nestjs/common';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository, QueryRunner, DataSource } from 'typeorm';
+// import { PersonalSalud } from './personal_salud.entity';
 
+// import { UsuarioService } from '../usuario/usuario.service';  
+// import { MailService } from '../correo_electronico/correo_electronico.service';
+// import { Usuario } from '../usuario/usuario.entity';  
+// import { CreatePersonalSaludDto } from './dto/personal_salud.dto';
 
-  // // Crear un registro de personal de salud y usuario en una transacción
-  // async createPersonalSalud(data: Partial<PersonalSalud>, rol: string): Promise<PersonalSalud> {
-  //   const queryRunner = this.dataSource.createQueryRunner();
-  //   await queryRunner.connect();
-  //   await queryRunner.startTransaction();
+// @Injectable()
+// export class PersonalSaludService {
+//   constructor(
+//     @InjectRepository(PersonalSalud)
+//     private personalSaludRepository: Repository<PersonalSalud>,
+//     private usuarioService: UsuarioService, 
+//     private mailService: MailService,
+//     private dataSource: DataSource, 
+//   ) {}
 
-  //   try {
-  //     // Crear el personal de salud
-  //     const personalSalud = this.personalSaludRepository.create(data);
-  //     const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
+//   // Crear un registro de personal de salud y usuario
+//   async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
+//     const { rol, ...personalSaludData } = createPersonalSaludDto;
 
-  //     // Generar nombre de usuario y contraseña
-  //     const nombreUsuario = this.generarNombreUsuario(data.nombres, data.primer_apellido, data.segundo_nombre);
-  //     const contrasenia = this.generarContrasenia();
+//     const queryRunner = this.dataSource.createQueryRunner();
+//     await queryRunner.connect();
+//     await queryRunner.startTransaction();
 
-  //     // Crear el usuario asociado
-  //     const usuarioData: Partial<Usuario> = {
-  //       nombre_usuario: nombreUsuario,
-  //       contrasenia,
-  //       rol,
-  //       estado: 1,
-  //     };
-  //     const nuevoUsuario = await this.usuarioService.createUsuario(usuarioData, queryRunner);  // Pasamos el queryRunner
+//     try {
+//       // Crear el personal de salud
+//       const personalSalud = this.personalSaludRepository.create(personalSaludData);
+//       const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
 
-  //     // Asociamos el usuario creado al personal de salud
-  //     savedPersonalSalud.usuario_usuario_ID = nuevoUsuario.usuario_ID;
-  //     await queryRunner.manager.save(savedPersonalSalud);
+//       // Generar nombre de usuario y contraseña
+//       const nombreUsuario = this.generarNombreUsuario(
+//         personalSaludData.nombres, 
+//         personalSaludData.primer_apellido, 
+//         personalSaludData.segundo_apellido
+//       );
+//       const contrasenia = this.generarContrasenia();
 
-  //     // Confirmar la transacción
-  //     await queryRunner.commitTransaction();
+//       // Crear el usuario asociado
+//       const usuarioData: Partial<Usuario> = {
+//         nombre_usuario: nombreUsuario,
+//         contrasenia,
+//         rol,
+//         estado: 1,
+//         personal: savedPersonalSalud  // Asociación directa con el personal de salud
+//       };
 
-  //     // Enviar las credenciales por correo
-  //     await this.mailService.sendUserCredentials(
-  //       data.nombres, data.primer_apellido, data.segundo_nombre, data.correo_electronico, nombreUsuario, contrasenia
-  //     );
+//       const nuevoUsuario = await this.usuarioService.createUsuario(usuarioData, queryRunner);
 
-  //     return savedPersonalSalud;
-  //   } catch (error) {
-  //     // Si algo falla, hacemos rollback
-  //     await queryRunner.rollbackTransaction();
-  //     throw error;
-  //   } finally {
-  //     await queryRunner.release();
-  //   }
-  // }
+//       // Asignar el usuario creado al personal de salud
+//       savedPersonalSalud.usuario = nuevoUsuario;
+//       await queryRunner.manager.save(savedPersonalSalud);
 
-  // // Función para generar el nombre de usuario
-  // generarNombreUsuario(nombres: string, primerApellido: string, segundoApellido: string): string {
-  //   const nombreInicial = nombres.charAt(0).toLowerCase();
-  //   const apellidoPaterno = primerApellido.toLowerCase();
-  //   const apellidoMaternoInicial = segundoApellido.charAt(0).toLowerCase();
-  //   return `${nombreInicial}${apellidoPaterno}${apellidoMaternoInicial}`;
-  // }
+//       await queryRunner.commitTransaction();
 
-  // // Función para generar una contraseña aleatoria
-  // generarContrasenia(): string {
-  //   return Math.random().toString(36).slice(-8);  // Ejemplo sencillo de generación de contraseña
-  // }
+//       // Enviar las credenciales por correo electrónico
+//       await this.mailService.sendUserCredentials(
+//         personalSaludData.nombres,
+//         personalSaludData.primer_apellido,
+//         personalSaludData.segundo_apellido,
+//         personalSaludData.correo_electronico,
+//         nombreUsuario,
+//         contrasenia,
+//       );
 
-
-
-
-//   // Crear un registro de personal de salud
-//   async createPersonalSalud(data: Partial<PersonalSalud>): Promise<PersonalSalud> {
-//     const personalSalud = this.personalSaludRepository.create(data);
-//     return this.personalSaludRepository.save(personalSalud);
+//       return savedPersonalSalud;
+//     } catch (error) {
+//       await queryRunner.rollbackTransaction();
+//       throw error;
+//     } finally {
+//       await queryRunner.release();
+//     }
 //   }
 
-//   // Obtener todos los registros de personal de salud
+//   // Método para obtener todos los registros
 //   async getAllPersonalSalud(): Promise<PersonalSalud[]> {
-//     return this.personalSaludRepository.find();
+//     return this.personalSaludRepository.find({ where: { estado: 1 } });
 //   }
 
-//   // Obtener un registro de personal de salud por ID
-//   async getPersonalSaludById(personal_ID: number): Promise<PersonalSalud> {
-//     const personalSalud = await this.personalSaludRepository.findOne({ where: { personal_ID } });
+//   // Método para obtener el personal de salud por ID
+//   async getPersonalSaludById(id: number): Promise<PersonalSalud> {
+//     const personalSalud = await this.personalSaludRepository.findOne({
+//       where: { personal_ID: id },
+//       relations: ['usuario'],  // Incluir la relación con usuario
+//     });
 //     if (!personalSalud) {
-//       throw new NotFoundException(`Personal de salud con ID ${personal_ID} no encontrado.`);
+//       throw new NotFoundException(`Personal de salud con ID ${id} no encontrado`);
 //     }
 //     return personalSalud;
 //   }
 
-
-//   // Actualizar un registro de personal de salud
-// async updatePersonalSalud(personal_ID: number, data: Partial<PersonalSalud>): Promise<PersonalSalud> {
-//   const personalSalud = await this.personalSaludRepository.preload({
-//     personal_ID,
-//     ...data,
-//   });
-
-//   // Si no se encuentra el registro, lanzar una excepción
-//   if (!personalSalud) {
-//     throw new NotFoundException(`Personal de salud con ID ${personal_ID} no encontrado para actualizar.`);
+//   // Método para actualizar el personal de salud por ID
+//   async updatePersonalSalud(id: number, updatePersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
+//     const personalSalud = await this.getPersonalSaludById(id);
+//     Object.assign(personalSalud, updatePersonalSaludDto);
+//     personalSalud.fecha_modificacion = new Date();
+//     return this.personalSaludRepository.save(personalSalud);
 //   }
 
-//   // Actualizar la fecha de modificación
-//   personalSalud.fecha_modificacion = new Date();
-
-//   // Guardar los cambios en la base de datos
-//   return this.personalSaludRepository.save(personalSalud);
-// }
-
-//   // Eliminar un registro de personal de salud (Eliminación lógica)
-// async deletePersonalSalud(personal_ID: number): Promise<void> {
-//   const personalSalud = await this.getPersonalSaludById(personal_ID);
-//   if (!personalSalud) {
-//     throw new NotFoundException(`Personal de salud con ID ${personal_ID} no encontrado para eliminar.`);
+//   // Método para realizar una eliminación lógica
+//   async deletePersonalSalud(id: number): Promise<PersonalSalud> {
+//     const personalSalud = await this.personalSaludRepository.findOne({ where: { personal_ID: id } });
+//     if (!personalSalud) {
+//       throw new NotFoundException(`Personal de salud con ID ${id} no encontrado`);
+//     }
+//     personalSalud.estado = 0; 
+//     return this.personalSaludRepository.save(personalSalud);
 //   }
-//   // Actualizar el campo estado a 0 y actualizar la fecha de modificación
-//   await this.personalSaludRepository.update(personal_ID, {
-//     estado: 0,
-//     fecha_modificacion: new Date(), // Actualizar también la fecha de modificación
-//   });
+
+//   // Función para generar el nombre de usuario
+//   generarNombreUsuario(nombres: string, primerApellido: string, segundoApellido: string): string {
+//     const nombreInicial = nombres.charAt(0).toLowerCase();
+//     const apellidoPaterno = primerApellido.toLowerCase();
+//     const apellidoMaternoInicial = segundoApellido ? segundoApellido.charAt(0).toLowerCase() : '';
+//     return `${nombreInicial}${apellidoPaterno}${apellidoMaternoInicial}`;
+//   }
+
+//   // Función para generar una contraseña aleatoria
+//   generarContrasenia(): string {
+//     return Math.random().toString(36).slice(-8);
+//   }
 // }
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+// import { Injectable, NotFoundException } from '@nestjs/common';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository, QueryRunner, DataSource } from 'typeorm';
+// import { PersonalSalud } from './personal_salud.entity';
+
+// import { UsuarioService } from '../usuario/usuario.service';  
+// import { MailService } from '../correo_electronico/correo_electronico.service';
+// import { Usuario } from '../usuario/usuario.entity';  
+// import { CreatePersonalSaludDto } from './dto/personal_salud.dto';
+ 
+
+
+// @Injectable()
+// export class PersonalSaludService {
+//   constructor(
+//     @InjectRepository(PersonalSalud)
+//     private personalSaludRepository: Repository<PersonalSalud>,
+//     private usuarioService: UsuarioService, 
+//     private mailService: MailService,
+//     private dataSource: DataSource, 
+//   ) {}
+
+
+//   // Crear un registro de personal de salud y usuario
+//   async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
+//     const { rol, ...personalSaludData } = createPersonalSaludDto;
+
+//     const queryRunner = this.dataSource.createQueryRunner();
+//     await queryRunner.connect();
+//     await queryRunner.startTransaction();
+
+//     try {
+//       // Crear el personal de salud
+//       const personalSalud = this.personalSaludRepository.create(personalSaludData);
+//       const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
+
+//       // Generar nombre de usuario y contraseña
+//       const nombreUsuario = this.generarNombreUsuario(personalSaludData.nombres, personalSaludData.primer_apellido, personalSaludData.segundo_nombre);
+//       const contrasenia = this.generarContrasenia();
+
+//       // Crear el usuario asociado
+//       const usuarioData: Partial<Usuario> = {
+//         nombre_usuario: nombreUsuario,
+//         contrasenia,
+//         rol,
+//         estado: 1,
+//       };
+
+//       const nuevoUsuario = await this.usuarioService.createUsuario(usuarioData, queryRunner);
+//       savedPersonalSalud.usuario_usuario_ID = nuevoUsuario.usuario_ID;
+
+//       // Guardar la relación de personal_salud con el usuario
+//       await queryRunner.manager.save(savedPersonalSalud);
+//       await queryRunner.commitTransaction();
+
+//       // Enviar las credenciales por correo electrónico
+//       await this.mailService.sendUserCredentials(
+//         personalSaludData.nombres,
+//         personalSaludData.primer_apellido,
+//         personalSaludData.segundo_nombre,
+//         personalSaludData.correo_electronico,
+//         nombreUsuario,
+//         contrasenia,
+//       );
+
+//       return savedPersonalSalud;
+//     } catch (error) {
+//       await queryRunner.rollbackTransaction();
+//       throw error;
+//     } finally {
+//       await queryRunner.release();
+//     }
+//   }
+ 
+
+//   // Método para obtener todos los registros
+//   async getAllPersonalSalud(): Promise<PersonalSalud[]> {
+//     return this.personalSaludRepository.find({where: {estado: 1}});
+
+//   }
+
+ 
+//   // Método para obtener el personal de salud por ID
+//   async getPersonalSaludById(id: number): Promise<PersonalSalud> {
+//     const personalSalud = await this.personalSaludRepository.findOne({ where: { personal_ID: id } });
+//     if (!personalSalud) {
+//       throw new NotFoundException(`Personal de salud con ID ${id} no encontrado`);
+//     }
+//     return personalSalud;
+//   }
+
+//   // Método para actualizar el personal de salud por ID
+//   async updatePersonalSalud(id: number, updatePersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
+//     const personalSalud = await this.getPersonalSaludById(id);
+//     Object.assign(personalSalud, updatePersonalSaludDto);
+//     personalSalud.fecha_modificacion = new Date();
+//     //console.log('Fecha de modificación:', updatePersonalSalud.fecha_modificacion);  
+//     return this.personalSaludRepository.save(personalSalud);
+//   }
+
+
+//   // Método para realizar una eliminación lógica
+//   async deletePersonalSalud(id: number): Promise<PersonalSalud> {
+//     const personalSalud = await this.personalSaludRepository.findOne({ where: { personal_ID: id } });
+//     if (!personalSalud) {
+//       throw new NotFoundException(`Personal de salud con ID ${id} no encontrado`);
+//     }
+//     personalSalud.estado = 0; 
+//     return this.personalSaludRepository.save(personalSalud);
+//   }
+
+
+
+//   // Función para generar el nombre de usuario
+//   generarNombreUsuario(nombres: string, primerApellido: string, segundoApellido: string): string {
+//     const nombreInicial = nombres.charAt(0).toLowerCase();
+//     const apellidoPaterno = primerApellido.toLowerCase();
+//     const apellidoMaternoInicial = segundoApellido.charAt(0).toLowerCase();
+//     return `${nombreInicial}${apellidoPaterno}${apellidoMaternoInicial}`;
+//   }
+
+//   // Función para generar una contraseña aleatoria
+//   generarContrasenia(): string {
+//     return Math.random().toString(36).slice(-8);
+//   }
+
+// }
