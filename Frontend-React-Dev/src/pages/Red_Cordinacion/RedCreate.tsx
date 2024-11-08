@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
-import validations from '../../utils/validation'; // Importamos las validaciones
 
 const RedCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -11,45 +10,19 @@ const RedCreate: React.FC = () => {
     numeracion: '',
   });
 
-  const [errors, setErrors] = useState<{ nombre?: string; numeracion?: string }>({});
-  const [isModalOpen, setModalOpen] = useState(false); // Estado para controlar el modal de éxito
+  // Estado para controlar el modal de éxito
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const updatedValue = validations.removeLeadingSpaces(value); // Elimina espacios al inicio
-
-    if (name === 'nombre') {
-      if (validations.isAlphabetic(updatedValue)) {
-        setFormData({ ...formData, nombre: updatedValue });
-        setErrors({ ...errors, nombre: '' }); // Sin errores
-      } else {
-        setErrors({ ...errors, nombre: 'El nombre solo debe contener letras.' });
-      }
-    } else if (name === 'numeracion') {
-      if (validations.isRomanNumeral(updatedValue)) {
-        setFormData({ ...formData, numeracion: updatedValue });
-        setErrors({ ...errors, numeracion: '' }); // Sin errores
-      } else {
-        setErrors({ ...errors, numeracion: 'La numeración debe estar en números romanos.' });
-      }
-    }
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validar antes de enviar el formulario
-    const nombreValid = validations.isAlphabetic(formData.nombre) && !validations.hasLeadingSpaces(formData.nombre);
-    const numeracionValid = validations.isRomanNumeral(formData.numeracion) && !validations.hasLeadingSpaces(formData.numeracion);
-
-    if (!nombreValid || !numeracionValid) {
-      setErrors({
-        nombre: !nombreValid ? 'El nombre solo debe contener letras y no puede comenzar con espacios.' : '',
-        numeracion: !numeracionValid ? 'La numeración debe estar en números romanos y no puede comenzar con espacios.' : '',
-      });
-      return;
-    }
-
     try {
       await axios.post('http://localhost:3000/red-cordinacion', {
         ...formData,
@@ -81,7 +54,6 @@ const RedCreate: React.FC = () => {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-          {errors.nombre && <p className="text-red-500">{errors.nombre}</p>}
         </div>
         <div>
           <label className="block text-gray-700">Numeración</label>
@@ -93,7 +65,6 @@ const RedCreate: React.FC = () => {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-          {errors.numeracion && <p className="text-red-500">{errors.numeracion}</p>}
         </div>
         <div className="flex space-x-4">
           <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">

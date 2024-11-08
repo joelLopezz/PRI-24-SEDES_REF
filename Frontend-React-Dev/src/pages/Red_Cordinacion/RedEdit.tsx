@@ -61,7 +61,7 @@ const RedEdit: React.FC = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false); // Cerrar el modal
-    navigate('/red-cordinacion'); // Redirigir a la lista de redes de coordinación
+    navigate('/red-coordinacion'); // Redirigir a la lista de redes de coordinación
   };
 
   return (
@@ -94,7 +94,7 @@ const RedEdit: React.FC = () => {
           <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
             Guardar Cambios
           </button>
-          <button type="button" onClick={() => navigate('/red-cordinacion')} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          <button type="button" onClick={() => navigate('/red-coordinacion')} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
             Cancelar
           </button>
         </div>
