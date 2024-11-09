@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import './login.css';
 import { useNavigate } from 'react-router-dom'; // Importar useNavigate para redirigir al usuario después del login
@@ -58,7 +59,7 @@ const Login: React.FC = () => {
         // Redirigir al usuario a la página protegida (EstablecimientoList)
         setTimeout(() => {
           //navigate('/cama'); // Cambia esto según la página a la que quieras redirigir
-          navigate('/especialidad'); // Cambia esto según la página a la que quieras
+          navigate('/establecimientos'); // Cambia esto según la página a la que quieras
         }, 1500); // Espera 1.5 segundos antes de redirigir
       })
       .catch(error => {

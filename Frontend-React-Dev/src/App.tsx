@@ -13,6 +13,8 @@ import CamaList from './pages/Cama/CamaList';
 // import CamaEdit from './pages/Cama/CamaEdit';
 
 // import EspecialidadesReport from './reporte/especialidadReport';
+import EstablecimientoList from './pages/EstablecimientoSalud/EstablecimientoList'; 
+
 
 const App: React.FC = () => {
   return (
@@ -21,6 +23,7 @@ const App: React.FC = () => {
         {/* Redirigir a login cuando se accede a la raíz */}
         <Route path="/" element={<Navigate to="/login" />} /> 
 
+        <Route path="/establecimientos" element={<EstablecimientoList />} />
         {/* Ruta exclusiva para el login */}
         <Route path="/login" element={<Login />} />
 
