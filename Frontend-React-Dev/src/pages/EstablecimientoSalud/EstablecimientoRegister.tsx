@@ -7,19 +7,15 @@ import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 
 import { validateNombre, validateTelefono, validateNoStartingSpace } from '../../Components/validations/Validations';
-
-
 interface RedCordinacion {
   red_ID: number;
   nombre: string;
   numeracion: string;
 }
-
 interface Municipio {
   municipio_ID: number;
   nombre: string;
 }
-
 const EstablecimientoRegister: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -46,6 +42,7 @@ const EstablecimientoRegister: React.FC = () => {
       try {
         const response = await axios.get<RedCordinacion[]>('http://localhost:3000/red-cordinacion');
         setRedCordinaciones(response.data);
+
       } catch (error) {
         console.error('Error al cargar las redes de coordinación:', error);
       }
@@ -183,7 +180,6 @@ const EstablecimientoRegister: React.FC = () => {
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Registro de Establecimiento</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
         {/* Nombre */}
         <div>
           <label className="block text-gray-700">Nombre de Establecimiento</label>
@@ -268,7 +264,6 @@ const EstablecimientoRegister: React.FC = () => {
           {error && <div className="text-red-500">{error}</div>}
         </div>
 
-
         {/* Select para Red de Coordinación */}
         <div>
           <label className="block text-gray-700">Red de Coordinación</label>
@@ -306,8 +301,6 @@ const EstablecimientoRegister: React.FC = () => {
             </MapContainer>
           </div>
         </div>
-
-        {/* Latitud y Longitud */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700">Latitud</label>

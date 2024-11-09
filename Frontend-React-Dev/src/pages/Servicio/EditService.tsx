@@ -88,8 +88,6 @@ const EditService: React.FC = () => {
       });
     }
   };
-  
-  
 
   // Enviar el formulario para actualizar el servicio
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,7 +111,7 @@ const EditService: React.FC = () => {
     }
   };
   
-  
+
 
   const handleCloseModal = () => {
     setModalOpen(false);

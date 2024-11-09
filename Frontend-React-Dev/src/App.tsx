@@ -1,24 +1,22 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Layout from './Components/Layout/Layout';
-import HomePage from './pages/HomePage/HomePage'; // Importa la nueva página de inicio
+import HomePage from './pages/HomePage/HomePage'; // Importa la página de inicio
+import Login from './pages/Login/login'; // Página de inicio de sesión
 
-
-import EstablecimientoList from './pages/EstablecimientoSalud/EstablecimientoList'; // Cambiar el nombre
-import EstablecimientoRegister from './pages/EstablecimientoSalud/EstablecimientoRegister'; // Cambiar el nombre
-import EstablecimientoEdit from './pages/EstablecimientoSalud/EstablecimientoEdit'; // Cambiar el nombre
+// Importaciones adicionales
+import EstablecimientoList from './pages/EstablecimientoSalud/EstablecimientoList';
+import EstablecimientoRegister from './pages/EstablecimientoSalud/EstablecimientoRegister';
+import EstablecimientoEdit from './pages/EstablecimientoSalud/EstablecimientoEdit';
 import EspecialidadesList from './pages/Especialidades/EspecialidadesList';
 import EspecialidadCreate from './pages/Especialidades/EspecialidadCreate';
 import EspecialidadEdit from './pages/Especialidades/EspecialidadEdit';
-
-// Importar las páginas relacionadas con servicios
 import ServiceList from './pages/Servicio/ServiceList';
-import CreateService from './pages/Servicio/CreateService'; // Para la creación de un servicio
-import EditService from './pages/Servicio/EditService'; // Para la edición de un servicio
-import MiHospital from './pages/Mi_Hospital/Mi_Hospital'; // Página "Mi Hospital"
+import CreateService from './pages/Servicio/CreateService';
+import EditService from './pages/Servicio/EditService';
+import MiHospital from './pages/Mi_Hospital/Mi_Hospital';
 import AgregarEspecialidades from './pages/Mi_Hospital/add_specialtys';
 import ServiciosEspecialidad from './pages/Mi_Hospital/ServiciosEspecialidad';
-import AgregarServicios from './pages/Mi_Hospital/AgregarServicios'; // Importa la página de agregar servicios
+import AgregarServicios from './pages/Mi_Hospital/AgregarServicios';
 import EstablecerDisponible from './pages/Mi_Hospital/EstablecerDisponible';
 import VerDisponibilidadPorMes from './pages/Mi_Hospital/VerDisponibilidadPorMes';
 import EspecialidadesSemana from './pages/Mi_Hospital/EspecialidadesSemana';
@@ -29,17 +27,20 @@ import HospitalesList from './pages/Hospitales/HospitalesList';
 import HospitalInfo from './pages/Hospitales/HospitalInfo';
 import ServiciosEspInfo from './pages/Hospitales/ServiciosEspInfo';
 import Credits from './pages/HomePage/Credits';
+import CamaList from './pages/Cama/CamaList'; // Importación de Cama
 
-
-
-const App: React.FC = () => {
+function App() {
   return (
     <Router>
       <Layout>
         <Routes>
-          {/* Ruta para la página de inicio */}
-          <Route path="/" element={<HomePage />} />
+          {/* Redirigir a Login como página inicial */}
+          <Route path="/" element={<Navigate to="/login" />} />
+          {/* Página de login */}
+          <Route path="/login" element={<Login />} />
 
+          {/* Nueva ruta para HomePage */}
+          <Route path="/inicio" element={<HomePage />} />
 
           {/* Rutas de establecimientos de salud */}
           <Route path="/establecimientos" element={<EstablecimientoList />} />
@@ -56,31 +57,34 @@ const App: React.FC = () => {
           <Route path="/servicios/crear" element={<CreateService />} />
           <Route path="/servicios/editar/:id" element={<EditService />} />
 
-          <Route path="/miHospital" element={<MiHospital />} /> {/* Nueva ruta para "Mi Hospital" */}
+          {/* Rutas de Mi Hospital */}
+          <Route path="/miHospital" element={<MiHospital />} />
           <Route path="/miHospital/agregar-especialidades" element={<AgregarEspecialidades />} />
-          <Route path="/miHospital/especialidad/:especialidadId/servicios" element={<ServiciosEspecialidad />}/>
+          <Route path="/miHospital/especialidad/:especialidadId/servicios" element={<ServiciosEspecialidad />} />
           <Route path="/miHospital/especialidad/:especialidadId/agregar-servicios" element={<AgregarServicios />} />
           <Route path="/miHospital/especialidad/:especialidadId/establecer-disponibilidad" element={<EstablecerDisponible />} />
           <Route path="/miHospital/especialidad/:especialidadId/ver-disponibilidad" element={<VerDisponibilidadPorMes />} />
           <Route path="/miHospital/ver-disponibilidad" element={<EspecialidadesSemana />} />
-          {/* Nueva ruta para Redes de Coordinación */}
+
+          {/* Rutas para Redes de Coordinación */}
           <Route path="/red-coordinacion" element={<RedesList />} />
-          <Route path="/red-cordinacion/crear" element={<RedCreate />} />
-          <Route path="/red-cordinacion/editar/:id" element={<RedEdit />} />
-          {/* Nueva ruta para INFO DE HOSPIATLES */}
+          <Route path="/red-coordinacion/crear" element={<RedCreate />} />
+          <Route path="/red-coordinacion/editar/:id" element={<RedEdit />} />
+
+          {/* Rutas de información de hospitales */}
           <Route path="/hospitales-info" element={<HospitalesList />} />
           <Route path="/hospitales-info/:id" element={<HospitalInfo />} />
           <Route path="/hospitales-info/servicios-especialidad/:especialidadId" element={<ServiciosEspInfo />} />
-          
-          {/* RUTAS PAGIAN DE CREDITOS */}
+
+          {/* Ruta de créditos */}
           <Route path="/credits" element={<Credits />} />
 
-
-
+          {/* Rutas de camas */}
+          <Route path="/cama" element={<CamaList />} />
         </Routes>
       </Layout>
     </Router>
   );
-};
+}
 
 export default App;

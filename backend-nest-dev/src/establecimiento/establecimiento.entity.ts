@@ -1,5 +1,8 @@
+
 import { RedCordinacion } from '../red-cordinacion/red-cordinacion.entity';
 import { Municipio } from '../municipio/municipio.entity';
+//import { RedCordinacion } from '../red-cordinacion/red-cordinacion.entity'; // Importa la entidad RedCordinacion
+import {Cama}  from '../cama/cama.entity'; 
 import {
   Entity,
   Column,
@@ -8,6 +11,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany
 } from 'typeorm';
 
 @Entity('establecimiento_salud')
@@ -23,7 +27,6 @@ export class EstablecimientoSalud {
 
   @Column({ type: 'varchar', length: 12 })
   telefono: string;
-
   @Column({ type: 'decimal', precision: 10, scale: 8 })
   latitud: number;
 

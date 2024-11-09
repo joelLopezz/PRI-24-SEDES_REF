@@ -6,6 +6,7 @@ import ConfirmationModal from '../../Components/ConfirmationModal'; // Importamo
 interface Especialidad {
   id: number;
   nombre: string;
+
 }
 
 const EspecialidadesList: React.FC = () => {

@@ -5,10 +5,12 @@ import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal
 import { validateNombre } from '../../Components/validations/Validations';
 
 
+
 interface Especialidad {
   id: number;
   nombre: string;
   estado: number;
+
 }
 
 const EspecialidadEdit: React.FC = () => {
@@ -19,6 +21,7 @@ const EspecialidadEdit: React.FC = () => {
     id: 0,
     nombre: '',
     estado: 1, // Manteniendo estado en 1 (activo)
+
   });
 
   const [loading, setLoading] = useState(true);
@@ -38,6 +41,7 @@ const EspecialidadEdit: React.FC = () => {
   
     fetchEspecialidad();
   }, [id]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -84,6 +88,7 @@ const EspecialidadEdit: React.FC = () => {
 
   if (loading) {
     return <div className="text-center text-lg text-gray-600">Cargando datos...</div>;
+
   }
 
   return (

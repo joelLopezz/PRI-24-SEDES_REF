@@ -14,7 +14,6 @@ interface RedCordinacion {
   nombre: string;
   numeracion: string;
 }
-
 interface Municipio {
   municipio_ID: number;
   nombre: string;
@@ -50,7 +49,6 @@ const EstablecimientoEdit: React.FC = () => {
   const [municipios, setMunicipios] = useState<Municipio[]>([]);
 
   const niveles = ['Primer Nivel', 'Segundo Nivel', 'Tercer Nivel'];
-
   useEffect(() => {
     const fetchEstablecimiento = async () => {
       try {
@@ -60,6 +58,7 @@ const EstablecimientoEdit: React.FC = () => {
           red_cordinacion_red_ID: response.data.red_cordinacion_red_ID,
           municipio_ID: response.data.municipio_ID,
         });
+
       } catch (error) {
         console.error('Error al cargar el establecimiento:', error);
       }
@@ -73,7 +72,6 @@ const EstablecimientoEdit: React.FC = () => {
         console.error('Error al cargar las redes de coordinación:', error);
       }
     };
-
     const fetchMunicipios = async () => {
       try {
         const response = await axios.get<Municipio[]>('http://localhost:3000/municipio');
@@ -296,6 +294,7 @@ const EstablecimientoEdit: React.FC = () => {
             {redCordinaciones.map((red) => (
               <option key={red.red_ID} value={red.red_ID}>
                 {red.nombre} - {red.numeracion}
+
               </option>
             ))}
           </select>
@@ -320,7 +319,6 @@ const EstablecimientoEdit: React.FC = () => {
           </div>
         </div>
 
-        {/* Latitud y Longitud */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700">Latitud</label>
@@ -354,7 +352,6 @@ const EstablecimientoEdit: React.FC = () => {
           </button>
         </div>
       </form>
-
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

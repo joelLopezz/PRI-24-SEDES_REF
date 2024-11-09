@@ -1,3 +1,4 @@
+
 // src/servicio/servicio.controller.ts
 import {
   Controller,
@@ -10,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ServicioService } from './servicio.service';
 import { Servicio } from './servicio.entity';
+
 
 @Controller('servicio')
 export class ServicioController {
@@ -62,3 +64,4 @@ export class ServicioController {
     return this.servicioService.findByEspecialidad(especialidadId);
   }
 }
+

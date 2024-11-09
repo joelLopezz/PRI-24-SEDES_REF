@@ -1,3 +1,4 @@
+
 // servicio.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,3 +16,4 @@ import { Specialty } from '../specialty/specialty.entity';
   exports: [ServicioService, TypeOrmModule], // Exporta el servicio y el módulo TypeOrm para otros módulos
 })
 export class ServicioModule {}
+

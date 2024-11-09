@@ -5,6 +5,7 @@ import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal
 import { validateNombre } from '../../Components/validations/Validations';
 
 
+
 const EspecialidadCreate: React.FC = () => {
   const navigate = useNavigate();
 
@@ -16,6 +17,7 @@ const EspecialidadCreate: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false); // Controlamos la apertura del modal de éxito
 
   // Al cambiar el valor de un campo
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
   
@@ -54,7 +56,6 @@ const EspecialidadCreate: React.FC = () => {
       console.error('Error al crear la especialidad:', error);
     }
   };
-  
 
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -82,7 +83,6 @@ const EspecialidadCreate: React.FC = () => {
             required
           />
         </div>
-
         {/* Botones */}
         <div className="flex space-x-4">
           <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
@@ -97,7 +97,6 @@ const EspecialidadCreate: React.FC = () => {
           </button>
         </div>
       </form>
-
       {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}

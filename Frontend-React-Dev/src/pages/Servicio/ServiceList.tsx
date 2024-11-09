@@ -6,6 +6,7 @@ import ConfirmationModal from '../../Components/ConfirmationModal'; // Importamo
 // Definir la interfaz para los servicios
 interface Especialidad {
   nombre: string; // Asegúrate de tener el nombre de la especialidad
+
 }
 
 interface Servicio {

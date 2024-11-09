@@ -101,7 +101,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             </Link>
           </li>
           
-          
         </ul>
       </nav>
     </div>

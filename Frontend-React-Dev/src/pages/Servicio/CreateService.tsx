@@ -72,13 +72,10 @@ const CreateService: React.FC = () => {
       });
     }
   };
-  
-  
 
   // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
     if (!formData.especialidad_ID || formData.especialidad_ID === "") {
       alert("Por favor, selecciona una especialidad válida.");
       return;
@@ -137,7 +134,6 @@ const CreateService: React.FC = () => {
             required
           />
         </div>
-
         {/* Select para la Especialidad */}
         <div>
           <label className="block text-gray-700">Especialidad</label>

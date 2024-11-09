@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
+
+import { Outlet } from 'react-router-dom'; // Importamos Outlet
 import Navbar from './NavBar';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
 
 interface LayoutProps {
+
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -33,6 +37,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-6 bg-white shadow-sm transition-transform duration-300 ease-in-out">
           {children}
+
         </main>
 
         {/* Footer */}
