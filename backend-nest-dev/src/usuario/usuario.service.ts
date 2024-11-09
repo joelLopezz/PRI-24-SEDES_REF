@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryRunner } from 'typeorm';
@@ -15,19 +16,30 @@ export class UsuarioService {
   ) {}
 
   // Crear un nuevo usuario con contraseña encriptada y asociarlo con un PersonalSalud
-  async createUsuario(data: Partial<Usuario>, queryRunner: QueryRunner): Promise<Usuario> {
+  async createUsuario(data: Partial<Usuario>, queryRunner?: QueryRunner): Promise<Usuario> {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.contrasenia, salt);
 
-    // Verificar que el personal_ID esté asociado a un PersonalSalud existente
-    // if (data.personal && data.personal.personal_ID) {
-    //   const personalSalud = await this.personalSaludRepository.findOne({ where: { personal_ID: data.personal.personal_ID } });
-    //   if (!personalSalud) {
-    //     throw new NotFoundException('Personal de salud asociado no encontrado');
-    //   }
-    //   data.personal = personalSalud; // Asociamos el objeto PersonalSalud completo a data.personal
-    // }
+    const usuario = queryRunner
+        ? queryRunner.manager.create(Usuario, {
+            ...data,
+            contrasenia: hashedPassword,
+            fecha_creacion: new Date(),
+        })
+        : this.usuarioRepository.create({
+            ...data,
+            contrasenia: hashedPassword,
+            fecha_creacion: new Date(),
+        });
 
+    return queryRunner
+        ? queryRunner.manager.save(usuario)
+        : this.usuarioRepository.save(usuario);
+}
+
+/*   async createUsuario(data: Partial<Usuario>, queryRunner: QueryRunner): Promise<Usuario> {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(data.contrasenia, salt);
     const usuario = this.usuarioRepository.create({
       ...data,
       contrasenia: hashedPassword,
@@ -35,7 +47,7 @@ export class UsuarioService {
     });
 
     return queryRunner.manager.save(usuario);
-  }
+  } */
 
   // Método para autenticar un usuario
   async validateUsuario(nombreUsuario: string, contrasenia: string): Promise<Usuario> {

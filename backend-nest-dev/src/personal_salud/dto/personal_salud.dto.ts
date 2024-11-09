@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // src/personal_salud/dto/create-personal-salud.dto.ts
 
 export class CreatePersonalSaludDto {

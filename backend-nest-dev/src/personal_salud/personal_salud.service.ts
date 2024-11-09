@@ -1,3 +1,6 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryRunner, DataSource } from 'typeorm';
@@ -78,67 +81,73 @@ export class PersonalSaludService {
 
 
   // Crear un registro de personal de salud y usuario
-async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
-  const { rol, ...personalSaludData } = createPersonalSaludDto;
+  async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
+    const { rol, ...personalSaludData } = createPersonalSaludDto;
 
-  const queryRunner = this.dataSource.createQueryRunner();
-  await queryRunner.connect();
-  await queryRunner.startTransaction();
+    const queryRunner = this.dataSource.createQueryRunner();
 
-  try {
-    // Variables adicionales para el usuario de creación
-    const usuarioCreacionId = 1; // Por defecto 1, se puede cambiar según la lógica del negocio
+    try {
+        await queryRunner.connect(); // Conectar el queryRunner
+        await queryRunner.startTransaction(); // Iniciar la transacción
 
-    // Añadir la fecha de creación y el usuario que está creando este registro
-    personalSaludData.fecha_creacion = new Date();
-    personalSaludData.usuario_creacion = usuarioCreacionId;
+        // Variables adicionales para el usuario de creación
+        const usuarioCreacionId = 1; // Por defecto 1, se puede cambiar según la lógica del negocio
 
-    // Crear el registro de personal de salud
-    const personalSalud = this.personalSaludRepository.create(personalSaludData);
-    const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
+        // Añadir la fecha de creación y el usuario que está creando este registro
+        personalSaludData.fecha_creacion = new Date();
+        personalSaludData.usuario_creacion = usuarioCreacionId;
 
-    // Generar nombre de usuario y contraseña
-    const nombreUsuario = this.generarNombreUsuario(
-      personalSaludData.nombres, 
-      personalSaludData.primer_apellido, 
-      personalSaludData.segundo_apellido
-    );
-    const contrasenia = this.generarContrasenia();
+        // Crear el registro de personal de salud
+        const personalSalud = this.personalSaludRepository.create(personalSaludData);
+        const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
 
-    // Crear el usuario asociado al personal de salud creado
-    const usuarioData: Partial<Usuario> = {
-      nombre_usuario: nombreUsuario,
-      contrasenia,
-      rol,
-      estado: 1,
-      personal: savedPersonalSalud, // Relación directa con personalSalud
-      establecimiento_id: personalSaludData.establecimiento_salud_idestablecimiento_ID,
-      fecha_creacion: new Date(),
-    };
+        // Generar nombre de usuario y contraseña
+        const nombreUsuario = this.generarNombreUsuario(
+            personalSaludData.nombres, 
+            personalSaludData.primer_apellido, 
+            personalSaludData.segundo_apellido
+        );
+        const contrasenia = this.generarContrasenia();
 
-    const nuevoUsuario = await this.usuarioService.createUsuario(usuarioData, queryRunner);
+        // Crear el usuario asociado al personal de salud creado
+        const usuarioData: Partial<Usuario> = {
+            nombre_usuario: nombreUsuario,
+            contrasenia,
+            rol,
+            estado: 1,
+            personal: savedPersonalSalud, // Relación directa con personalSalud
+            establecimiento_id: personalSaludData.establecimiento_salud_idestablecimiento_ID,
+            fecha_creacion: new Date(),
+        };
 
-    // Confirmar la transacción
-    await queryRunner.commitTransaction();
+        await this.usuarioService.createUsuario(usuarioData, queryRunner);
 
-    // Enviar las credenciales por correo electrónico
-    await this.mailService.sendUserCredentials(
-      personalSaludData.nombres,
-      personalSaludData.primer_apellido,
-      personalSaludData.segundo_apellido,
-      personalSaludData.correo_electronico,
-      nombreUsuario,
-      contrasenia,
-    );
+        // Confirmar la transacción
+        await queryRunner.commitTransaction();
 
-    return savedPersonalSalud;
-  } catch (error) {
-    await queryRunner.rollbackTransaction();
-    throw error;
-  } finally {
-    await queryRunner.release();
-  }
+        // Enviar las credenciales por correo electrónico
+        await this.mailService.sendUserCredentials(
+            personalSaludData.nombres,
+            personalSaludData.primer_apellido,
+            personalSaludData.segundo_apellido,
+            personalSaludData.correo_electronico,
+            nombreUsuario,
+            contrasenia,
+        );
+
+        return savedPersonalSalud;
+    } catch (error) {
+        if (queryRunner.isTransactionActive) { // Solo hacer rollback si la transacción está activa
+            await queryRunner.rollbackTransaction();
+        }
+        throw error;
+    } finally {
+        if (queryRunner.isReleased === false) { // Solo liberar si no está liberado
+            await queryRunner.release();
+        }
+    }
 }
+
 
 
 

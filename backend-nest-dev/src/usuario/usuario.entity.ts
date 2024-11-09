@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { PersonalSalud } from '../personal_salud/personal_salud.entity';
 

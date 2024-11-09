@@ -1,9 +1,25 @@
+/* eslint-disable prettier/prettier */
+import * as nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {}
+  private transporter;
+
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com', // Cambia esto si usas otro servicio SMTP
+      port: 587,
+      secure: false, // true para puerto 465, false para otros puertos
+      auth: {
+        user: 'mp2797598@gmail.com', // Configura las credenciales aquí o usa variables de entorno
+        pass: 'qwpu heqb ckgi tsba',
+      },
+      tls: {
+        rejectUnauthorized: false, // Ignorar certificados autofirmados
+      },
+    });
+  }
 
   async sendUserCredentials(
     nombres: string,
@@ -13,7 +29,8 @@ export class MailService {
     nombre_usuario: string,
     contrasenia: string,
   ) {
-    await this.mailerService.sendMail({
+    await this.transporter.sendMail({
+      from: '"No Reply" <desarrollo.dev@example.com>',
       to: email,
       subject: 'Tus credenciales de acceso',
       text: `Hola ${nombres} ${primer_apellido} ${segundo_nombre},\n\nAquí están tus credenciales de acceso:\n\nUsuario: ${nombre_usuario}\nContraseña: ${contrasenia}\n\nPor favor, guarda esta información de manera segura.\n\nSaludos,`,
