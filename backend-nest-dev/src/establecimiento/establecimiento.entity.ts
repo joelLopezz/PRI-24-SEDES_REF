@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 
 import { RedCordinacion } from '../red-cordinacion/red-cordinacion.entity';
 import { Municipio } from '../municipio/municipio.entity';
@@ -64,4 +65,8 @@ export class EstablecimientoSalud {
 
   @Column({ type: 'mediumint', nullable: true })
   usuario_modificacion: number;
+
+  // Relación con la entidad Cama (relación inversa)
+  @OneToMany(() => Cama, (cama) => cama.establecimientoSalud)
+  camas: Cama[];
 }

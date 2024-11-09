@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       } transition-transform duration-200 ease-in-out bg-gradient-to-b from-blue-900 to-blue-800 shadow-lg w-64`}
     >
       <div className="flex items-center justify-center h-16 bg-blue-900 text-white shadow-md">
-        <Link to="/" className="text-lg font-extrabold tracking-wider hover:text-blue-300 transition-colors duration-300">
+        <Link to="/inicio" className="text-lg font-extrabold tracking-wider hover:text-blue-300 transition-colors duration-300">
           SEDES Referencias
         </Link>
       </div>

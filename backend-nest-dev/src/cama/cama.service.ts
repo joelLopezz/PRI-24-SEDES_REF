@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cama } from '../cama/cama.entity';
-import { Especialidad } from '../especiaidad/especialidad.entity';
+import { Specialty } from '../specialty/specialty.entity';
 import { Servicio } from '../servicio/servico.entity';
 import {EstablecimientoSalud} from '../establecimiento/establecimiento.entity';
 
@@ -12,8 +14,8 @@ export class CamaService {
     @InjectRepository(Cama)
     private readonly camaRepository: Repository<Cama>,
 
-    @InjectRepository(Especialidad)
-    private readonly especialidadRepository: Repository<Especialidad>,
+    @InjectRepository(Specialty)
+    private readonly especialidadRepository: Repository<Specialty>,
 
     @InjectRepository(Servicio)
     private readonly servicioRepository: Repository<Servicio>,
@@ -22,13 +24,8 @@ export class CamaService {
     private readonly establecimientoRepository: Repository<EstablecimientoSalud>,
   ) {}
 
-
-
-
-
   async getEspecialidadesPorHospital(): Promise<any[]> {
     const hospital_id = 1; // ID fijo del hospital para el filtro
-  
     const especialidades = await this.especialidadRepository
       .createQueryBuilder('especialidad')
       .leftJoin('especialidad.camas', 'cama')
@@ -46,7 +43,6 @@ export class CamaService {
       ])
       .groupBy('especialidad.especialidad_ID, historiaCama.historia_ID')
       .getRawMany();
-  
     // Convertimos los valores de las sumas a enteros
     return especialidades.map((especialidad) => ({
       nombre: especialidad.nombre,

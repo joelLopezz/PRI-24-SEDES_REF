@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -26,6 +27,15 @@ export class EstablecimientoService {
       relations: ['redCordinacion', 'municipio'], // Incluir la relación con RedCordinacion y Municipio
     });
   }
+  // Método para obtener todos los establecimientos de salud con ID y nombre
+  // Método para obtener todos los establecimientos de salud con ID y nombre
+  async obtenerNombresEstablecimientos(): Promise<{ id: number; nombre: string }[]> {
+    return await this.establecimientoRepository.find({
+      select: ['id', 'nombre'], // Selecciona los campos 'id' y 'nombre'
+      where: { estado: 1 }, // Opcional: filtra por estado activo si es necesario
+    });
+  }
+
 
   // Obtener un establecimiento por su ID
   async findOne(id: number): Promise<EstablecimientoSalud> {

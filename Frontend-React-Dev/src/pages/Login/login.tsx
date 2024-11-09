@@ -59,7 +59,7 @@ const Login: React.FC = () => {
         // Redirigir al usuario a la página protegida (EstablecimientoList)
         setTimeout(() => {
           //navigate('/cama'); // Cambia esto según la página a la que quieras redirigir
-          navigate('/establecimientos'); // Cambia esto según la página a la que quieras
+          navigate('/inicio'); // Cambia esto según la página a la que quieras
         }, 1500); // Espera 1.5 segundos antes de redirigir
       })
       .catch(error => {

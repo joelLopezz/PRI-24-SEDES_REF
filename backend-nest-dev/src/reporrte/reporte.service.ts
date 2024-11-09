@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HistoriaCama } from '../historial_cama/historial_cama.entity';
 import { Cama } from '../cama/cama.entity';
-import { Especialidad } from '../especiaidad/especialidad.entity';
+import { Specialty } from '../specialty/specialty.entity';
 import { EstablecimientoSalud } from '../establecimiento/establecimiento.entity';
 
 @Injectable()
@@ -13,8 +15,8 @@ export class ReporteService {
     private readonly historiaCamaRepository: Repository<HistoriaCama>,
     @InjectRepository(Cama)
     private readonly camaRepository: Repository<Cama>,
-    @InjectRepository(Especialidad)
-    private readonly especialidadRepository: Repository<Especialidad>,
+    @InjectRepository(Specialty)
+    private readonly especialidadRepository: Repository<Specialty>,
     @InjectRepository(EstablecimientoSalud)
     private readonly establecimientoRepository: Repository<EstablecimientoSalud>,
   ) {}

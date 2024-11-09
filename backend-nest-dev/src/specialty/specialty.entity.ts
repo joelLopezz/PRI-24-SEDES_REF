@@ -1,4 +1,5 @@
 import { Servicio } from '../servicio/servicio.entity';
+import { Cama } from 'src/cama/cama.entity';
 import {
   Entity,
   Column,
@@ -44,4 +45,7 @@ export class Specialty {
   // Relación inversa con la entidad Servicio
   @OneToMany(() => Servicio, (servicio) => servicio.especialidad)
   servicios: Servicio[];
+
+  @OneToMany(() => Cama, (cama) => cama.especialidad)
+  camas: Cama[];
 }
