@@ -1,0 +1,352 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+h1{
+  color: #000;
+}
+
+.Turno{
+  text-align:justify;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #ffffff;
+  text-align: center;
+  padding: 8px;
+  border-radius: 5px;
+  color: #202749;
+  background-color: #7788d662;
+  
+}
+th {
+  background-color: #6279dd;
+  color: white;
+}
+.selecciobale{
+  padding: 1px;
+}
+.selecciobale:hover{
+  background: #c8eaff;
+}
+.header-control {
+  background-color: #F0F0F0;
+  text-align: center;
+}       
+.header-control th {
+  background-color: #D1D1D1;
+  color: black;
+}
+.tabla_popup th{
+  background-color: #6279dd;
+}
+.highlight {
+  background-color: #FFD700;
+}
+.green-cell {
+  background-color: #90EE90;
+}
+.blue-cell {
+  background-color: #87CEFA;
+  color: white;
+}
+/* Estilos para el select transparente */
+select {
+  width: 100%;
+  height: 50px;
+  text-align: center;
+  /*padding: 5px;*/
+  border: none;
+  background-color: transparent;
+  cursor: pointer; /* Cambiar el cursor cuando se pase sobre el select */
+  appearance: none; /* Ocultar la flecha en algunos navegadores */
+  -webkit-appearance: none; /* Ocultar la flecha en WebKit (Safari, Chrome) */
+  -moz-appearance: none; /* Ocultar la flecha en Firefox */
+  color: #000;
+  font-size: 16px;
+}
+/* Para agregar un ícono de flecha personalizado */
+select::-ms-expand {
+  display: none; /* Ocultar flecha en IE */
+}
+/* Para asegurar que los select no se vean como botones */
+select option {
+  color: black;
+  background-color: white;
+}
+
+.contenedor{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.preguntas{
+  align-content: center;
+  margin-right: 50px;
+}
+.preguntas{
+  color: #6279dd;
+  transition: ease-in-out 0.6s;
+}
+.preguntas:hover{
+  color: #324fce;
+  font-size: 20px;
+  transition: ease-in-out 0.6s;
+}
+
+.button {
+  background-color: #14192c;
+  border: 0;
+  border-radius: 7px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 14px;
+  padding: 10px 25px;
+  margin-top: 25px;
+}
+
+.btn_help {
+background-color: transparent;
+border: transparent;
+color: #87CEFA;
+}
+
+.modal_container {
+display: flex;
+background-color: rgba(0, 0, 0, 0.3);
+align-items: center;
+justify-content: center;
+position: fixed;
+pointer-events: none;
+opacity: 0;  
+top: 0;
+left: 0;
+height: 100vh;
+width: 100vw;
+transition: opacity 0.3s ease;
+z-index: 1050;
+}
+
+.show {
+pointer-events: auto;
+opacity: 1;
+}
+
+.modal_own {
+background-color: #fff;
+width: 700px;
+max-width: 100%;
+padding: 30px 50px;
+border-radius: 5px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+text-align: center;
+font-size: 14px;
+}
+
+.modal_own h1 {
+margin: 0;
+}
+
+.modal_own p {
+opacity: 0.7;
+font-size: 14px;
+}
+
+.tabla_popup th{
+  color: white;
+}
+
+.button_group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 15px;
+}
+
+.buttons_container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 15px;
+}
+
+.Btn_rol {
+
+  background-color: #14192c;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 14px;
+  padding: 10px 25px;
+  margin-top: 25px;
+  margin: 0 50px 0 50px;
+
+  transition: ease-in-out 0.3s;
+}
+
+.btn_editar:hover{
+  background: #b6b604;
+  transition: ease-in-out 0.3s;
+} 
+.btn_guardar:hover{
+  background: #19b604;
+  transition: ease-in-out 0.3s;
+} 
+.btn_cancelar:hover{
+  background: #b60404;
+  transition: ease-in-out 0.3s;
+}
+
+.input_area{
+  background: #b5ceb8;
+  border-radius: 7px;
+  padding: 5px;
+  color: #000;
+  transition: ease-in-out 0.3s;
+  font-size: 15px;
+}
+
+.input_area:enabled{
+  transition: ease-in-out 0.3s;
+  background: #c9ceb5;    
+  
+}
+
+.input_container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputs_multiples{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.button_agregar{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.input_area_boton{
+  margin: 0 10px 20px 10px;
+}
+
+.inputs_multiples input{
+  margin-bottom: 10px;
+}
+
+.input_button_eliminar{
+  background-color: #b60404;
+  font-size: 20px;
+  padding: 4px;
+  margin-right: 10px;
+}
+
+.agregar_imput:enabled{
+  background: white;
+}
+
+.inputs_fijos{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.input_fijo_check{
+  display: flex;
+  flex-direction: row;
+  margin: 0 10px 15px 10px;
+}
+
+.input_area_check{
+  width: 100%;
+}
+
+.input_checkbox{
+  background-color: transparent;
+  font-size: 30px;
+  padding: 0px;
+  margin-right: 10px;
+  color: #000;
+  border: transparent;
+  outline: none;
+  transition: ease-in-out 0.2s;
+}
+
+.input_checkbox:hover{
+  background-color: transparent;
+  border: transparent;
+  outline: none;
+  color: #718373;
+  transition: ease-in-out 0.2s;
+}
+
+.input_checkbox:focus-visible{
+  background-color: transparent;
+  border: transparent;
+  outline: none;
+}
+
+.input_checkbox:focus{
+  background-color: transparent;
+  border: transparent;
+  outline: none;
+}
+
+.input_sigla{
+  width: 80px;
+}
+
+.input_sigla_hora{
+  width: 160px;
+}
+
+.modal_sigla{
+  width: auto;
+  min-width: 700px;;
+}
+
+.tabla_popup .table_actions{
+  background: transparent;
+  background-color: transparent;
+}
+
+.table_actions_button{
+  padding-right: 0px;
+  background-color: transparent;
+}
+
+.input_button_eliminar_tabla{
+  margin: 0px;
+}
+
+.input_group_time{
+  margin-bottom: 10px;
+}
+
+.input_label {
+  display: block; /* Hace que el label esté en su propia línea */
+  margin-bottom: 5px; /* Espacio entre el label y el input */
+  font-weight: bold; /* Opcional: para resaltar el label */
+  color: #000;
+  text-align: left;
+  margin-left: 15px;
+}
+
+.buton_sigla_agregar{
+  margin: 0;
+}
+
+.box_sigla_agregar{
+  align-items: center;
+}

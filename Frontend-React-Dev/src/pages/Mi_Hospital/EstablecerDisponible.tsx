@@ -5,6 +5,7 @@ import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 import { useAuth } from '../../Context/AuthContext'; // Importa useAuth para obtener el establecimiento ID
 
+
 interface Servicio {
   id: number;
   servicio: {

@@ -1,5 +1,7 @@
 import { Servicio } from '../servicio/servicio.entity';
 import { Cama } from 'src/cama/cama.entity';
+import {RolTurno}  from '../rol_turnos/rol_turno.entity'; 
+import {CodificacionTurno}  from '../codificacion_turnos/codificacion_turno.entity'; 
 import {
   Entity,
   Column,
@@ -48,4 +50,10 @@ export class Specialty {
 
   @OneToMany(() => Cama, (cama) => cama.especialidad)
   camas: Cama[];
+
+  @OneToMany(() => RolTurno, (turno) => turno.especialidad)
+  turnos: RolTurno[];
+
+  @OneToMany(() => CodificacionTurno, (codificacion) => codificacion.especialidad)
+  codificacionesTurno: CodificacionTurno[];
 }

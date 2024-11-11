@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import axios from 'axios';
 import '../Cama/style/camaList.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 interface EspecialidadData {
@@ -251,11 +252,11 @@ const EspecialidadesList = () => {
         </div>
       )}
       {/* Botón para navegar a otra página */}
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+      {/* <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <button onClick={handleNavigation} className="btn btn-primary">
           Ir a Otra Página
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

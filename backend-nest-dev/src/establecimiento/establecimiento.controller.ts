@@ -31,6 +31,13 @@ export class EstablecimientoController {
     return this.establecimientoService.findAll();
   }
 
+
+  // Obtener nombres de establecimientos con ID
+  @Get('nombres') // Nueva ruta para obtener solo los nombres e IDs
+  async obtenerNombresEstablecimientos(): Promise<{ id: number; nombre: string }[]> {
+    return this.establecimientoService.obtenerNombresEstablecimientos();
+  }
+
   // Obtener un establecimiento por su ID
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<EstablecimientoSalud> {

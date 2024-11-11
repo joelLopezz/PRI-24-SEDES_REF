@@ -5,6 +5,7 @@ import L, { LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { useAuth } from '../../Context/AuthContext';
 

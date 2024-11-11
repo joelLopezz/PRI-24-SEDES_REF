@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaInfoCircle } from 'react-icons/fa';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Municipio {
   municipio_ID: number;

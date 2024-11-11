@@ -27,6 +27,15 @@ import HospitalesList from './pages/Hospitales/HospitalesList';
 import HospitalInfo from './pages/Hospitales/HospitalInfo';
 import ServiciosEspInfo from './pages/Hospitales/ServiciosEspInfo';
 import Credits from './pages/HomePage/Credits';
+
+import PersonalSaludList from    './pages/personal_salud/PersonalSaludList';
+import PersonalSaludEdit from    './pages/personal_salud/PersonalSaludEdit';
+import PersonalSaludCreate from  './pages/personal_salud/PersonalSaludCreate';
+import EspecialidadesReport from './reporte/especialidadReport';
+
+import RolTurnosList from './pages/RoldeTurnos/RolTurnosList';
+import ConsultaExternaList from './pages/ConsultaExterna/ConsultaExternaList';
+
 import CamaList from './pages/Cama/CamaList';
 
 function ProtectedRoutes() {
@@ -133,10 +142,21 @@ function ProtectedRoutes() {
               path="/cama"
               element={hasPermission(['Admin Hospital', 'Doctor']) ? <CamaList /> : <Navigate to="/inicio" />}
             />
+            <Route path="/personal-salud" element={<PersonalSaludList />} />
+            <Route path="/personal-salud/:id" element={<PersonalSaludEdit isEditing=  {true} />} />
+            <Route path="/personal-salud/crear" element={<PersonalSaludCreate isEditing = {false} />} />
+
+            {/* Ruta de reporte  */}
+            <Route path="/reporte-especialidades" element={<EspecialidadesReport />} />
+
+            {/* Ruta de Cronograma de turnos  */}
+            <Route path='/cronograma-turnos' element={<RolTurnosList/>}/>
+            <Route path='/consulta-externa' element={<ConsultaExternaList/>}/>
         </Route>
       </Routes>
   );
 }
+
 
 function App() {
   const isAuthenticated = !!localStorage.getItem('user'); // Verifica si el usuario está autenticado

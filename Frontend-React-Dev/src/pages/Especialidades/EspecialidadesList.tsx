@@ -4,6 +4,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y elimin
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Importamos el modal
 import { useAuth } from '../../Context/AuthContext'; // Importa el contexto
 
+
 interface Especialidad {
   id: number;
   nombre: string;

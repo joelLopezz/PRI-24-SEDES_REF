@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Usuario } from '../usuario/usuario.entity';
+import {AreaPersonal}  from '../area_personal/area_personal.entity'; 
+import {RolTurno}  from '../rol_turnos/rol_turno.entity'; 
 
 @Entity('personal_salud')
 export class PersonalSalud {
@@ -51,4 +53,10 @@ export class PersonalSalud {
 
   @OneToMany(() => Usuario, (usuario) => usuario.personal)
   usuarios: Usuario[];
+
+  @OneToMany(() => AreaPersonal, (personal) => personal.personalSalud)
+    areas: AreaPersonal[];
+
+  @OneToMany(() => RolTurno, (turno) => turno.personalSalud)
+  turnos: RolTurno[];
 }

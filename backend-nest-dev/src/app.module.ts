@@ -37,6 +37,10 @@ import { ReporteModule } from './reporrte/reporte.module';
 import { PersonalSalud } from './personal_salud/personal_salud.entity';
 import { PersonalSaludModule } from './personal_salud/personal_salud.module';
 import { HistoriaCamaModule } from './historial_cama/hostoria_cama.module';
+import { ConsultaExternaModule } from './consulta_externa/consulta_externa.module';
+import { AreaPersonalModule } from './area_personal/area_personal.module';
+import { CodificacionTurnosModule } from './codificacion_turnos/codificacion_turnos.module';
+import { RolTurnosModule } from './rol_turnos/rol_turnos.module';
 
 @Module({
   imports: [
@@ -78,6 +82,10 @@ import { HistoriaCamaModule } from './historial_cama/hostoria_cama.module';
     HistoriaCamaModule,
     ReporteModule,
     TypeOrmModule.forFeature([PersonalSalud]),
+    ConsultaExternaModule,
+    AreaPersonalModule,
+    CodificacionTurnosModule,
+    RolTurnosModule,
   ],
   controllers: [
     AppController,

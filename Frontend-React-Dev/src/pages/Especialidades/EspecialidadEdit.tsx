@@ -7,6 +7,7 @@ import { useAuth } from '../../Context/AuthContext'; // Importar useAuth
 
 
 
+
 interface Especialidad {
   id: number;
   nombre: string;

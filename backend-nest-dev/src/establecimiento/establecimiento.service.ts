@@ -31,7 +31,7 @@ export class EstablecimientoService {
   // Método para obtener todos los establecimientos de salud con ID y nombre
   // Método para obtener todos los establecimientos de salud con ID y nombre
   async obtenerNombresEstablecimientos(): Promise<{ id: number; nombre: string }[]> {
-    return await this.establecimientoRepository.find({
+    return await this.establecimientoRepository.find({ 
       select: ['id', 'nombre'], // Selecciona los campos 'id' y 'nombre'
       where: { estado: 1 }, // Opcional: filtra por estado activo si es necesario
     });

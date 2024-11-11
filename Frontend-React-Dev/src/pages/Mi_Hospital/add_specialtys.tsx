@@ -5,6 +5,7 @@ import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 import { useAuth } from '../../Context/AuthContext'; // Importa useAuth
 
+
 interface Especialidad {
   id: number;
   nombre: string;

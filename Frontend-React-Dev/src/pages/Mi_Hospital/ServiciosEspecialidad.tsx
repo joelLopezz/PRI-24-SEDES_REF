@@ -6,6 +6,7 @@ import { FaTrash } from 'react-icons/fa'; // Iconos para editar y eliminar
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Asegúrate de importar correctamente el modal
 import { useAuth } from '../../Context/AuthContext'; // Importa el contexto de autenticación
 
+
 interface Servicio {
   id: number;
   servicio: {

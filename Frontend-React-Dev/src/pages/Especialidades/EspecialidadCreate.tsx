@@ -5,6 +5,7 @@ import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal
 import { validateNombre } from '../../Components/validations/Validations';
 import { useAuth } from '../../Context/AuthContext'; // Importar useAuth
 
+
 const EspecialidadCreate: React.FC = () => {
   const { usuarioID } = useAuth(); // Extraer usuarioID del contexto de autenticación
   const navigate = useNavigate();

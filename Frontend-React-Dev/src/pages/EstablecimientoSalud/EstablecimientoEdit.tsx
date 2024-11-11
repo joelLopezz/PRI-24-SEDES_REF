@@ -9,6 +9,7 @@ import { validateNombre, validateTelefono, validateNoStartingSpace } from '../..
 import { useAuth } from '../../Context/AuthContext';
 
 
+
 // Definir la interfaz para RedCordinacion y Municipio
 interface RedCordinacion {
   red_ID: number;

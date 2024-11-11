@@ -4,6 +4,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y elimin
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Modal para confirmación
 import { useAuth } from '../../Context/AuthContext'; // Importa el contexto
 
+
 // Definir las interfaces para los datos
 interface Municipio {
   municipio_ID: number;
