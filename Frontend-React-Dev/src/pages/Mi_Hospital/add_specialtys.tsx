@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importa tu componente SuccessModal
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Especialidad {
   id: number;

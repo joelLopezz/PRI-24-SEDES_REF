@@ -37,19 +37,29 @@ import { ReporteModule } from './reporrte/reporte.module';
 import { PersonalSalud } from './personal_salud/personal_salud.entity';
 import { PersonalSaludModule } from './personal_salud/personal_salud.module';
 import { HistoriaCamaModule } from './historial_cama/hostoria_cama.module';
+import { ConsultaExternaModule } from './consulta_externa/consulta_externa.module';
+import { AreaPersonalModule } from './area_personal/area_personal.module';
+import { CodificacionTurnosModule } from './codificacion_turnos/codificacion_turnos.module';
+import { RolTurnosModule } from './rol_turnos/rol_turnos.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      //database: 'db_sedesreferencias',
-      database: 'sedes',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false,
+    ConfigModule.forRoot({
+      isGlobal: true, // Hace que las variables de entorno estén disponibles globalmente
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: false, // Solo en desarrollo. Desactívalo en producción.
+      }),
     }),
     SpecialtyModule, // Ahora Specialty está encapsulado en su propio módulo
     ServicioModule,
@@ -72,6 +82,10 @@ import { HistoriaCamaModule } from './historial_cama/hostoria_cama.module';
     HistoriaCamaModule,
     ReporteModule,
     TypeOrmModule.forFeature([PersonalSalud]),
+    ConsultaExternaModule,
+    AreaPersonalModule,
+    CodificacionTurnosModule,
+    RolTurnosModule,
   ],
   controllers: [
     AppController,

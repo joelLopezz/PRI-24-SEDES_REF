@@ -1,6 +1,7 @@
 // src/pages/cama/CamaCreate.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 const CamaCreate = () => {

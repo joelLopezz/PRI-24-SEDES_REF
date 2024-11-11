@@ -4,6 +4,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { FaTrash } from 'react-icons/fa'; // Iconos para editar y eliminar
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Asegúrate de importar correctamente el modal
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Servicio {
   id: number;

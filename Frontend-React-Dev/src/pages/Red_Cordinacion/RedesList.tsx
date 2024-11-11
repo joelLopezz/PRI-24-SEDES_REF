@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FaTrash, FaEdit } from 'react-icons/fa';
 import ConfirmationModal from '../../Components/ConfirmationModal';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface RedCordinacion {
   red_ID: number;

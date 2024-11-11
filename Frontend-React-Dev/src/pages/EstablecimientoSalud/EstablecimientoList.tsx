@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y eliminar
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Modal para confirmación
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Definir las interfaces para los datos
 interface Municipio {

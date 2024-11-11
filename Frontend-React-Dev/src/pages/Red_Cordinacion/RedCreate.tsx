@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 import { validateNombre, validateNumeracion } from '../../Components/validations/Validations';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const toRoman = (num: number): string => {
   const romanNumerals: { [key: number]: string } = {

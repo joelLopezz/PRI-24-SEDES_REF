@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../personal_salud/style/personal-saludlLit.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface PersonalSalud {
   personal_ID: number;

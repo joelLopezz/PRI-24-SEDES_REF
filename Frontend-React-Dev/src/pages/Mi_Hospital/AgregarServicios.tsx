@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Servicio {
   servicio_ID: number;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../personal_salud/style/personal_saludEdit.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface PersonalSaludFormProps {
   isEditing: boolean;

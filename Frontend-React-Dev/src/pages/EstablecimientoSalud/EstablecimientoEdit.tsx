@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css'; // Importar estilos de Leaflet
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
 import { validateNombre, validateTelefono, validateNoStartingSpace } from '../../Components/validations/Validations';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 // Definir la interfaz para RedCordinacion y Municipio

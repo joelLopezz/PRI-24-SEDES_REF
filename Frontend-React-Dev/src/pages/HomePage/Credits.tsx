@@ -1,6 +1,7 @@
 import React from 'react';
 import universityLogo from '../../assets/Images/logos univalle/LOGO UNIVALLE-03.png';
 import backgroundLogo from '../../assets/Images/logotipo UMA/JPG/Mesa de trabajo 1-100.jpg'; // Asegúrate de que la ruta sea correcta
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Credits: React.FC = () => {
     return (

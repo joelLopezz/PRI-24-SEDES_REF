@@ -4,6 +4,7 @@ import { RedCordinacion } from '../red-cordinacion/red-cordinacion.entity';
 import { Municipio } from '../municipio/municipio.entity';
 //import { RedCordinacion } from '../red-cordinacion/red-cordinacion.entity'; // Importa la entidad RedCordinacion
 import {Cama}  from '../cama/cama.entity'; 
+import {RolTurno}  from '../rol_turnos/rol_turno.entity'; 
 import {
   Entity,
   Column,
@@ -69,4 +70,6 @@ export class EstablecimientoSalud {
   // Relación con la entidad Cama (relación inversa)
   @OneToMany(() => Cama, (cama) => cama.establecimientoSalud)
   camas: Cama[];
+  @OneToMany(() => RolTurno, (turno) => turno.establecimientoSalud)
+  turnos: RolTurno[];
 }

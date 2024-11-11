@@ -34,6 +34,9 @@ import PersonalSaludEdit from    './pages/personal_salud/PersonalSaludEdit';
 import PersonalSaludCreate from  './pages/personal_salud/PersonalSaludCreate';
 import EspecialidadesReport from './reporte/especialidadReport';
 
+import RolTurnosList from './pages/RoldeTurnos/RolTurnosList';
+import ConsultaExternaList from './pages/ConsultaExterna/ConsultaExternaList';
+
 function App() {
   return (
     <Router>
@@ -95,6 +98,11 @@ function App() {
 
           {/* Ruta de reporte  */}
           <Route path="/reporte-especialidades" element={<EspecialidadesReport />} />
+
+          {/* Ruta de Cronograma de turnos  */}
+          <Route path='/cronograma-turnos' element={<RolTurnosList/>}/>
+          <Route path='/consulta-externa' element={<ConsultaExternaList/>}/>
+
         </Routes>
       </Layout>
     </Router>

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 import { validateNombre } from '../../Components/validations/Validations';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 
