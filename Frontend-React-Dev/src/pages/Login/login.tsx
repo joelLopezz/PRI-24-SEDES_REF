@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import './login.css';
-import { useNavigate } from 'react-router-dom'; // Importar useNavigate para redirigir al usuario después del login
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 
 const Login: React.FC = () => {
+  const { setRole, setUsuarioID, setEstablecimientoID } = useAuth();
   const [focusInput, setFocusInput] = useState({ username: false, password: false });
   const [formData, setFormData] = useState({ username: '', password: '' });
-  const [errorMessage, setErrorMessage] = useState(''); // Para mostrar mensajes de error
-  const [successMessage, setSuccessMessage] = useState(''); // Para mostrar mensajes de éxito
-  const navigate = useNavigate(); // Hook para redirigir al usuario después del inicio de sesión exitoso
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleFocus = (input: 'username' | 'password') => {
     setFocusInput({ ...focusInput, [input]: true });
@@ -27,18 +29,15 @@ const Login: React.FC = () => {
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Evitar recarga de la página
-    setErrorMessage(''); // Resetear mensaje de error
-    setSuccessMessage(''); // Resetear mensaje de éxito
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
 
     const loginData = {
       nombre_usuario: formData.username,
       contrasenia: formData.password,
     };
 
-    console.log('Datos enviados al backend:', loginData);
-
-    // Enviar los datos al backend
     fetch('http://localhost:3000/usuario/login', {
       method: 'POST',
       headers: {
@@ -53,23 +52,34 @@ const Login: React.FC = () => {
         return response.json();
       })
       .then(data => {
-        // Si la autenticación es exitosa 
-        setSuccessMessage('Inicio de sesión exitoso'); // Mostrar mensaje de éxito
+        // Guarda los datos en localStorage
+        const userData = {
+          usuario_ID: data.data.usuario_ID,
+          nombre_usuario: data.data.nombre_usuario,
+          rol: data.data.rol,
+          establecimiento_id: data.data.establecimiento_id,
+          nombres: data.data.nombres,
+          primer_apellido: data.data.primer_apellido,
+        };
+        localStorage.setItem('user', JSON.stringify(userData));
 
-        // Redirigir al usuario a la página protegida (EstablecimientoList)
+        // Actualiza el contexto para reflejar los cambios inmediatamente
+        setRole(data.data.rol);
+        setUsuarioID(data.data.usuario_ID);
+        setEstablecimientoID(data.data.establecimiento_id);
+
+        setSuccessMessage('Inicio de sesión exitoso');
         setTimeout(() => {
-          //navigate('/cama'); // Cambia esto según la página a la que quieras redirigir
-          navigate('/inicio'); // Cambia esto según la página a la que quieras
-        }, 1500); // Espera 1.5 segundos antes de redirigir
+          navigate('/inicio');
+        }, 1500);
       })
       .catch(error => {
-        // Si ocurre algún error, mostrar mensaje de error
         setErrorMessage('Usuario o contraseña incorrectos');
       });
   };
 
   return (
-    <div className="App">
+    <div className="login-page">
       <div className="container_login">
         <div className="img">
           <img src="src/assets/Images/Medico.svg" alt="background illustration" />

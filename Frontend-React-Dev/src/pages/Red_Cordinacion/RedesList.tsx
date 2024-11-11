@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FaTrash, FaEdit } from 'react-icons/fa';
 import ConfirmationModal from '../../Components/ConfirmationModal';
+import { useAuth } from '../../Context/AuthContext';
 
 interface RedCordinacion {
   red_ID: number;
@@ -11,6 +12,7 @@ interface RedCordinacion {
 }
 
 const RedesList: React.FC = () => {
+  const { usuarioID } = useAuth();
   const [redes, setRedes] = useState<RedCordinacion[]>([]);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -36,7 +38,13 @@ const RedesList: React.FC = () => {
   const confirmDelete = async () => {
     if (selectedId !== null) {
       try {
-        await axios.delete(`http://localhost:3000/red-cordinacion/${selectedId}`);
+        await axios.request({
+          url: `http://localhost:3000/red-cordinacion/${selectedId}`,
+          method: 'DELETE',
+          data: {
+            usuario_ID: usuarioID, // Aquí envías el usuario_ID desde el contexto
+          },
+        });
         setRedes(redes.filter((red) => red.red_ID !== selectedId));
         setConfirmOpen(false); // Cerrar el modal de confirmación después de eliminar
       } catch (error) {
@@ -44,6 +52,7 @@ const RedesList: React.FC = () => {
       }
     }
   };
+  
 
   const handleCloseConfirmModal = () => {
     setConfirmOpen(false);

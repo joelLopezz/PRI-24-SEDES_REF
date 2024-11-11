@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 import { validateCodigo, validateNombreServicio } from '../../Components/validations/Validations';
+import { useAuth } from '../../Context/AuthContext';
 
 
 // Definir la interfaz para las especialidades
@@ -20,6 +21,7 @@ interface Servicio {
 }
 
 const EditService: React.FC = () => {
+  const { usuarioID } = useAuth();
   const { id } = useParams<{ id: string }>(); // Obtener el ID del servicio desde la URL
   const navigate = useNavigate();
 
@@ -102,6 +104,7 @@ const EditService: React.FC = () => {
       const formDataWithUpperCaseCode = {
         ...formData,
         codigo: formData.codigo.toUpperCase(), // Asegurarse de enviar "codigo" en mayúsculas
+        usuario_ID: usuarioID,
       };
   
       await axios.patch(`http://localhost:3000/servicio/${id}`, formDataWithUpperCaseCode);

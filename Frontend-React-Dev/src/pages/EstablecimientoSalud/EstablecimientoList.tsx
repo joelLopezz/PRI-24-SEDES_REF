@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y eliminar
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Modal para confirmación
+import { useAuth } from '../../Context/AuthContext'; // Importa el contexto
 
 // Definir las interfaces para los datos
 interface Municipio {
@@ -27,6 +28,7 @@ interface Establecimiento {
   redCordinacion: RedCordinacion; // Relación con Red de Coordinación
 }
 const EstablecimientoList: React.FC = () => {
+  const { usuarioID } = useAuth(); // Obtén el usuario_ID del contexto
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +69,10 @@ const EstablecimientoList: React.FC = () => {
     try {
       const response = await fetch(`http://localhost:3000/establecimiento/${selectedEstablecimientoId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario_modificacion: usuarioID }), // Pasa usuario_modificacion en el cuerpo de la solicitud
       });
 
       if (response.ok) {

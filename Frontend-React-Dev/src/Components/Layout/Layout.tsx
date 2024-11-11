@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-
-import { Outlet } from 'react-router-dom'; // Importamos Outlet
+import { Outlet } from 'react-router-dom';
 import Navbar from './NavBar';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
 
-interface LayoutProps {
-
-  children: React.ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-
+const Layout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -30,14 +23,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main content */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
+      <div className={`flex-1 flex flex-col ${sidebarOpen ? 'ml-64' : 'ml-0'} transition-all duration-300 ease-in-out`}>
         {/* Navbar */}
         <Navbar onToggleSidebar={toggleSidebar} />
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-white shadow-sm transition-transform duration-300 ease-in-out">
-          {children}
-
+        <main className="flex-1 overflow-y-auto p-6 bg-white shadow-sm">
+          <Outlet /> {/* Renderiza las rutas hijas aquí */}
         </main>
 
         {/* Footer */}

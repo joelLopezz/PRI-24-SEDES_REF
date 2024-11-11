@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -17,9 +18,8 @@ export class SpecialtyController {
   // Crear una nueva especialidad
   @Post()
   async createSpecialty(
-    @Body() specialtyData: Partial<Specialty>,
+    @Body() specialtyData: Partial<Specialty> & { usuario_creacion: number },
   ): Promise<Specialty> {
-    specialtyData.usuario_creacion = 1;
     return this.specialtyService.createSpecialty(specialtyData);
   }
 
@@ -39,15 +39,17 @@ export class SpecialtyController {
   @Put(':id')
   async updateSpecialty(
     @Param('id') id: number,
-    @Body() specialtyData: Partial<Specialty>,
+    @Body() specialtyData: Partial<Specialty> & { usuario_modificacion: number },
   ): Promise<Specialty> {
-    specialtyData.usuario_modificacion = 1;
     return this.specialtyService.updateSpecialty(id, specialtyData);
   }
 
   // Eliminar una especialidad (Eliminación lógica)
   @Delete(':id')
-  async deleteSpecialty(@Param('id') id: number): Promise<void> {
-    return this.specialtyService.deleteSpecialty(id);
+  async deleteSpecialty(
+    @Param('id') id: number,
+    @Body() deleteData: { usuario_modificacion: number },
+  ): Promise<void> {
+    return this.specialtyService.deleteSpecialty(id, deleteData.usuario_modificacion);
   }
 }

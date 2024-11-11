@@ -6,6 +6,8 @@ import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 
+import { useAuth } from '../../Context/AuthContext';
+
 import { validateNombre, validateTelefono, validateNoStartingSpace } from '../../Components/validations/Validations';
 interface RedCordinacion {
   red_ID: number;
@@ -17,6 +19,7 @@ interface Municipio {
   nombre: string;
 }
 const EstablecimientoRegister: React.FC = () => {
+  const { usuarioID } = useAuth(); // Obtén el usuarioID del contexto
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
@@ -157,7 +160,7 @@ const EstablecimientoRegister: React.FC = () => {
       await axios.post('http://localhost:3000/establecimiento', {
         ...formData,
         estado: 1,
-        usuario_creacion: 1,
+        usuario_creacion: usuarioID,
       });
       setModalOpen(true);
     } catch (error) {

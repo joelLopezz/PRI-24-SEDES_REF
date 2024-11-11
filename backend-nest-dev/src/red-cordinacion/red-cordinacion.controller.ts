@@ -16,7 +16,9 @@ export class RedCordinacionController {
 
   // Crear una nueva red de coordinación
   @Post()
-  async create(@Body() data: Partial<RedCordinacion>): Promise<RedCordinacion> {
+  async create(
+    @Body() data: Partial<RedCordinacion> & { usuario_ID: number },
+  ): Promise<RedCordinacion> {
     return this.redCordinacionService.create(data);
   }
 
@@ -38,18 +40,21 @@ export class RedCordinacionController {
     return this.redCordinacionService.findOne(id);
   }
 
-  // Actualizar una red de coordinación
+  // Actualizar una red de coordinación en el controlador
   @Patch(':id')
   async update(
     @Param('id') id: number,
-    @Body() data: Partial<RedCordinacion>,
+    @Body() data: Partial<RedCordinacion> & { usuario_modificacion: number },
   ): Promise<RedCordinacion> {
     return this.redCordinacionService.update(id, data);
   }
 
   // Eliminar una red (eliminación lógica)
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    return this.redCordinacionService.delete(id);
+  async delete(
+    @Param('id') id: number,
+    @Body() data: { usuario_ID: number },
+  ): Promise<void> {
+    return this.redCordinacionService.delete(id, data.usuario_ID);
   }
 }

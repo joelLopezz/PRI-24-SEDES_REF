@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 import { validateNombre } from '../../Components/validations/Validations';
+import { useAuth } from '../../Context/AuthContext'; // Importar useAuth
 
 
 
@@ -14,6 +15,8 @@ interface Especialidad {
 }
 
 const EspecialidadEdit: React.FC = () => {
+
+  const { usuarioID } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -67,6 +70,7 @@ const EspecialidadEdit: React.FC = () => {
       const upperCaseData = {
         ...formData,
         nombre: formData.nombre.toUpperCase(), // Asegurarse de enviar en mayúsculas
+        usuario_modificacion: usuarioID,
       };
   
       await axios.put(`http://localhost:3000/specialties/${id}`, upperCaseData);

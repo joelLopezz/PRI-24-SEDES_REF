@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 import { validateNombre } from '../../Components/validations/Validations';
-
-
+import { useAuth } from '../../Context/AuthContext'; // Importar useAuth
 
 const EspecialidadCreate: React.FC = () => {
+  const { usuarioID } = useAuth(); // Extraer usuarioID del contexto de autenticación
   const navigate = useNavigate();
 
   // Estado del formulario con nombres correctos según el backend
@@ -46,6 +46,7 @@ const EspecialidadCreate: React.FC = () => {
         ...formData,
         nombre: formData.nombre.toUpperCase(), // Asegurarse de enviar en mayúsculas
         estado: 1,
+        usuario_creacion: usuarioID, 
       };
   
       console.log('Enviando datos:', upperCaseData);

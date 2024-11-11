@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,13 +12,13 @@ export class RedCordinacionService {
   ) {}
 
   // Crear una nueva red de coordinación
-  async create(data: Partial<RedCordinacion>): Promise<RedCordinacion> {
-    data.usuario_creacion = 1; // Temporalmente asignamos el ID de creación
-    const nuevaRed = this.redCordinacionRepository.create(data);
+  async create(data: Partial<RedCordinacion> & { usuario_ID: number }): Promise<RedCordinacion> {
+    const nuevaRed = this.redCordinacionRepository.create({
+      ...data,
+      usuario_creacion: data.usuario_ID,
+    });
     return this.redCordinacionRepository.save(nuevaRed);
   }
-
-  // Obtener todas las redes de coordinación
   // Obtener todas las redes de coordinación activas
   async findAll(): Promise<RedCordinacion[]> {
     return this.redCordinacionRepository.find({
@@ -39,22 +40,26 @@ export class RedCordinacionService {
   }
 
   // Actualizar una red de coordinación
+  // Actualizar una red de coordinación en el servicio
   async update(
     id: number,
-    data: Partial<RedCordinacion>,
+    data: Partial<RedCordinacion> & { usuario_modificacion: number },
   ): Promise<RedCordinacion> {
-    data.fecha_modificacion = new Date();
-    data.usuario_modificacion = 1; // Temporalmente asignamos el ID de modificación
-    await this.redCordinacionRepository.update(id, data);
+    await this.redCordinacionRepository.update(id, {
+      ...data,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: data.usuario_modificacion,
+    });
     return this.redCordinacionRepository.findOne({ where: { red_ID: id } });
   }
 
+
   // Eliminar una red (eliminación lógica)
-  async delete(id: number): Promise<void> {
+  async delete(id: number, usuario_ID: number): Promise<void> {
     await this.redCordinacionRepository.update(id, {
       estado: 0,
       fecha_modificacion: new Date(),
-      usuario_modificacion: 1, // Temporalmente asignamos el ID de modificación
+      usuario_modificacion: usuario_ID,
     });
   }
 }

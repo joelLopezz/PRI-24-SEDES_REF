@@ -1,4 +1,4 @@
-.App {
+.login-page {
     height: 100vh;
     background: linear-gradient(to bottom, rgba(10, 4, 60, 1) 0%, rgba(26, 27, 65, 1) 50%, rgba(0, 74, 153, 1) 100%);
     display: flex;
@@ -6,18 +6,18 @@
     align-items: center;
   }
  
-  * {
+  .login-page * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
   }
  
-  body {
+  .login-page  body {
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
   }
  
-  .wave {
+  .login-page .wave {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -25,7 +25,7 @@
     z-index: -1;
   }
  
-  .container_login {
+  .login-page  .container_login {
     width: 60vw;
     height: 70vh;
     display: grid;
@@ -33,7 +33,7 @@
     padding: 0 2rem;
   }
  
-  .img {
+  .login-page .img {
     display: flex;
     justify-content:center;
     align-items: center;
@@ -41,7 +41,7 @@
     border-radius: 40px 0px 0px 40px;
   }
  
-  .login_content{
+  .login-page .login_content{
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -51,26 +51,26 @@
     border-radius: 0px 40px 40px 0px;
   }
  
-  .img img {
+  .login-page .img img {
     width: 400px;
   }
  
-  form {
+  .login-page form {
     width: 360px;
   }
  
-  .login_content img {
+  .login-page .login_content img {
     height: 100px;
   }
  
-  .login_content h2 {
+  .login-page .login_content h2 {
     margin: 15px 0;
     color: #333;
     text-transform: uppercase;
     font-size: 1.9rem;
   }
  
-  .login_content .input-div {
+  .login-page .login_content .input-div {
     position: relative;
     display: grid;
     grid-template-columns: 7% 93%;
@@ -79,27 +79,27 @@
     border-bottom: 2px solid #d9d9d9;
   }
  
-  .login_content .input-div.one {
+  .login-page .login_content .input-div.one {
     margin-top: 0;
   }
  
-  .i {
+  .login-page .i {
     color: #d9d9d9;
     display: flex;
     justify-content: center;
     align-items: center;
   }
  
-  .i i {
+  .login-page .i i {
     transition: .3s;
   }
  
-  .input-div > div {
+  .login-page .input-div > div {
     position: relative;
     height: 45px;
   }
  
-  .input-div > div > h5 {
+  .login-page .input-div > div > h5 {
     position: absolute;
     left: 10px;
     top: 50%;
@@ -109,8 +109,8 @@
     transition: .3s;
   }
  
-  .input-div:before,
-  .input-div:after {
+  .login-page .input-div:before,
+  .login-page .input-div:after {
     content: '';
     position: absolute;
     bottom: -2px;
@@ -120,29 +120,29 @@
     transition: .4s;
   }
  
-  .input-div:before {
+  .login-page .input-div:before {
     right: 50%;
   }
  
-  .input-div:after {
+  .login-page .input-div:after {
     left: 50%;
   }
  
-  .input-div.focus:before,
-  .input-div.focus:after {
+  .login-page .input-div.focus:before,
+  .login-page .input-div.focus:after {
     width: 50%;
   }
  
-  .input-div.focus > div > h5 {
+ .login-page.login-page .input-div.focus > div > h5 {
     top: -5px;
     font-size: 15px;
   }
  
-  .input-div.focus > .i > i {
+ .login-page.login-page .input-div.focus > .i > i {
     color: #4032be;
   }
  
-  .input-div > div > input {
+ .login-page.login-page .input-div > div > input {
     position: absolute;
     left: 0;
     top: 0;
@@ -157,11 +157,11 @@
     font-family: 'Poppins', sans-serif;
   }
  
-  .input-div.pass {
+ .login-page.login-page .input-div.pass {
     margin-bottom: 4px;
   }
  
-  a {
+ .login-page a {
     display: block;
     text-align: right;
     text-decoration: none;
@@ -170,11 +170,11 @@
     transition: .3s;
   }
  
-  a:hover {
+ .login-page a:hover {
     color: #4032be;
   }
  
-  .btn {
+ .login-page .btn {
     display: block;
     width: 100%;
     height: 50px;
@@ -192,7 +192,7 @@
     transition: .5s;
   }
  
-  .btn:hover {
+ .login-page .btn:hover {
     background-position: right;
   }
  
@@ -205,30 +205,30 @@
         width: 290px;
     }
  
-    .login_content h2 {
+    .login-page  .login_content h2 {
         font-size: 2.4rem;
         margin: 8px 0;
     }
  
-    .img img {
+    .login-page .img img {
         width: 400px;
     }
   }
  
   @media screen and (max-width: 900px) {
-    .container_login {
+   .login-page .container_login {
         grid-template-columns: 1fr;
     }
  
-    .img {
+   .login-page .img {
         display: none;
     }
  
-    .wave {
+   .login-page .wave {
         display: none;
     }
  
-    .login_content {
+   .login-page .login_content {
         justify-content: center;
     }
   }

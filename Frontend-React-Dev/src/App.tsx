@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './../src/Context/AuthContext';
 import Layout from './Components/Layout/Layout';
-import HomePage from './pages/HomePage/HomePage'; // Importa la página de inicio
-import Login from './pages/Login/login'; // Página de inicio de sesión
-
-// Importaciones adicionales
+import HomePage from './pages/HomePage/HomePage';
+import Login from './pages/Login/login';
+// Importaciones adicionales de las páginas
 import EstablecimientoList from './pages/EstablecimientoSalud/EstablecimientoList';
 import EstablecimientoRegister from './pages/EstablecimientoSalud/EstablecimientoRegister';
 import EstablecimientoEdit from './pages/EstablecimientoSalud/EstablecimientoEdit';
@@ -27,63 +27,133 @@ import HospitalesList from './pages/Hospitales/HospitalesList';
 import HospitalInfo from './pages/Hospitales/HospitalInfo';
 import ServiciosEspInfo from './pages/Hospitales/ServiciosEspInfo';
 import Credits from './pages/HomePage/Credits';
-import CamaList from './pages/Cama/CamaList'; // Importación de Cama
+import CamaList from './pages/Cama/CamaList';
+
+function ProtectedRoutes() {
+  const { hasPermission } = useAuth();
+
+  return (
+      <Routes>
+        <Route element={<Layout />}>
+            {/* Redirigir a HomePage */}
+            <Route path="/" element={<Navigate to="/inicio" />} />
+            <Route path="/inicio" element={<HomePage />} />
+
+            {/* Rutas protegidas basadas en roles */}
+            <Route
+              path="/establecimientos"
+              element={hasPermission(['Admin Sedes']) ? <EstablecimientoList /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/establecimientos/crear"
+              element={hasPermission(['Admin Sedes']) ? <EstablecimientoRegister /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/establecimientos/editar/:id"
+              element={hasPermission(['Admin Sedes']) ? <EstablecimientoEdit /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/especialidades"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital']) ? <EspecialidadesList /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/especialidades/crear"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital']) ? <EspecialidadCreate /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/especialidades/editar/:id"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital']) ? <EspecialidadEdit /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/servicios"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital']) ? <ServiceList /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/servicios/crear"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital']) ? <CreateService /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/servicios/editar/:id"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital']) ? <EditService /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/miHospital"
+              element={hasPermission(['Admin Hospital', 'Doctor']) ? <MiHospital /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/miHospital/agregar-especialidades"
+              element={hasPermission(['Admin Hospital']) ? <AgregarEspecialidades /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/miHospital/especialidad/:especialidadId/servicios"
+              element={hasPermission(['Admin Hospital', 'Doctor']) ? <ServiciosEspecialidad /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/miHospital/especialidad/:especialidadId/agregar-servicios"
+              element={hasPermission(['Admin Hospital']) ? <AgregarServicios /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/miHospital/especialidad/:especialidadId/establecer-disponibilidad"
+              element={hasPermission(['Admin Hospital']) ? <EstablecerDisponible /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/miHospital/especialidad/:especialidadId/ver-disponibilidad"
+              element={hasPermission(['Admin Hospital', 'Doctor']) ? <VerDisponibilidadPorMes /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/miHospital/ver-disponibilidad"
+              element={hasPermission(['Admin Hospital', 'Doctor']) ? <EspecialidadesSemana /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/red-coordinacion"
+              element={hasPermission(['Admin Sedes']) ? <RedesList /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/red-cordinacion/crear"
+              element={hasPermission(['Admin Sedes']) ? <RedCreate /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/red-cordinacion/editar/:id"
+              element={hasPermission(['Admin Sedes']) ? <RedEdit /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/hospitales-info"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital', 'Doctor']) ? <HospitalesList /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/hospitales-info/:id"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital', 'Doctor']) ? <HospitalInfo /> : <Navigate to="/inicio" />}
+            />
+            <Route
+              path="/hospitales-info/servicios-especialidad/:especialidadId"
+              element={hasPermission(['Admin Sedes', 'Admin Hospital', 'Doctor']) ? <ServiciosEspInfo /> : <Navigate to="/inicio" />}
+            />
+            <Route path="/credits" element={<Credits />} />
+            <Route
+              path="/cama"
+              element={hasPermission(['Admin Hospital', 'Doctor']) ? <CamaList /> : <Navigate to="/inicio" />}
+            />
+        </Route>
+      </Routes>
+  );
+}
 
 function App() {
+  const isAuthenticated = !!localStorage.getItem('user'); // Verifica si el usuario está autenticado
+
   return (
-    <Router>
-      <Layout>
+    <AuthProvider>
+      <Router>
         <Routes>
-          {/* Redirigir a Login como página inicial */}
-          <Route path="/" element={<Navigate to="/login" />} />
-          {/* Página de login */}
           <Route path="/login" element={<Login />} />
-
-          {/* Nueva ruta para HomePage */}
-          <Route path="/inicio" element={<HomePage />} />
-
-          {/* Rutas de establecimientos de salud */}
-          <Route path="/establecimientos" element={<EstablecimientoList />} />
-          <Route path="/establecimientos/crear" element={<EstablecimientoRegister />} />
-          <Route path="/establecimientos/editar/:id" element={<EstablecimientoEdit />} />
-
-          {/* Rutas de especialidades */}
-          <Route path="/especialidades" element={<EspecialidadesList />} />
-          <Route path="/especialidades/crear" element={<EspecialidadCreate />} />
-          <Route path="/especialidades/editar/:id" element={<EspecialidadEdit />} />
-
-          {/* Rutas de servicios */}
-          <Route path="/servicios" element={<ServiceList />} />
-          <Route path="/servicios/crear" element={<CreateService />} />
-          <Route path="/servicios/editar/:id" element={<EditService />} />
-
-          {/* Rutas de Mi Hospital */}
-          <Route path="/miHospital" element={<MiHospital />} />
-          <Route path="/miHospital/agregar-especialidades" element={<AgregarEspecialidades />} />
-          <Route path="/miHospital/especialidad/:especialidadId/servicios" element={<ServiciosEspecialidad />} />
-          <Route path="/miHospital/especialidad/:especialidadId/agregar-servicios" element={<AgregarServicios />} />
-          <Route path="/miHospital/especialidad/:especialidadId/establecer-disponibilidad" element={<EstablecerDisponible />} />
-          <Route path="/miHospital/especialidad/:especialidadId/ver-disponibilidad" element={<VerDisponibilidadPorMes />} />
-          <Route path="/miHospital/ver-disponibilidad" element={<EspecialidadesSemana />} />
-
-          {/* Rutas para Redes de Coordinación */}
-          <Route path="/red-coordinacion" element={<RedesList />} />
-          <Route path="/red-coordinacion/crear" element={<RedCreate />} />
-          <Route path="/red-coordinacion/editar/:id" element={<RedEdit />} />
-
-          {/* Rutas de información de hospitales */}
-          <Route path="/hospitales-info" element={<HospitalesList />} />
-          <Route path="/hospitales-info/:id" element={<HospitalInfo />} />
-          <Route path="/hospitales-info/servicios-especialidad/:especialidadId" element={<ServiciosEspInfo />} />
-
-          {/* Ruta de créditos */}
-          <Route path="/credits" element={<Credits />} />
-
-          {/* Rutas de camas */}
-          <Route path="/cama" element={<CamaList />} />
+          {isAuthenticated ? (
+            <Route path="/*" element={<ProtectedRoutes />} />
+          ) : (
+            <Route path="/*" element={<Navigate to="/login" />} />
+          )}
         </Routes>
-      </Layout>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

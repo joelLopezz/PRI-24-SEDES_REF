@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y eliminar
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Importamos el modal
+import { useAuth } from '../../Context/AuthContext'; // Importa el contexto
 
 interface Especialidad {
   id: number;
@@ -10,6 +11,7 @@ interface Especialidad {
 }
 
 const EspecialidadesList: React.FC = () => {
+  const { usuarioID } = useAuth();
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,17 +48,21 @@ const EspecialidadesList: React.FC = () => {
 
   // Confirmar eliminación
   const handleConfirmDelete = async () => {
-    if (!selectedEspecialidadId) return;
+    if (!selectedEspecialidadId || !usuarioID) return;
 
     try {
       const response = await fetch(`http://localhost:3000/specialties/${selectedEspecialidadId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario_modificacion: usuarioID, // Pasar el ID del usuario como dato adicional
+        }),
       });
 
       if (response.ok) {
-        // Actualizar el estado en el frontend después de la eliminación lógica
-        const nuevasEspecialidades = especialidades.filter((especialidad) => especialidad.id !== selectedEspecialidadId);
-        setEspecialidades(nuevasEspecialidades);
+        setEspecialidades(especialidades.filter((especialidad) => especialidad.id !== selectedEspecialidadId));
       } else {
         throw new Error('Error al eliminar la especialidad');
       }
@@ -64,7 +70,7 @@ const EspecialidadesList: React.FC = () => {
       console.error('Error al eliminar la especialidad:', error);
       setError('Error al eliminar la especialidad');
     } finally {
-      setModalOpen(false); // Cerramos el modal después de la acción
+      setModalOpen(false);
     }
   };
 

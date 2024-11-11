@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,7 +12,7 @@ export class SpecialtyService {
   ) {}
 
   // Crear una especialidad
-  async createSpecialty(data: Partial<Specialty>): Promise<Specialty> {
+  async createSpecialty(data: Partial<Specialty> & { usuario_creacion: number }): Promise<Specialty> {
     const specialty = this.specialtyRepository.create(data);
     return this.specialtyRepository.save(specialty);
   }
@@ -44,7 +45,7 @@ export class SpecialtyService {
   // Actualizar una especialidad
   async updateSpecialty(
     id: number,
-    data: Partial<Specialty>,
+    data: Partial<Specialty> & { usuario_modificacion: number },
   ): Promise<Specialty> {
     data.fecha_modificacion = new Date();
     await this.specialtyRepository.update(id, data);
@@ -52,11 +53,11 @@ export class SpecialtyService {
   }
 
   // Eliminar una especialidad (Eliminación lógica)
-  async deleteSpecialty(id: number): Promise<void> {
+  async deleteSpecialty(id: number, usuario_modificacion: number): Promise<void> {
     await this.specialtyRepository.update(id, {
       estado: 0, // Eliminación lógica
       fecha_modificacion: new Date(),
-      usuario_modificacion: 1, // Temporalmente 1
+      usuario_modificacion: usuario_modificacion,
     });
   }
 }

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
+import { useAuth } from '../../Context/AuthContext'; // Importa useAuth para obtener el establecimiento ID
 
 interface Servicio {
   id: number;
@@ -20,7 +21,7 @@ const EstablecerDisponible: React.FC = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { especialidadNombre } = state as { especialidadNombre: string };
-  const establecimientoId = 1;
+  const { establecimientoID } = useAuth(); // Obtén el establecimiento ID del contexto
 
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,9 +30,14 @@ const EstablecerDisponible: React.FC = () => {
 
   useEffect(() => {
     const fetchServicios = async () => {
+      if (establecimientoID === null) {
+        setError('Establecimiento no encontrado.');
+        setLoading(false);
+        return;
+      }
       try {
         const response = await axios.get<Servicio[]>(
-          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoId}/especialidad/${especialidadId}/servicios`
+          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/servicios`
         );
         setServicios(response.data);
       } catch (err) {
@@ -42,7 +48,7 @@ const EstablecerDisponible: React.FC = () => {
     };
 
     fetchServicios();
-  }, [especialidadId, establecimientoId]);
+  }, [especialidadId, establecimientoID]);
 
   const handleCheckboxChange = (id: number, field: keyof Servicio) => {
     setServicios((prevServicios) =>

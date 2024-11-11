@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { PersonalSaludService } from './personal_salud.service';
 import { PersonalSalud } from './personal_salud.entity';

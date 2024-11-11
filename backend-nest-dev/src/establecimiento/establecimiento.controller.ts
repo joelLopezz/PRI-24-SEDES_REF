@@ -21,7 +21,8 @@ export class EstablecimientoController {
   async create(
     @Body() data: Partial<EstablecimientoSalud>,
   ): Promise<EstablecimientoSalud> {
-    return this.establecimientoService.create(data);
+    const usuarioID = data.usuario_creacion; // Extrae el usuario_ID de los datos
+    return this.establecimientoService.create(data, usuarioID);
   }
 
   // Obtener todos los establecimientos
@@ -42,12 +43,19 @@ export class EstablecimientoController {
     @Param('id') id: number,
     @Body() data: Partial<EstablecimientoSalud>,
   ): Promise<EstablecimientoSalud> {
-    return this.establecimientoService.update(id, data);
+    const usuarioID = data.usuario_modificacion; // Extrae el usuario_ID de los datos
+    return this.establecimientoService.update(id, data, usuarioID);
   }
 
   // Eliminar un establecimiento (eliminación lógica)
+  // En el controlador de establecimiento
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    return this.establecimientoService.delete(id);
+  async delete(
+    @Param('id') id: number,
+    @Body() body: { usuario_modificacion: number },
+  ) {
+    const { usuario_modificacion } = body;
+    await this.establecimientoService.delete(id, usuario_modificacion);
+    return { message: 'Establecimiento eliminado correctamente' };
   }
 }

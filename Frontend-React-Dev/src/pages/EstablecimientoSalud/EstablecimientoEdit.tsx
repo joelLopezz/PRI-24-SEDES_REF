@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css'; // Importar estilos de Leaflet
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
 import { validateNombre, validateTelefono, validateNoStartingSpace } from '../../Components/validations/Validations';
+import { useAuth } from '../../Context/AuthContext';
 
 
 // Definir la interfaz para RedCordinacion y Municipio
@@ -31,6 +32,7 @@ interface Establecimiento {
 }
 
 const EstablecimientoEdit: React.FC = () => {
+  const { usuarioID } = useAuth(); // Obtén el usuarioID del contexto
   const { id } = useParams<{ id: string }>(); // Obtener el ID desde los parámetros de la URL
   const navigate = useNavigate();
   const [formData, setFormData] = useState<Establecimiento>({
@@ -169,7 +171,7 @@ const EstablecimientoEdit: React.FC = () => {
         red_cordinacion_red_ID: formData.red_cordinacion_red_ID,
         municipio_ID: formData.municipio_ID,
         rues: formData.rues,
-        usuario_modificacion: 1, // Temporalmente asignamos el ID del usuario 1
+        usuario_modificacion: usuarioID, // Temporalmente asignamos el ID del usuario 1
       };
 
       console.log("Datos enviados para la actualización:", updatedData);

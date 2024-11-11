@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useLocation } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 
 interface Servicio {
   id: number;
@@ -18,28 +20,35 @@ const VerDisponibilidadPorMes: React.FC = () => {
   const { especialidadId } = useParams<{ especialidadId: string }>();
   const { state } = useLocation();
   const { especialidadNombre } = state as { especialidadNombre: string };
-  const establecimientoId = 1;
   
+  const { establecimientoID } = useAuth(); // Obtener el establecimientoID del contexto
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!establecimientoID) {
+      setError('No se encontró el establecimiento del usuario');
+      return;
+    }
+
     const fetchServicios = async () => {
       try {
         const response = await axios.get<Servicio[]>(
-          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoId}/especialidad/${especialidadId}/servicios`
+          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/servicios`
         );
         setServicios(response.data);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         setError('Error al cargar los servicios de disponibilidad');
       }
     };
-    fetchServicios();
-  }, [especialidadId, establecimientoId]);
 
-  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-  //const mesActual = new Date().getMonth(); // Índice del mes actual (0 = enero, 11 = diciembre)
+    fetchServicios();
+  }, [especialidadId, establecimientoID]);
+
+  const meses = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ];
 
   const renderDisponibilidadMes = (servicio: Servicio, mesIndex: number) => {
     const fechaActualizacion = new Date(servicio.fecha_actualizacion);
@@ -48,26 +57,21 @@ const VerDisponibilidadPorMes: React.FC = () => {
     const añoActual = new Date().getFullYear();
     const mesActual = new Date().getMonth();
     const esDisponible = servicio.equipo_instrumental === 1;
-  
-    // Si el año de la última actualización es menor que el año actual, no se pinta ningún mes
+
     if (añoServicio < añoActual) {
       return <td className="py-2 px-4 border border-gray-400"></td>;
     }
-  
-    // Si estamos en el mismo año, pintamos los meses desde la última actualización hasta el mes actual
+
     if (añoServicio === añoActual) {
       if (mesServicio <= mesIndex && mesIndex <= mesActual) {
-        // Pinta los meses desde el mes de la última actualización hasta el actual
         return (
           <td className={`py-2 px-4 border border-gray-400 ${esDisponible ? 'bg-green-400' : 'bg-red-400'}`}></td>
         );
       }
     }
-    
-    // Si estamos en meses futuros del año actual o en otro año, no pintamos
+
     return <td className="py-2 px-4 border border-gray-400"></td>;
   };
-  
 
   return (
     <div className="p-6">

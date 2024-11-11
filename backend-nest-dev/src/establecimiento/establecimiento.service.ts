@@ -14,8 +14,9 @@ export class EstablecimientoService {
   // Crear un nuevo establecimiento
   async create(
     data: Partial<EstablecimientoSalud>,
+    usuarioID: number,
   ): Promise<EstablecimientoSalud> {
-    data.usuario_creacion = 1;
+    data.usuario_creacion = usuarioID; // Asigna el usuario_ID recibido
     const newEstablecimiento = this.establecimientoRepository.create(data);
     return this.establecimientoRepository.save(newEstablecimiento);
   }
@@ -53,20 +54,23 @@ export class EstablecimientoService {
   async update(
     id: number,
     data: Partial<EstablecimientoSalud>,
+    usuarioID: number,
   ): Promise<EstablecimientoSalud> {
     data.fecha_modificacion = new Date();
-    data.usuario_modificacion = 1;
+    data.usuario_modificacion = usuarioID; // Asigna el usuario_ID recibido
     await this.establecimientoRepository.update(id, data);
     return this.establecimientoRepository.findOne({ where: { id } });
   }
 
   // Eliminar un establecimiento (eliminación lógica)
-  async delete(id: number): Promise<void> {
+  // En el servicio de establecimiento
+  async delete(id: number, usuario_modificacion: number): Promise<void> {
     await this.establecimientoRepository.update(id, {
       estado: 0,
       fecha_modificacion: new Date(),
-      usuario_modificacion: 1,
+      usuario_modificacion,
     });
   }
+
 }
 

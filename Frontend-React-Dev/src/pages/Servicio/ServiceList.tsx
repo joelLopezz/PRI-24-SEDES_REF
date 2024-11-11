@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa'; // Iconos para editar y eliminar
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Importamos el modal
+import { useAuth } from './../../Context/AuthContext';
 
 // Definir la interfaz para los servicios
 interface Especialidad {
@@ -17,12 +18,15 @@ interface Servicio {
 }
 
 const ServiceList: React.FC = () => {
+  const { usuarioID } = useAuth();
   const [servicios, setServicios] = useState<Servicio[]>([]); // Estado para almacenar los servicios
   const [loading, setLoading] = useState(true); // Estado para mostrar el cargando
   const [error, setError] = useState<string | null>(null); // Estado para errores
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal de confirmación
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null); // Guardar el ID del servicio seleccionado
   const navigate = useNavigate(); // Hook para redirigir
+
+  const { hasPermission } = useAuth();
 
   // Efecto para obtener los servicios al montar el componente
   useEffect(() => {
@@ -58,6 +62,10 @@ const ServiceList: React.FC = () => {
     try {
       const response = await fetch(`http://localhost:3000/servicio/${selectedServiceId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario_ID: usuarioID }), // Enviar usuario_ID en el cuerpo
       });
 
       if (response.ok) {
@@ -124,7 +132,7 @@ const ServiceList: React.FC = () => {
               <th className="py-4 px-6 text-left font-semibold">Código</th> {/* Mostrar el código */}
               <th className="py-4 px-6 text-left font-semibold">Nombre</th>
               <th className="py-4 px-6 text-left font-semibold">Especialidad</th> {/* Mostrar el nombre de la especialidad */}
-              <th className="py-4 px-6 text-left font-semibold">Acciones</th>
+              {hasPermission(['Admin Sedes', 'Admin Hospital']) && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -139,6 +147,7 @@ const ServiceList: React.FC = () => {
                 <td className="py-4 px-6">{servicio.codigo}</td> {/* Código */}
                 <td className="py-4 px-6">{servicio.nombre}</td> {/* Nombre */}
                 <td className="py-4 px-6">{servicio.especialidad?.nombre || 'Especialidad no disponible'}</td> {/* Nombre de la especialidad */}
+                {hasPermission(['Admin Sedes', 'Admin Hospital']) && (
                 <td className="py-4 px-6 flex space-x-4">
                   <button
                     onClick={() => handleEdit(servicio.servicio_ID)}
@@ -152,7 +161,7 @@ const ServiceList: React.FC = () => {
                   >
                     <FaTrash className="w-5 h-5" />
                   </button>
-                </td>
+                </td>)}
               </tr>
             ))}
           </tbody>

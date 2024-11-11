@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../Context/AuthContext';
 
 interface Especialidad {
   id: number;
@@ -11,18 +13,18 @@ interface Especialidad {
 
 const MiHospital: React.FC = () => {
   const navigate = useNavigate();
+  const { establecimientoID } = useAuth(); // Extraemos establecimientoID del contexto de autenticación
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const establecimientoId = 1;
-
   useEffect(() => {
+    if (establecimientoID === null) return; // Si no hay un establecimientoID, no hace la llamada
+
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get<Especialidad[]>(`http://localhost:3000/estab-especialidad/especialidades/${establecimientoId}`);
+        const response = await axios.get<Especialidad[]>(`http://localhost:3000/estab-especialidad/especialidades/${establecimientoID}`);
         setEspecialidades(response.data);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         setError('Error al cargar las especialidades del hospital');
       } finally {
@@ -31,7 +33,7 @@ const MiHospital: React.FC = () => {
     };
 
     fetchEspecialidades();
-  }, [establecimientoId]);
+  }, [establecimientoID]);
 
   const handleAgregarEspecialidades = () => {
     navigate('/miHospital/agregar-especialidades');

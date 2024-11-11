@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 import { validateNombre, validateNumeracion } from '../../Components/validations/Validations';
+import { useAuth } from '../../Context/AuthContext';
 
 const toRoman = (num: number): string => {
   const romanNumerals: { [key: number]: string } = {
@@ -31,6 +32,7 @@ const toRoman = (num: number): string => {
 };
 
 const RedCreate: React.FC = () => {
+  const { usuarioID } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
@@ -71,7 +73,7 @@ const RedCreate: React.FC = () => {
         ...formData,
         numeracion: toRoman(parseInt(formData.numeracion, 10)), // Convertimos el número a romano
         estado: 1,
-        usuario_creacion: 1, // Cambiar según el usuario actual
+        usuario_ID: usuarioID, // Agregar el ID del usuario 
       };
 
       await axios.post('http://localhost:3000/red-cordinacion', formDataWithRomanNumeration);

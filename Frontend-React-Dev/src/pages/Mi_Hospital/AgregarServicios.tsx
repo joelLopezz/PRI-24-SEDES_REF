@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import SuccessModal from '../../Components/SuccessModal'; // Importar el modal de éxito
+import SuccessModal from '../../Components/SuccessModal';
+import { useAuth } from '../../Context/AuthContext'; // Importa el contexto
 
 interface Servicio {
   servicio_ID: number;
@@ -13,33 +14,36 @@ interface Servicio {
 const AgregarServicios: React.FC = () => {
   const { especialidadId } = useParams<{ especialidadId: string }>();
   const { state } = useLocation();
-  const { especialidadNombre } = state as { especialidadNombre: string }; // Capturar el nombre dinámicamente
+  const { especialidadNombre } = state as { especialidadNombre: string };
   const navigate = useNavigate();
+  const { establecimientoID } = useAuth(); // Accede al establecimientoID desde el contexto
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [selectedServicios, setSelectedServicios] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado del modal de éxito
-
-  // ID del establecimiento manual (para pruebas)
-  const establecimientoId = 1;
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchServicios = async () => {
-    try {
+      try {
         const response = await axios.get<Servicio[]>(
-            `http://localhost:3000/estab-servicio/establecimiento/${establecimientoId}/especialidad/${especialidadId}/disponibles`
+          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/disponibles`
         );
         setServicios(response.data);
-    } catch (err) {
+      } catch (err) {
         setError('Error al cargar los servicios de la especialidad');
-    } finally {
+      } finally {
         setLoading(false);
-    }
+      }
     };
 
-    fetchServicios();
-  }, [especialidadId]);
+    if (establecimientoID) {
+      fetchServicios();
+    } else {
+      setError('ID del establecimiento no disponible');
+      setLoading(false);
+    }
+  }, [especialidadId, establecimientoID]);
 
   const handleCheckboxChange = (id: number) => {
     setSelectedServicios((prevSelected) =>
@@ -51,35 +55,31 @@ const AgregarServicios: React.FC = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    // Redirigir a la página `ServiciosEspecialidad` después de cerrar el modal con el nombre dinámico
     navigate(`/miHospital/especialidad/${especialidadId}/servicios`, {
-      state: { especialidadNombre }, // Usar el nombre dinámico pasado desde `ServiciosEspecialidad`
+      state: { especialidadNombre },
     });
   };
 
   const handleCancelar = () => {
-    setSelectedServicios([]); // Limpiar las selecciones de checkboxes
+    setSelectedServicios([]);
     navigate(`/miHospital/especialidad/${especialidadId}/servicios`, {
-      state: { especialidadNombre }, // Usar el nombre dinámico en caso de cancelar
+      state: { especialidadNombre },
     });
   };
 
   const handleGuardar = async () => {
     try {
       const serviciosData = selectedServicios.map((servicioId) => ({
-        establecimiento_salud_id: establecimientoId,
+        establecimiento_salud_id: establecimientoID, // Usa el establecimientoID del contexto
         servicio_id: servicioId,
       }));
 
       await axios.post('http://localhost:3000/estab-servicio/multiple', serviciosData);
-
-      // Mostrar el modal de éxito
       setIsModalOpen(true);
     } catch (err) {
       setError('Error al guardar los servicios.');
     }
   };
-
 
   if (loading) {
     return <div className="text-center mt-8">Cargando servicios...</div>;
@@ -121,7 +121,6 @@ const AgregarServicios: React.FC = () => {
         </button>
       </div>
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

@@ -1,4 +1,4 @@
-
+/* eslint-disable prettier/prettier */
 // src/servicio/servicio.controller.ts
 import {
   Controller,
@@ -11,8 +11,6 @@ import {
 } from '@nestjs/common';
 import { ServicioService } from './servicio.service';
 import { Servicio } from './servicio.entity';
-
-
 @Controller('servicio')
 export class ServicioController {
   constructor(private readonly servicioService: ServicioService) {}
@@ -20,10 +18,8 @@ export class ServicioController {
   // Crear un nuevo servicio
   @Post()
   async createServicio(
-    @Body() servicioData: Partial<Servicio>,
+    @Body() servicioData: Partial<Servicio> & { usuario_ID: number },
   ): Promise<Servicio> {
-    // Asignamos temporalmente el ID de usuario de creación
-    servicioData.usuario_creacion = 1;
     return this.servicioService.create(servicioData);
   }
 
@@ -43,17 +39,16 @@ export class ServicioController {
   @Patch(':id')
   async updateServicio(
     @Param('id') id: number,
-    @Body() servicioData: Partial<Servicio>,
+    @Body() servicioData: Partial<Servicio> & { usuario_ID: number }, // Recibe usuario_ID
   ): Promise<Servicio> {
-    // Asignamos temporalmente el ID de usuario de modificación
-    servicioData.usuario_modificacion = 1;
+    // Pasa el usuario_ID como un parámetro adicional
     return this.servicioService.updateServicio(id, servicioData);
   }
 
   // Eliminar un servicio
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.servicioService.deleteServicio(+id);
+  async remove(@Param('id') id: number, @Body('usuario_ID') usuario_ID: number) {
+    return this.servicioService.deleteServicio(id, usuario_ID);
   }
 
   // Nuevo endpoint para obtener servicios por especialidad
@@ -64,4 +59,3 @@ export class ServicioController {
     return this.servicioService.findByEspecialidad(especialidadId);
   }
 }
-

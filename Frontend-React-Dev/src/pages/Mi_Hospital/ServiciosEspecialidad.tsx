@@ -4,6 +4,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { FaTrash } from 'react-icons/fa'; // Iconos para editar y eliminar
 import ConfirmationModal from '../../Components/ConfirmationModal'; // Asegúrate de importar correctamente el modal
+import { useAuth } from '../../Context/AuthContext'; // Importa el contexto de autenticación
 
 interface Servicio {
   id: number;
@@ -24,13 +25,20 @@ const ServiciosEspecialidad: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<number | null>(null);
 
-  const establecimientoId = 1;
+  // Obtén el establecimientoID del contexto de autenticación
+  const { establecimientoID } = useAuth();
 
   useEffect(() => {
     const fetchServicios = async () => {
+      if (!establecimientoID) {
+        setError('Establecimiento no encontrado');
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get<Servicio[]>(
-          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoId}/especialidad/${especialidadId}/servicios`
+          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/servicios`
         );
         setServicios(response.data);
       } catch (err) {
@@ -41,7 +49,7 @@ const ServiciosEspecialidad: React.FC = () => {
     };
 
     fetchServicios();
-  }, [especialidadId, establecimientoId]);
+  }, [especialidadId, establecimientoID]);
 
   const handleAgregarServicios = () => {
     navigate(`/miHospital/especialidad/${especialidadId}/agregar-servicios`, { state: { especialidadNombre } });
@@ -72,7 +80,7 @@ const ServiciosEspecialidad: React.FC = () => {
       }
     }
   };
-  
+
   const handleVerDisponibilidad = () => {
     navigate(`/miHospital/especialidad/${especialidadId}/ver-disponibilidad`, { state: { especialidadNombre } });
   };
@@ -117,7 +125,7 @@ const ServiciosEspecialidad: React.FC = () => {
                 <td className="py-2 px-4 border-b">{servicio.servicio.nombre}</td>
                 <td className="py-2 px-4 border-b text-center">
                   <button onClick={() => openDeleteModal(servicio.id)} className="text-red-500 hover:text-red-700">
-                  <FaTrash className="w-5 h-5" />
+                    <FaTrash className="w-5 h-5" />
                   </button>
                 </td>
               </tr>

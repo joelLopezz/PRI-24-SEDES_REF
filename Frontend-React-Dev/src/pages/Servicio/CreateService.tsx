@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 import { validateCodigo, validateNombreServicio } from '../../Components/validations/Validations';
+import { useAuth } from '../../Context/AuthContext';
 
 
 // Definir la interfaz para las especialidades
@@ -12,6 +13,7 @@ interface Especialidad {
 }
 
 const CreateService: React.FC = () => {
+  const { usuarioID } = useAuth();
   const navigate = useNavigate();
 
   // Estado para los datos del formulario
@@ -86,6 +88,7 @@ const CreateService: React.FC = () => {
         ...formData,
         nombre: formData.nombre.toUpperCase(), // Convertir a mayúsculas antes de enviar
         estado: 1,
+        usuario_ID: usuarioID,  // Utiliza el usuarioID del contexto
       };
   
       await axios.post('http://localhost:3000/servicio', formDataUpperCase);

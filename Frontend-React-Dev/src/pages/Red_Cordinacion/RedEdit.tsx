@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 import { validateNombre, validateNumeracion, toRoman } from '../../Components/validations/Validations';
+import { useAuth } from '../../Context/AuthContext';
 
 const romanToNumber = (roman: string): number => {
   const romanNumerals: { [key: string]: number } = {
@@ -35,6 +36,7 @@ interface RedCordinacionData {
 }
 
 const RedEdit: React.FC = () => {
+  const { usuarioID } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -94,7 +96,7 @@ const RedEdit: React.FC = () => {
       const formDataWithRomanNumeration = {
         ...formData,
         numeracion: toRoman(parseInt(formData.numeracion, 10)), // Convertimos el número a romano
-        usuario_modificacion: 1,
+        usuario_modificacion: usuarioID, 
       };
 
       await axios.patch(`http://localhost:3000/red-cordinacion/${id}`, formDataWithRomanNumeration);
