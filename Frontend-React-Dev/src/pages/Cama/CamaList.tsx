@@ -251,11 +251,11 @@ const EspecialidadesList = () => {
         </div>
       )}
       {/* Botón para navegar a otra página */}
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+      {/* <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <button onClick={handleNavigation} className="btn btn-primary">
           Ir a Otra Página
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

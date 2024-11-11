@@ -20,12 +20,33 @@ const PersonalSaludList: React.FC = () => {
   const navigate = useNavigate();
 
   // Obtener los registros de PersonalSalud del backend
+  // const fetchPersonalesSalud = () => {
+  //   fetch('http://localhost:3000/personal-salud')
+  //     .then(response => response.json())
+  //     .then(data => setPersonalesSalud(data))
+  //     .catch(() => setErrorMessage('Error al obtener la lista de personal de salud'));
+  // };
+
+
   const fetchPersonalesSalud = () => {
     fetch('http://localhost:3000/personal-salud')
-      .then(response => response.json())
-      .then(data => setPersonalesSalud(data))
-      .catch(() => setErrorMessage('Error al obtener la lista de personal de salud'));
+      .then(response => {
+        //console.log('Respuesta del servidor:', response); // Verifica la respuesta
+        if (!response.ok) {
+          throw new Error('Error al obtener los datos');
+        }
+        return response.json();
+      })
+      .then(data => {
+        //console.log('Datos obtenidos:', data); // Verifica los datos obtenidos
+        setPersonalesSalud(data.data); // Accede a la propiedad 'data' que contiene el arreglo
+      })
+      .catch((error) => {
+        //console.error('Error en fetchPersonalesSalud:', error);
+        setErrorMessage('Error al obtener la lista de personal de salud');
+      });
   };
+  
 
   useEffect(() => {
     fetchPersonalesSalud();

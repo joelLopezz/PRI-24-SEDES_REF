@@ -24,13 +24,14 @@ const PersonalSaludEdit: React.FC<PersonalSaludFormProps> = ({ isEditing }) => {
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
-    if (isEditing && id) {
-      fetch(`http://localhost:3000/personal-salud/${id}`)
-        .then(response => response.json())
-        .then(data => setFormData(data))
-        .catch(() => setErrorMessage('No se pudo cargar los datos del personal de salud'));
-    }
-  }, [isEditing, id]);
+    console.log("ID:", id, "isEditing:", isEditing); // Verifica valores
+  if (isEditing && id) {
+    fetch(`http://localhost:3000/personal-salud/${id}`)
+      .then(response => response.json())
+      .then(data => setFormData(data))
+      .catch(() => setErrorMessage('No se pudo cargar los datos del personal de salud'));
+  }
+}, [isEditing, id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

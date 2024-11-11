@@ -27,7 +27,12 @@ import HospitalesList from './pages/Hospitales/HospitalesList';
 import HospitalInfo from './pages/Hospitales/HospitalInfo';
 import ServiciosEspInfo from './pages/Hospitales/ServiciosEspInfo';
 import Credits from './pages/HomePage/Credits';
-import CamaList from './pages/Cama/CamaList'; // Importación de Cama
+import CamaList from './pages/Cama/CamaList'; // Importación de 
+
+import PersonalSaludList from    './pages/personal_salud/PersonalSaludList';
+import PersonalSaludEdit from    './pages/personal_salud/PersonalSaludEdit';
+import PersonalSaludCreate from  './pages/personal_salud/PersonalSaludCreate';
+import EspecialidadesReport from './reporte/especialidadReport';
 
 function App() {
   return (
@@ -81,6 +86,15 @@ function App() {
 
           {/* Rutas de camas */}
           <Route path="/cama" element={<CamaList />} />
+
+
+          {/* Ruta de Personal Salud */}
+          <Route path="/personal-salud" element={<PersonalSaludList />} />
+          <Route path="/personal-salud/:id" element={<PersonalSaludEdit isEditing=  {true} />} />
+          <Route path="/personal-salud/crear" element={<PersonalSaludCreate isEditing = {false} />} />
+
+          {/* Ruta de reporte  */}
+          <Route path="/reporte-especialidades" element={<EspecialidadesReport />} />
         </Routes>
       </Layout>
     </Router>
