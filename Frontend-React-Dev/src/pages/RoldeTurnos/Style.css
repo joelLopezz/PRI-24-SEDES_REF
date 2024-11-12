@@ -353,3 +353,7 @@ font-size: 14px;
 .box_sigla_agregar{
     align-items: center;
 }
+
+.fin_de_semana {
+    background-color: #a5b2e9; /* Color distinto para fines de semana */
+  }

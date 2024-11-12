@@ -998,145 +998,180 @@ const ShiftTable: React.FC = () => {
             </th>
           </tr>
           <tr>
-            <th>N°</th>
-            <th>NOMBRE COMPLETO</th>
-            <th>ÁREA</th>
-            {Array.from({ length: numeroDeDias }, (_, i) => (
-              <th key={i + 1}>{i + 1}</th>
-            ))}
-            <th>Total Horas</th>
+            <th rowSpan={2}>N°</th>
+            <th rowSpan={2}>NOMBRE COMPLETO</th>
+            <th rowSpan={2}>ÁREA</th>
+            {Array.from({ length: numeroDeDias }, (_, i) => {
+              const fecha = new Date(2024, mesSeleccionado - 1, i + 1);
+              const nombreDia = fecha.toLocaleString('es-ES', { weekday: 'short' });
+              const esFinDeSemana = fecha.getDay() === 0 || fecha.getDay() === 6; // 0 es domingo, 6 es sábado
+
+              return (
+                <th
+                  key={`dia-${i + 1}`}
+                  className={esFinDeSemana ? 'fin_de_semana' : ''}
+                >
+                  {nombreDia}
+                </th>
+              );
+            })}
+            <th rowSpan={2}>Total Horas</th>
           </tr>
+          <tr>
+            {Array.from({ length: numeroDeDias }, (_, i) => {
+              const fecha = new Date(2024, mesSeleccionado - 1, i + 1);
+              const esFinDeSemana = fecha.getDay() === 0 || fecha.getDay() === 6;
+
+              return (
+                <th
+                  key={`fecha-${i + 1}`}
+                  className={esFinDeSemana ? 'fin_de_semana' : ''}
+                >
+                  {i + 1}
+                </th>
+              );
+            })}
+          </tr>       
         </thead>
         <tbody>
           {doctors
             .filter((doctor) => doctor.name !== "S/D") // Filtrar doctores sin datos
             .map((doctor) => {
-            // Procesar las áreas del doctor
-            const areasArray = doctor.area.split(',').map((areaString) => {
-              const [areaId, areaName] = areaString.split(':');
-              return { areaId: parseInt(areaId, 10), areaName };
-            });
+              // Procesar las áreas del doctor
+              const areasArray = doctor.area.split(',').map((areaString) => {
+                const [areaId, areaName] = areaString.split(':');
+                return { areaId: parseInt(areaId, 10), areaName };
+              });
 
-            // Concatenar los nombres de las áreas con " - "
-            const areaNames = areasArray.map((area) => area.areaName).join(' - ');
+              // Concatenar los nombres de las áreas con " - "
+              const areaNames = areasArray.map((area) => area.areaName).join(' - ');
 
-            return (
-              <tr key={doctor.doctor_id}>
-                <td>{doctor.doctor_id}</td>
-                <td>{doctor.name}</td>
-                {/* Mostrar los nombres de las áreas concatenados */}
-                <td onClick={() => handleOpenAreaModal(doctor.area || '', doctor.doctor_id)}>{areaNames || 'Agregar área'}</td>
-                {Array.from({ length: numeroDeDias }, (_, i) => {
-                  const dia = (i + 1).toString();
-                  const turno = doctor.shifts[dia]?.turno || '';
-                  const turnoId = doctor.shifts[dia]?.turno_id ?? null;
+              return (
+                <tr key={doctor.doctor_id}>
+                  <td>{doctor.doctor_id}</td>
+                  <td>{doctor.name}</td>
+                  {/* Mostrar los nombres de las áreas concatenados */}
+                  <td onClick={() => handleOpenAreaModal(doctor.area || '', doctor.doctor_id)}>
+                    {areaNames || 'Agregar área'}
+                  </td>
+                  {Array.from({ length: numeroDeDias }, (_, i) => {
+                    const dia = (i + 1).toString();
+                    const turno = doctor.shifts[dia]?.turno || '';
+                    const turnoId = doctor.shifts[dia]?.turno_id ?? null;
+                    
+                    // Calcular el día de la semana y asignar la clase correspondiente si es sábado o domingo
+                    const fecha = new Date(2024, mesSeleccionado - 1, parseInt(dia));
+                    const diaSemana = fecha.getDay(); // 0 para domingo, 6 para sábado
+                    const esFinDeSemana = diaSemana === 0 || diaSemana === 6;
+                    const claseFinDeSemana = esFinDeSemana ? 'fin_de_semana' : '';
 
-                  return (
-                    <td key={dia}>
-                      <select
-                        value={turno}
-                        disabled={!editando}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          const codificacionTurno = turnos.find((t) => t.Sigla === newValue)?.codificacion_turnos_id ?? null;
-                        
-                          setDoctors((prevDoctors) =>
-                            prevDoctors.map((d) =>
-                              d.doctor_id === doctor.doctor_id
-                                ? {
-                                    ...d,
-                                    shifts: {
-                                      ...d.shifts,
-                                      [dia]: {
-                                        turno: newValue,
-                                        turno_id: codificacionTurno,
+                    return (
+                      <td key={dia} className={claseFinDeSemana}>
+                        <select
+                          value={turno}
+                          disabled={!editando}
+                          onChange={(e) => {
+                            const newValue = e.target.value;
+                            const codificacionTurno = turnos.find((t) => t.Sigla === newValue)?.codificacion_turnos_id ?? null;
+
+                            setDoctors((prevDoctors) =>
+                              prevDoctors.map((d) =>
+                                d.doctor_id === doctor.doctor_id
+                                  ? {
+                                      ...d,
+                                      shifts: {
+                                        ...d.shifts,
+                                        [dia]: {
+                                          turno: newValue,
+                                          turno_id: codificacionTurno,
+                                        },
                                       },
-                                    },
-                                  }
-                                : d
-                            )
-                          );
-                        
-                          // Diferenciar entre insert y update
-                          if (turno === '' && newValue !== '') {
-                            // Caso Insert
-                            setTurnosParaEnviar((prev) => [
-                              ...prev.filter(
-                                (t) =>
-                                  t.fecha !==
-                                    `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-${dia.padStart(2, '0')}` ||
-                                  t.personal_salud_personal_ID !== doctor.doctor_id
-                              ),
-                              {
-                                fecha: `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-${dia.padStart(2, '0')}`,
-                                personal_salud_personal_ID: doctor.doctor_id,
-                                establecimiento_salud_idestablecimiento_ID: 1, // Dato estático por ahora
-                                especialidad_especialidad_ID: especialidadId, // Dato estático por ahora
-                                codificacion_codificacion_turno_ID: codificacionTurno,
-                                usuario_creacion: 1, // Dato estático por ahora
-                              },
-                            ]);
-                          } else if (turno !== '' && newValue !== '') {
-                            // Caso Update
-                            setTurnosParaActualizar((prev) => [
-                              ...prev.filter((t) => t.turno_ID !== turnoId),
-                              {
-                                turno_ID: turnoId,
-                                codificacion_codificacion_turno_ID: codificacionTurno,
-                              },
-                            ]);
-                          } else if (turno !== '' && newValue === '') {
-                            // Caso Update para dejar vacío
-                            setTurnosParaActualizar((prev) => [
-                              ...prev.filter((t) => t.turno_ID !== turnoId),
-                              {
-                                turno_ID: turnoId,
-                                codificacion_codificacion_turno_ID: null,
-                              },
-                            ]);
-                          } else {
-                            // Si el valor se deja vacío después de haber sido un valor nuevo (revertir)
-                            setTurnosParaEnviar((prev) =>
-                              prev.filter(
-                                (t) =>
-                                  t.fecha !== `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-${dia.padStart(2, '0')}` ||
-                                  t.personal_salud_personal_ID !== doctor.doctor_id
+                                    }
+                                  : d
                               )
                             );
-                          }
-                        
-                          // Actualizar el total de horas para el doctor actualizado
-                          setTotalHorasPorDoctor((prevTotalHoras) => ({
-                            ...prevTotalHoras,
-                            [doctor.doctor_id]: calcularTotalHorasDoctor({
-                              ...doctor,
-                              shifts: {
-                                ...doctor.shifts,
-                                [dia]: {
-                                  turno: newValue,
-                                  turno_id: codificacionTurno,
-                                },
-                              },
-                            }),
-                          }));
-                        }}
-                      >
-                        <option value=""></option>
-                        {turnos.map((t) => (
-                          <option key={t.codificacion_turnos_id} value={t.Sigla}>
-                            {t.Sigla}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  );
-                })}
 
-                <td>{totalHorasPorDoctor[doctor.doctor_id] || 0}h</td>
-              </tr>
-            );
-          })}
+                            // Diferenciar entre insert y update
+                            if (turno === '' && newValue !== '') {
+                              // Caso Insert
+                              setTurnosParaEnviar((prev) => [
+                                ...prev.filter(
+                                  (t) =>
+                                    t.fecha !==
+                                      `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-${dia.padStart(2, '0')}` ||
+                                    t.personal_salud_personal_ID !== doctor.doctor_id
+                                ),
+                                {
+                                  fecha: `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-${dia.padStart(2, '0')}`,
+                                  personal_salud_personal_ID: doctor.doctor_id,
+                                  establecimiento_salud_idestablecimiento_ID: 1, // Dato estático por ahora
+                                  especialidad_especialidad_ID: especialidadId, // Dato estático por ahora
+                                  codificacion_codificacion_turno_ID: codificacionTurno,
+                                  usuario_creacion: 1, // Dato estático por ahora
+                                },
+                              ]);
+                            } else if (turno !== '' && newValue !== '') {
+                              // Caso Update
+                              setTurnosParaActualizar((prev) => [
+                                ...prev.filter((t) => t.turno_ID !== turnoId),
+                                {
+                                  turno_ID: turnoId,
+                                  codificacion_codificacion_turno_ID: codificacionTurno,
+                                },
+                              ]);
+                            } else if (turno !== '' && newValue === '') {
+                              // Caso Update para dejar vacío
+                              setTurnosParaActualizar((prev) => [
+                                ...prev.filter((t) => t.turno_ID !== turnoId),
+                                {
+                                  turno_ID: turnoId,
+                                  codificacion_codificacion_turno_ID: null,
+                                },
+                              ]);
+                            } else {
+                              // Si el valor se deja vacío después de haber sido un valor nuevo (revertir)
+                              setTurnosParaEnviar((prev) =>
+                                prev.filter(
+                                  (t) =>
+                                    t.fecha !== `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-${dia.padStart(2, '0')}` ||
+                                    t.personal_salud_personal_ID !== doctor.doctor_id
+                                )
+                              );
+                            }
+
+                            // Actualizar el total de horas para el doctor actualizado
+                            setTotalHorasPorDoctor((prevTotalHoras) => ({
+                              ...prevTotalHoras,
+                              [doctor.doctor_id]: calcularTotalHorasDoctor({
+                                ...doctor,
+                                shifts: {
+                                  ...doctor.shifts,
+                                  [dia]: {
+                                    turno: newValue,
+                                    turno_id: codificacionTurno,
+                                  },
+                                },
+                              }),
+                            }));
+                          }}
+                        >
+                          <option value=""></option>
+                          {turnos.map((t) => (
+                            <option key={t.codificacion_turnos_id} value={t.Sigla}>
+                              {t.Sigla}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                    );
+                  })}
+
+                  <td>{totalHorasPorDoctor[doctor.doctor_id] || 0}h</td>
+                </tr>
+              );
+            })}
         </tbody>
+
       </table>
 
       {/* Botones Editar, Guardar, Cancelar */}
