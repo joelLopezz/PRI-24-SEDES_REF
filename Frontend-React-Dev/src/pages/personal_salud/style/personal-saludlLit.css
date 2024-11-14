@@ -1,18 +1,6 @@
 /* Archivo: personal_salud.css */
 
 /* Estilo general para el contenedor principal */
-.container {
-  margin-top: 2rem;
-  width: 90%;
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
-  font-family: Arial, sans-serif;
-}
 
 /* Estilo del título del formulario */
 .container h2 {

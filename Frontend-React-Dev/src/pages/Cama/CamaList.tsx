@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/pages/cama/EspecialidadesList.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import axios from 'axios';
 import '../Cama/style/camaList.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-
 interface EspecialidadData {
   historia_ID: number;
   nombre: string;
@@ -15,15 +14,12 @@ interface EspecialidadData {
   ocupadas: number;
   alta: number;
 }
-
 const EspecialidadesList = () => {
   const [especialidades, setEspecialidades] = useState<EspecialidadData[]>([]);
   const [selectedEspecialidad, setSelectedEspecialidad] = useState<EspecialidadData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState(''); // Estado para el mensaje de confirmación
-
   const navigate = useNavigate(); // Inicializa useNavigate
-
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
@@ -33,32 +29,26 @@ const EspecialidadesList = () => {
         console.error('Error al obtener las especialidades:', error);
       }
     };
-
     fetchEspecialidades();
   }, []);
-
   const handleNavigation = () => {
     navigate('/reporte-especialidades'); // Cambia '/otra-pagina' por la ruta de destino deseada
   };
-
   const handleEdit = (especialidad: EspecialidadData) => {
     setSelectedEspecialidad(especialidad);
     setConfirmationMessage(''); // Resetea el mensaje de confirmación al abrir el modal
     setIsModalOpen(true); // Abre el modal
   };
-
   const handleModalClose = () => {
     setIsModalOpen(false); // Cierra el modal
     setSelectedEspecialidad(null); // Limpia la selección al cerrar el modal
     setConfirmationMessage(''); // Resetea el mensaje de confirmación al cerrar el modal
   };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const parsedValue = value === '' ? '' : Number(value);
     setSelectedEspecialidad((prev) => prev ? { ...prev, [name]: parsedValue } : null);
   };
-
   const handleSaveChanges = async () => {
     if (selectedEspecialidad) {
       try {
@@ -68,25 +58,19 @@ const EspecialidadesList = () => {
           // alta: isNaN(Number(selectedEspecialidad.alta)) ? 0 : Number(selectedEspecialidad.ocupadas),
           disponible: selectedEspecialidad.disponibles,
           alta:  selectedEspecialidad.alta,
-
         };
-  
         // Log para verificar los datos antes de enviarlos al backend
         console.log("Datos que se enviarán al backend:", {
           historia_ID: selectedEspecialidad.historia_ID,
           ...dataToSend
         });
-  
         // Hacer la solicitud POST solo con los datos requeridos
         await axios.post(`http://localhost:3000/historia-cama/reinsertar/${selectedEspecialidad.historia_ID}`, dataToSend);
-  
         setConfirmationMessage('DATOS ACTUALIZADOS CORRECTAMENTE'); // Muestra el mensaje de confirmación
-
         // Cerrar el modal automáticamente después de 1 segundo
         setTimeout(() => {
           handleModalClose();
         }, 1400);
-  
         // Actualizar la lista local después de la edición
         setEspecialidades((prevEspecialidades) =>
           prevEspecialidades.map((especialidad) =>
@@ -102,7 +86,6 @@ const EspecialidadesList = () => {
     }
   };
   
-
   return (
     <div className="container">
       <h2 className="title">Especialidades por Hospital</h2>
@@ -142,7 +125,6 @@ const EspecialidadesList = () => {
           </tbody>
         </table>
       )}
-
       {/* Modal para editar especialidad */}
       {isModalOpen && selectedEspecialidad && (
         <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
@@ -152,7 +134,6 @@ const EspecialidadesList = () => {
               <span className="especialidad-nombre fw-bold text-center">{selectedEspecialidad.nombre}</span>
               <button type="button" className="btn-close" aria-label="Close" onClick={handleModalClose}></button>
             </div>
-
               <div className="modal-body">
                 <form>
                   <div className="row mb-3 align-items-center">
@@ -228,7 +209,6 @@ const EspecialidadesList = () => {
                       />
                     </div>
                   </div>
-
                   {/* Mensaje de confirmación */}
                   {confirmationMessage && (
                     <p className="text-success text-center fw-bold">{confirmationMessage}</p>
@@ -251,12 +231,6 @@ const EspecialidadesList = () => {
           </div>
         </div>
       )}
-      {/* Botón para navegar a otra página */}
-      {/* <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <button onClick={handleNavigation} className="btn btn-primary">
-          Ir a Otra Página
-        </button>
-      </div> */}
     </div>
   );
 };
