@@ -46,6 +46,7 @@ import { RolTurnosModule } from './rol_turnos/rol_turnos.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Hace que las variables de entorno estén disponibles globalmente
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
