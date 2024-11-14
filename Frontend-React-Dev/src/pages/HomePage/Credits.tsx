@@ -32,6 +32,8 @@ const Credits: React.FC = () => {
             <li>Elsa Trigo Maldonado</li>
             <li>Angela Sanchez Leaño</li>
             <li>Rover Serrano Quiroz</li>
+            <li>Jorge Varela Quiroz</li>
+            <li>Laura Paz Navia</li>
           </ul>
         </div>
       </div>

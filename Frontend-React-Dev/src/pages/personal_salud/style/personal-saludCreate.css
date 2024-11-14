@@ -1,7 +1,7 @@
 /* Archivo: personal_salud.css */
 
 /* Estilo general para el contenedor principal */
-.container {
+.container_personal_create {
   margin-top: 2rem;
   width: 90%;
   max-width: 800px;
@@ -15,7 +15,7 @@
 }
 
 /* Estilo del título del formulario */
-.container h2 {
+.container_personal_create h2 {
   text-align: center;
   color: #2f4fbb;
   font-weight: bold;

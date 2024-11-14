@@ -58,7 +58,7 @@ const EspecialidadesReport = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container_resporte">
       <h2 className="title">Reporte Hospitales</h2>
 
       {/* Combo Box para seleccionar establecimiento de forma dinámica */}

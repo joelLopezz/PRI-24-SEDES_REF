@@ -1,6 +1,6 @@
 
 /* CSS para CamaList, usando puro CSS sin Bootstrap */
-  .container {
+  .container_cama_list {
     width: 90%;
     margin: 0 auto;
     font-family: Arial, sans-serif;
