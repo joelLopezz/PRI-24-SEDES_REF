@@ -92,7 +92,7 @@ const PersonalSaludList: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container_personal_list">
       {/* Botón para registrar nuevo personal */}
       <div className="button-insertar">
         <button onClick={handleCreate}>
