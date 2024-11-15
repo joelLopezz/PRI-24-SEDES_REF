@@ -2,8 +2,9 @@
 
 /* Estilo general para el contenedor principal */
 
+
 /* Estilo del título del formulario */
-.container h2 {
+.container_personal_edit h2 {
   text-align: center;
   color: #1d3f72;
   font-weight: bold;

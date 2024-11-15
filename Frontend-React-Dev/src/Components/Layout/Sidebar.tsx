@@ -156,7 +156,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
 
           {/* Opción de reporte */}
-          {/* <li className="group">
+          <li className="group">
             <Link
               to="/reporte-especialidades"
               className="block px-4 py-2 text-gray-200 group-hover:bg-blue-700 group-hover:text-white rounded-md transform transition-transform duration-200 ease-in-out group-hover:translate-x-1"
@@ -166,7 +166,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 <span className="group-hover:font-bold">Reporte</span>
               </div>
             </Link>
-          </li> */}
+          </li> 
         </ul>
       </nav>
     </div>

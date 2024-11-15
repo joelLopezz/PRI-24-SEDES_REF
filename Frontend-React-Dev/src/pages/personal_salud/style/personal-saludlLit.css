@@ -2,8 +2,9 @@
 
 /* Estilo general para el contenedor principal */
 
+
 /* Estilo del título del formulario */
-.container h2 {
+.container_personal_list h2 {
   text-align: center;
   color: #2f4fbb;
   font-weight: bold;

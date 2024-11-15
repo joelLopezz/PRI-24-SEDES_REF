@@ -87,7 +87,7 @@ const EspecialidadesList = () => {
   };
   
   return (
-    <div className="container">
+    <div className="container_cama_list">
       <h2 className="title">Especialidades por Hospital</h2>
       {especialidades.length === 0 ? (
         <p>Cargando datos de especialidades o no hay especialidades disponibles.</p>

@@ -66,7 +66,7 @@ const PersonalSaludEdit: React.FC<PersonalSaludFormProps> = ({ isEditing }) => {
   };
 
   return (
-  <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
+  <div className="container_personal_edit" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
   <h2 className="text-center" style={{ marginBottom: '20px', fontWeight: 'bold', color: '#333' }}>{isEditing ? 'Editar Personal de Salud' : 'Registrar Personal de Salud'}</h2>
   {errorMessage && <div className="alert alert-danger" style={{ marginBottom: '15px', color: '#721c24', backgroundColor: '#f8d7da', padding: '10px', borderRadius: '4px', border: '1px solid #f5c6cb' }}>{errorMessage}</div>}
   {successMessage && <div className="alert alert-success" style={{ marginBottom: '15px', color: '#155724', backgroundColor: '#d4edda', padding: '10px', borderRadius: '4px', border: '1px solid #c3e6cb' }}>{successMessage}</div>}

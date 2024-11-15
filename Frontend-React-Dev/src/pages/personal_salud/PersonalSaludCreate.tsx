@@ -20,6 +20,7 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
     especialidad: '',
     genero: '',
     establecimiento_salud_idestablecimiento_ID: '',
+    rol:'',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -56,6 +57,8 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
       especialidad: '',
       genero: '',
       establecimiento_salud_idestablecimiento_ID: '',
+      rol:'',
+
     });
     setErrorMessage('');
     setSuccessMessage('');
@@ -89,7 +92,7 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
   };
 
   return (
-    <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9', padding: '20px' }}>
+    <div className="container_personal_create" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9', padding: '20px' }}>
   <div style={{ width: '100%', maxWidth: '800px', backgroundColor: '#ffffff', padding: '30px', borderRadius: '12px', boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)' }}>
     <h2 className="text-center" style={{ marginBottom: '20px', fontWeight: 'bold', color: '#333', fontSize: '1.75rem' }}>{isEditing ? 'Editar Personal de Salud' : 'Registrar Personal de Salud'}</h2>
     {errorMessage && <div className="alert alert-danger" style={{ marginBottom: '15px', color: '#721c24', backgroundColor: '#f8d7da', padding: '15px', borderRadius: '8px', border: '1px solid #f5c6cb', fontWeight: 'bold', textAlign: 'center' }}>{errorMessage}</div>}
@@ -248,6 +251,23 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
                 required
               />
               <label htmlFor="generoF" style={{ color: '#555', fontWeight: 'bold' }}>Femenino</label>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="rol" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Rol:</label>
+              <select
+                id="rol"
+                name="rol"
+                value={formData.rol}
+                onChange={handleInputChange}
+                className="form-control"
+                style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+              >
+                <option value="">Seleccione una rol</option>
+                <option value="oftalmologia">Admin Sedes</option>
+                <option value="cardiologia">Doctor</option>
+                <option value="pediatria">Admin Hospital</option>
+              </select>
             </div>
           </div>
         </div>

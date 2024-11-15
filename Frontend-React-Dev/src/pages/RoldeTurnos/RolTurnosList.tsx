@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Style.css';
+import styles from './Style.module.css';
 
 
 
@@ -13,18 +13,18 @@ const ShiftTable: React.FC = () => {
 
   const [turnos, setTurnos] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<{ doctor_id: number; name: string; area: string; shifts: { [key: string]: { turno: string; turno_id: number } } }[]>([]);
-  const [doctorsOriginal, setDoctorsOriginal] = useState<typeof doctors>([]); // Estado para almacenar los datos originales
-  const [editando, setEditando] = useState<boolean>(false); // Estado para controlar si estamos en modo edición
+  const [doctorsOriginal, setDoctorsOriginal] = useState<typeof doctors>([]);
+  const [editando, setEditando] = useState<boolean>(false);
   const [showAreaModal, setShowAreaModal] = useState(false);
   const [showSiglaModal, setShowSiglaModal] = useState(false);
   const [areaInputs, setAreaInputs] = useState<{ areaId: number; areaName: string; areaPersonalSaludId?: number }[]>([]);
-  const [newAreas, setNewAreas] = useState<{ areaId: number; areaName: string }[]>([]); // Arreglo separado para las nuevas áreas agregadas
+  const [newAreas, setNewAreas] = useState<{ areaId: number; areaName: string }[]>([]);
   const [areaEditMode, setAreaEditMode] = useState<boolean>(false);
   const [siglaEditMode, setSiglaEditMode] = useState<boolean>(false);
   const [newAreaValue, setNewAreaValue] = useState<string>('');
-  const [fixedAreas, setFixedAreas] = useState<string[]>([]); // Arreglo para almacenar las áreas fijas seleccionadas
-  const [areasToDelete, setAreasToDelete] = useState<number[]>([]); // Arreglo para almacenar los IDs de las áreas a eliminar
-  const [newTurno, setNewTurno] = useState<{ Turno: string; Sigla: string; Hora_Inicio: string; Hora_Fin: string }>({ Turno: '', Sigla: '', Hora_Inicio: '', Hora_Fin: '' }); // Estado para el nuevo turno
+  const [fixedAreas, setFixedAreas] = useState<string[]>([]);
+  const [areasToDelete, setAreasToDelete] = useState<number[]>([]);
+  const [newTurno, setNewTurno] = useState<{ Turno: string; Sigla: string; Hora_Inicio: string; Hora_Fin: string }>({ Turno: '', Sigla: '', Hora_Inicio: '', Hora_Fin: '' });
 
   const handleOpenModal = () => setShowSiglaModal(true);
   const handleCloseModal = () => setShowSiglaModal(false);
@@ -620,63 +620,61 @@ const ShiftTable: React.FC = () => {
   return (
     <div>
       {showSiglaModal && (
-        <div className="modal_container show">
-        <div className="modal_own modal_sigla">
+        <div className={`${styles.modal_container} ${styles.show}`}>
+        <div className={`${styles.modal_own} ${styles.modal_sigla}`}>
           {siglaEditMode && (
-            <div className="button_agregar box_sigla_agregar">
-            <div className="input_group_time">
-              <label htmlFor="turno" className="input_label">Turno</label>
+            <div className={`${styles.button_agregar} ${styles.box_sigla_agregar}`}>
+            <div className={styles.input_group_time}>
+              <label htmlFor="turno" className={styles.input_label}>Turno</label>
               <input
                 type="text"
                 id="turno"
                 placeholder="Turno"
                 value={newTurno.Turno}
                 onChange={(e) => handleNewTurnoInputChange('Turno', e.target.value)}
-                className="input_area agregar_imput input_area_boton"
+                className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton}`}
               />
             </div>
 
-            <div className="input_group_time">
-              <label htmlFor="sigla" className="input_label">Sigla</label>
+            <div className={styles.input_group_time}>
+              <label htmlFor="sigla" className={styles.input_label}>Sigla</label>
               <input
                 type="text"
                 id="sigla"
                 placeholder="Sigla"
                 value={newTurno.Sigla}
                 onChange={(e) => handleNewTurnoInputChange('Sigla', e.target.value)}
-                className="input_area agregar_imput input_area_boton input_sigla"
+                className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton} ${styles.input_sigla}`}
               />
             </div>
-
-            <div className="input_group_time">
-              <label htmlFor="horaInicio" className="input_label">Hora Inicio</label>
+            <div className={styles.input_group_time}>
+              <label htmlFor="horaInicio" className={styles.input_label}>Hora Inicio</label>
               <input
                 type="time"
                 id="horaInicio"
                 placeholder="Hora Inicio (HH:MM)"
                 value={newTurno.Hora_Inicio}
                 onChange={(e) => handleNewTurnoInputChange('Hora_Inicio', e.target.value)}
-                className="input_area agregar_imput input_area_boton input_sigla_hora"
+                className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton} ${styles.input_sigla_hora}`}
               />
             </div>
-
-            <div className="input_group_time">
-              <label htmlFor="horaFin" className="input_label">Hora Fin</label>
+            <div className={styles.input_group_time}>
+              <label htmlFor="horaFin" className={styles.input_label}>Hora Fin</label>
               <input
                 type="time"
                 id="horaFin"
                 placeholder="Hora Fin (HH:MM)"
                 value={newTurno.Hora_Fin}
                 onChange={(e) => handleNewTurnoInputChange('Hora_Fin', e.target.value)}
-                className="input_area agregar_imput input_area_boton input_sigla_hora"
+                className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton} ${styles.input_sigla_hora}`}
               />
             </div>
-            <button className="input_area_boton buton_sigla_agregar" onClick={handleAddTurno}>Agregar</button>
+            <button className={`${styles.input_area_boton} ${styles.buton_sigla_agregar}`} onClick={() => {}}>Agregar</button>
           </div>
           )}
           <table>
             <thead>
-              <tr className="header-control tabla_popup">
+              <tr className= {`${styles.header_control} ${styles.tabla_popup}`}>
                 <th>Turnos</th>
                 <th>Sigla</th>
                 <th colSpan={2}>Horario</th>
@@ -715,7 +713,7 @@ const ShiftTable: React.FC = () => {
                             },
                           ])
                         }
-                        className="input_area"
+                        className={styles.input_area}
                       />
                     ) : (
                       turno.Turno
@@ -750,7 +748,7 @@ const ShiftTable: React.FC = () => {
                             },
                           ])
                         }
-                        className="input_area"
+                        className={styles.input_area}
                       />
                     ) : (
                       turno.Sigla
@@ -785,7 +783,7 @@ const ShiftTable: React.FC = () => {
                             },
                           ])
                         }
-                        className="input_area"
+                        className={styles.input_area}
                       />
                     ) : (
                       turno.Hora_Inicio.substring(0, 5)
@@ -820,7 +818,7 @@ const ShiftTable: React.FC = () => {
                             },
                           ])
                         }
-                        className="input_area"
+                        className={styles.input_area}
                       />
                     ) : (
                       turno.Hora_Fin.substring(0, 5)
@@ -831,22 +829,22 @@ const ShiftTable: React.FC = () => {
               ))}
             </tbody>
           </table>
-          <div className="buttons_container">
+          <div className={styles.input_area}>
             {!siglaEditMode ? (
               <>
-              <button className="Btn_rol btn_editar" onClick={handleEditarsigla}>
+              <button className={`${styles.Btn_rol} ${styles.btn_editar}`} onClick={handleEditarsigla}>
                 Editar
               </button>
-              <button className="Btn_rol btn_cancelar" onClick={handleCloseModal}>
+              <button className={`${styles.Btn_rol} ${styles.btn_cancelar}`} onClick={handleCloseModal}>
                 Salir
               </button>
               </>
             ) : (
               <>
-                <button className="Btn_rol btn_guardar" onClick={handleGuardarTurnos}>
+                <button className={`${styles.Btn_rol} ${styles.btn_guardar}`} onClick={handleGuardarTurnos}>
                   Guardar
                 </button>
-                <button className="Btn_rol btn_cancelar" onClick={handleSiglaCancel}>
+                <button className={`${styles.Btn_rol} ${styles.btn_cancelar}`} onClick={handleSiglaCancel}>
                   Cancelar
                 </button>
               </>
@@ -857,26 +855,26 @@ const ShiftTable: React.FC = () => {
       )}
 
       {showAreaModal && (
-        <div className="modal_container show">
-          <div className="modal_own">
-            <div className="input_container">
+        <div className={`${styles.modal_container} ${styles.show}`}>
+          <div className={styles.modal_own}>
+            <div className={styles.input_container}>
               {areaEditMode && (
-                <div className="button_agregar">
+                <div className={styles.button_agregar}>
                   <input
                     type="text"
                     value={newAreaValue}
                     onChange={handleNewAreaInputChange}
-                    className="input_area agregar_imput input_area_boton"
+                    className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton}`}
                   />
-                  <button className="input_area_boton" onClick={handleAddArea}>Agregar</button>
+                  <button className={styles.input_area_boton} onClick={handleAddArea}>Agregar</button>
                 </div>
               )}
               {areaEditMode && (
-                <div className="inputs_fijos">
+                <div className={styles.inputs_fijos}>
                   {["Emergencia", "Consulta Externa", "Internado"].map((fixedArea) => (
-                    <div key={fixedArea} className="input_editable_button input_fijo_check">
+                    <div key={fixedArea} className={`${styles.input_editable_button} ${styles.input_fijo_check}`}>
                       <button
-                        className="input_checkbox"
+                        className={styles.input_checkbox}
                         onClick={() => toggleFixedArea(fixedArea)}
                       >
                         <i className={
@@ -889,17 +887,17 @@ const ShiftTable: React.FC = () => {
                         type="text"
                         value={fixedArea}
                         disabled
-                        className="input_area input_area_check"
+                        className={`${styles.input_area} ${styles.input_area_check}`}
                       />
                     </div>
                   ))}
                 </div>
               )}
-              <div className="inputs_multiples">
+              <div className={styles.inputs_multiples}>
                 {areaInputs.map((area, index) => (
-                  <div key={area.areaId} className="input_editable_button">
+                  <div key={area.areaId} className={styles.input_editable_button}>
                     {areaEditMode && (
-                      <button className="input_button_eliminar" onClick={() => handleDeleteArea(area.areaId, area.areaPersonalSaludId)}>
+                      <button className={styles.input_button_eliminar} onClick={() => handleDeleteArea(area.areaId, area.areaPersonalSaludId)}>
                         <i className='bx bx-trash'></i>
                       </button>
                     )}
@@ -908,14 +906,14 @@ const ShiftTable: React.FC = () => {
                       value={area.areaName}
                       onChange={(e) => handleAreaInputChange(index, e)}
                       disabled={!areaEditMode}
-                      className="input_area"
+                      className={styles.input_area}
                     />
                   </div>
                 ))}
                 {newAreas.map((area, index) => (
-                  <div key={area.areaId} className="input_editable_button">
+                  <div key={area.areaId} className={styles.input_editable_button}>
                     {areaEditMode && (
-                      <button className="input_button_eliminar" onClick={() => setNewAreas(newAreas.filter((_, i) => i !== index))}>
+                      <button className={styles.input_button_eliminar} onClick={() => setNewAreas(newAreas.filter((_, i) => i !== index))}>
                         <i className='bx bx-trash'></i>
                       </button>
                     )}
@@ -924,23 +922,23 @@ const ShiftTable: React.FC = () => {
                       value={area.areaName}
                       onChange={(e) => handleAreaInputChange(index, e)}
                       disabled={!areaEditMode}
-                      className="input_area"
+                      className={styles.input_area}
                     />
                   </div>
                 ))}
               </div>
             </div>           
-            <div className="buttons_container">
+            <div className={styles.buttons_container}>
               {!areaEditMode && (
                 <>
-                  <button className="Btn_rol btn_editar" onClick={handleAreaEdit}>Editar</button>
-                  <button className="Btn_rol btn_cancelar" onClick={handleAreaSalir}>Salir</button>
+                  <button className={`${styles.Btn_rol} ${styles.btn_editar}`} onClick={handleAreaEdit}>Editar</button>
+                  <button className={`${styles.Btn_rol} ${styles.btn_cancelar}`} onClick={handleAreaSalir}>Salir</button>
                 </>                
               )}
               {areaEditMode && (
                 <>
-                  <button className="Btn_rol btn_guardar" onClick={handleAreaSave}>Guardar</button>
-                  <button className="Btn_rol btn_cancelar" onClick={handleAreaCancel}>Cancelar</button>
+                  <button className={`${styles.Btn_rol} ${styles.btn_guardar}`} onClick={handleAreaSave}>Guardar</button>
+                  <button className={`${styles.Btn_rol} ${styles.btn_cancelar}`} onClick={handleAreaCancel}>Cancelar</button>
                 </>
               )}
             </div>
@@ -948,9 +946,9 @@ const ShiftTable: React.FC = () => {
         </div>
       )}
 
-      <div className="contenedor">
+      <div className={styles.contenedor}>
         <h1>Control de Horarios - Agosto 2024</h1>
-        <div onClick={handleOpenModal} className="preguntas">
+        <div onClick={handleOpenModal} className={styles.preguntas}>
           <label>Significado siglas</label>
           <i className="fa-solid fa-circle-info help"></i>
         </div>
@@ -958,11 +956,11 @@ const ShiftTable: React.FC = () => {
 
       <table>
         <thead>
-          <tr className="header-control">
+          <tr className={styles.header_control}>
             <th colSpan={3}>Control años</th>
             <th colSpan={4}>2024</th>
             <th colSpan={4}>Control meses</th>
-            <th colSpan={4} className="highlight">
+            <th colSpan={4} className={styles.highlight}>
               <select value={mesSeleccionado} onChange={handleMesChange}>
                 <option value="">Seleccionar Mes</option>
                 <option value="1">Enero</option>
@@ -979,7 +977,7 @@ const ShiftTable: React.FC = () => {
                 <option value="12">Diciembre</option>
               </select>
             </th>
-            <th colSpan={6} className="highlight">
+            <th colSpan={6} className={styles.highlight}>
               <select
                 value={especialidadSeleccionada}
                 onChange={(e) => {
@@ -1009,7 +1007,7 @@ const ShiftTable: React.FC = () => {
               return (
                 <th
                   key={`dia-${i + 1}`}
-                  className={esFinDeSemana ? 'fin_de_semana' : ''}
+                  className={esFinDeSemana ? styles.fin_de_semana : ''}
                 >
                   {nombreDia}
                 </th>
@@ -1025,7 +1023,7 @@ const ShiftTable: React.FC = () => {
               return (
                 <th
                   key={`fecha-${i + 1}`}
-                  className={esFinDeSemana ? 'fin_de_semana' : ''}
+                  className={esFinDeSemana ? styles.fin_de_semana : ''}
                 >
                   {i + 1}
                 </th>
@@ -1063,7 +1061,7 @@ const ShiftTable: React.FC = () => {
                     const fecha = new Date(2024, mesSeleccionado - 1, parseInt(dia));
                     const diaSemana = fecha.getDay(); // 0 para domingo, 6 para sábado
                     const esFinDeSemana = diaSemana === 0 || diaSemana === 6;
-                    const claseFinDeSemana = esFinDeSemana ? 'fin_de_semana' : '';
+                    const claseFinDeSemana = esFinDeSemana ? styles.fin_de_semana : '';
 
                     return (
                       <td key={dia} className={claseFinDeSemana}>
@@ -1175,18 +1173,18 @@ const ShiftTable: React.FC = () => {
       </table>
 
       {/* Botones Editar, Guardar, Cancelar */}
-      <div className="button_group">
+      <div className={styles.button_group}>
         {!editando && (
-          <button className="Btn_rol btn_editar" onClick={handleEditar}>
+          <button className={`${styles.Btn_rol} ${styles.btn_editar}`} onClick={handleEditar}>
             Editar
           </button>
         )}
         {editando && (
           <>
-            <button className="Btn_rol btn_guardar" onClick={handleGuardarTurnosDoctor}>
+            <button className={`${styles.Btn_rol} ${styles.btn_guardar}`} onClick={handleGuardarTurnosDoctor}>
               Guardar
             </button>
-            <button className="Btn_rol btn_cancelar" onClick={handleCancelar}>
+            <button className={`${styles.Btn_rol} ${styles.btn_cancelar}`} onClick={handleCancelar}>
               Cancelar
             </button>
           </>
