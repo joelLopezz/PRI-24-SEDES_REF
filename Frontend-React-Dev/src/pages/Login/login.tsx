@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 
 const Login: React.FC = () => {
-  const { setRole, setUsuarioID, setEstablecimientoID } = useAuth();
+  const { setRole, setUsuarioID, setEstablecimientoID, setIsAuthenticated } = useAuth();
   const [focusInput, setFocusInput] = useState({ username: false, password: false });
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [errorMessage, setErrorMessage] = useState('');
@@ -67,6 +67,7 @@ const Login: React.FC = () => {
         setRole(data.data.rol);
         setUsuarioID(data.data.usuario_ID);
         setEstablecimientoID(data.data.establecimiento_id);
+        setIsAuthenticated(true); // <--- Añade esta línea
 
         setSuccessMessage('Inicio de sesión exitoso');
         setTimeout(() => {

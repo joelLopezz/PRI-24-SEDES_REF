@@ -3,11 +3,9 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn } from 'react-icons/fa'; // Iconos
 import { Link } from 'react-router-dom'; // Importa el componente Link para la navegación
 import logo from '../../assets/Images/logotipo UMA/PNG/logo  UMA 2023 (BN negativo).png'; // Asegúrate de ajustar la ruta de la imagen correctamente
 
-
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white py-3">
-
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo en el lado izquierdo */}
         <div className="flex items-center space-x-2">
@@ -34,6 +32,7 @@ const Footer: React.FC = () => {
             </li>
           </ul>
         </div>
+
         {/* Texto de copyright y enlace a créditos en el lado derecho */}
         <div className="text-center">
           <p className="text-gray-400 text-sm tracking-wider hover:text-gray-200 transition-colors duration-300">
