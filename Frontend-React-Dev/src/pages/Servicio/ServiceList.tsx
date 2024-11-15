@@ -135,6 +135,7 @@ const ServiceList: React.FC = () => {
               {hasPermission(['Admin Sedes', 'Admin Hospital']) && <th>Acciones</th>}
             </tr>
           </thead>
+          
           <tbody>
             {servicios.map((servicio, index) => (
               <tr
@@ -146,22 +147,28 @@ const ServiceList: React.FC = () => {
                 <td className="py-4 px-6 hidden">{servicio.servicio_ID}</td>
                 <td className="py-4 px-6">{servicio.codigo}</td> {/* Código */}
                 <td className="py-4 px-6">{servicio.nombre}</td> {/* Nombre */}
-                <td className="py-4 px-6">{servicio.especialidad?.nombre || 'Especialidad no disponible'}</td> {/* Nombre de la especialidad */}
-                {hasPermission(['Admin Sedes', 'Admin Hospital']) && (
-                <td className="py-4 px-6 flex space-x-4">
-                  <button
-                    onClick={() => handleEdit(servicio.servicio_ID)}
-                    className="text-blue-500 hover:text-blue-700 transition-transform transform hover:scale-110"
-                  >
-                    <FaEdit className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(servicio.servicio_ID)}
-                    className="text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
-                  >
-                    <FaTrash className="w-5 h-5" />
-                  </button>
-                </td>)}
+                <td className="py-4 px-6">
+                  {servicio.especialidad?.nombre || 'Especialidad no disponible'}
+                </td>
+                {/* Nombre de la especialidad */}
+                <td className="py-4 px-6">
+                  {hasPermission(['Admin Sedes', 'Admin Hospital']) ? (
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleEdit(servicio.servicio_ID)}
+                        className="w-8 h-8 inline-flex items-center justify-center text-blue-500 hover:text-blue-700 transition-transform transform hover:scale-110"
+                      >
+                        <FaEdit className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(servicio.servicio_ID)}
+                        className="w-8 h-8 inline-flex items-center justify-center text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
+                      >
+                        <FaTrash className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ) : null}
+                </td>
               </tr>
             ))}
           </tbody>

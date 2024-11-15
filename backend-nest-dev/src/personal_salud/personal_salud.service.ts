@@ -29,9 +29,11 @@ export class PersonalSaludService {
         await queryRunner.startTransaction(); // Iniciar la transacción
         // Variables adicionales para el usuario de creación
         const usuarioCreacionId = 1; // Por defecto 1, se puede cambiar según la lógica del negocio
+        const establecimiento_salud_idestablecimiento_ID = 1; // Valor predeterminado para establecimiento_salud_idestablecimiento_ID
         // Añadir la fecha de creación y el usuario que está creando este registro
         personalSaludData.fecha_creacion = new Date();
         personalSaludData.usuario_creacion = usuarioCreacionId;
+        personalSaludData.establecimiento_salud_idestablecimiento_ID = establecimiento_salud_idestablecimiento_ID;
         // Crear el registro de personal de salud
         const personalSalud = this.personalSaludRepository.create(personalSaludData);
         const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
@@ -49,7 +51,7 @@ export class PersonalSaludService {
             rol,
             estado: 1,
             personal: savedPersonalSalud, // Relación directa con personalSalud
-            establecimiento_id: personalSaludData.establecimiento_salud_idestablecimiento_ID,
+            establecimiento_id: establecimiento_salud_idestablecimiento_ID, // Se utiliza el valor establecido anteriormente
             fecha_creacion: new Date(),
         };
         await this.usuarioService.createUsuario(usuarioData, queryRunner);
@@ -63,6 +65,7 @@ export class PersonalSaludService {
             personalSaludData.correo_electronico,
             nombreUsuario,
             contrasenia,
+            personalSaludData.telefono
         );
         return savedPersonalSalud;
     } catch (error) {

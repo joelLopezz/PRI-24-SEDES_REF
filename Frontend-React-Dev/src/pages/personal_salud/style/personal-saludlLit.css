@@ -231,3 +231,47 @@
   margin-top: 1rem;
   text-align: center;
 }
+
+
+
+
+.botones {
+  display: flex;
+  gap: 10px;
+}
+
+.button-editar,
+.button-eliminar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.button-editar {
+  background-color: #e7e13b; /* Verde */
+}
+
+.button-editar:hover {
+  background-color: #e3e328;
+}
+
+.button-eliminar {
+  background-color: #dc3545; /* Rojo */
+}
+
+.button-eliminar:hover {
+  background-color: #c82333;
+}
+
+.button-editar i,
+.button-eliminar i {
+  margin-right: 5px;
+}
+

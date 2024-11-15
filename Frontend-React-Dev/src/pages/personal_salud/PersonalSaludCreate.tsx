@@ -1,63 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-interface PersonalSaludCreate {
-  isEditing: boolean;
-}
-
-const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
+const PersonalSaludCreate: React.FC = () => {
+  // Definir el estado inicial del formulario, sin incluir establecimiento_id
   const [formData, setFormData] = useState({
     nombres: '',
     primer_apellido: '',
-    segundo_nombre: '',
-    nacionalidad: '',
+    segundo_apellido: '',
     ci: '',
-    telefono: '',
     matricula_profesional: '',
+    sexo: '',
+    cargo: '',
     correo_electronico: '',
-    especialidad: '',
-    genero: '',
-    establecimiento_salud_idestablecimiento_ID: '',
-    rol:'',
+    rol: '',
+    telefono: '',
   });
+
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
 
-  useEffect(() => {
-    if (isEditing && id) {
-      fetch(`http://localhost:3000/personal-salud/${id}`)
-        .then(response => response.json())
-        .then(data => setFormData(data))
-        .catch(() => setErrorMessage('No se pudo cargar los datos del personal de salud'));
-    }
-  }, [isEditing, id]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleClearForm = () => {
     setFormData({
       nombres: '',
       primer_apellido: '',
-      segundo_nombre: '',
-      nacionalidad: '',
+      segundo_apellido: '',
       ci: '',
-      telefono: '',
       matricula_profesional: '',
+      sexo: '',
+      cargo: '',
       correo_electronico: '',
-      especialidad: '',
-      genero: '',
-      establecimiento_salud_idestablecimiento_ID: '',
-      rol:'',
-
+      rol: '',
+      telefono: '',
     });
     setErrorMessage('');
     setSuccessMessage('');
@@ -67,234 +51,589 @@ const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
     navigate('/personal-salud');
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('FormData antes del envío:', formData); // Verifica que el género esté presente
-    const url = isEditing ? `http://localhost:3000/personal-salud/${id}` : 'http://localhost:3000/personal-salud';
-    const method = isEditing ? 'PUT' : 'POST';
-
-    fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al guardar los datos');
-        }
-        setSuccessMessage(isEditing ? 'Personal de salud actualizado correctamente' : 'Personal de salud creado correctamente');
-        setTimeout(() => navigate('/personal-salud'), 1500);
-      })
-      .catch(() => setErrorMessage('Error al guardar los datos'));
+  
+    // Verificar que los campos requeridos estén llenos
+    if (!formData.nombres || !formData.primer_apellido || !formData.ci || !formData.telefono || !formData.correo_electronico || !formData.rol) {
+      setErrorMessage("Todos los campos obligatorios deben ser completados.");
+      return;
+    }
+  
+    console.log('Datos enviados al servidor:', formData); // Mostrar datos en consola para depuración
+  
+    const url = 'http://localhost:3000/personal-salud';
+    setLoading(true);
+  
+    try {
+      // Enviar solicitud POST al backend sin incluir establecimiento_id
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      // Manejo de la respuesta del servidor
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error en el servidor:', errorData);
+        setErrorMessage(errorData.message || 'Error al guardar los datos');
+        return;
+      }
+  
+      // Mostrar mensaje de éxito si la solicitud fue exitosa
+      setSuccessMessage('Personal de salud creado correctamente');
+      setTimeout(() => navigate('/personal-salud'), 1500);
+  
+    } catch (error) {
+      console.error('Error al hacer la solicitud:', error);
+      setErrorMessage('Ocurrió un error inesperado al enviar los datos.');
+    } finally {
+      setLoading(false);
+    }
   };
 
+  
+
   return (
-    <div className="container_personal_create" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9', padding: '20px' }}>
-  <div style={{ width: '100%', maxWidth: '800px', backgroundColor: '#ffffff', padding: '30px', borderRadius: '12px', boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)' }}>
-    <h2 className="text-center" style={{ marginBottom: '20px', fontWeight: 'bold', color: '#333', fontSize: '1.75rem' }}>{isEditing ? 'Editar Personal de Salud' : 'Registrar Personal de Salud'}</h2>
-    {errorMessage && <div className="alert alert-danger" style={{ marginBottom: '15px', color: '#721c24', backgroundColor: '#f8d7da', padding: '15px', borderRadius: '8px', border: '1px solid #f5c6cb', fontWeight: 'bold', textAlign: 'center' }}>{errorMessage}</div>}
-    {successMessage && <div className="alert alert-success" style={{ marginBottom: '15px', color: '#155724', backgroundColor: '#d4edda', padding: '15px', borderRadius: '8px', border: '1px solid #c3e6cb', fontWeight: 'bold', textAlign: 'center' }}>{successMessage}</div>}
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        <div className="form-group">
-          <label htmlFor="nombres" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Nombres:</label>
-          <input
-            type="text"
-            id="nombres"
-            name="nombres"
-            value={formData.nombres}
-            onChange={handleInputChange}
-            className="form-control"
-            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
-            required
-          />
-        </div>
+    <div className="container mt-5 mb-5">
+      <div className="card p-4 shadow-sm">
+        <h2 className="text-center mb-4">Registrar Personal de Salud</h2>
 
-        <div className="form-group">
-          <label htmlFor="ci" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>C.I.:</label>
-          <input
-            type="text"
-            id="ci"
-            name="ci"
-            value={formData.ci}
-            onChange={handleInputChange}
-            className="form-control"
-            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
-            required
-          />
-        </div>
+        {errorMessage && (
+          <div className="alert alert-danger text-center">{errorMessage}</div>
+        )}
 
-        <div className="form-group">
-          <label htmlFor="primer_apellido" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Primer Apellido:</label>
-          <input
-            type="text"
-            id="primer_apellido"
-            name="primer_apellido"
-            value={formData.primer_apellido}
-            onChange={handleInputChange}
-            className="form-control"
-            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
-            required
-          />
-        </div>
+        {successMessage && (
+          <div className="alert alert-success text-center">{successMessage}</div>
+        )}
 
-        <div className="form-group">
-          <label htmlFor="segundo_apellido" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Segundo Apellido:</label>
-          <input
-            type="text"
-            id="segundo_nombre"
-            name="segundo_nombre"
-            value={formData.segundo_nombre}
-            onChange={handleInputChange}
-            className="form-control"
-            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="correo_electronico" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Correo Electrónico:</label>
-          <input
-            type="email"
-            id="correo_electronico"
-            name="correo_electronico"
-            value={formData.correo_electronico}
-            onChange={handleInputChange}
-            className="form-control"
-            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="matricula_profesional" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Matrícula Profesional:</label>
-          <input
-            type="text"
-            id="matricula_profesional"
-            name="matricula_profesional"
-            value={formData.matricula_profesional}
-            onChange={handleInputChange}
-            className="form-control"
-            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="especialidad" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Especialidad:</label>
-          <select
-            id="especialidad"
-            name="especialidad"
-            value={formData.especialidad}
-            onChange={handleInputChange}
-            className="form-control"
-            style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
-          >
-            <option value="">Seleccione una opción</option>
-            <option value="oftalmologia">Oftalmología</option>
-            <option value="cardiologia">Cardiología</option>
-            <option value="pediatria">Pediatría</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Género:</label>
-          <div className="gender-options" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+        <form onSubmit={handleSubmit}>
+          <div className="row">
+            {/* Nombres */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="nombres" className="form-label">
+                Nombres:
+              </label>
               <input
-                type="radio"
-                id="generoM"
-                name="genero"
-                value="M"
-                checked={formData.genero === 'M'}
+                type="text"
+                id="nombres"
+                name="nombres"
+                value={formData.nombres}
                 onChange={handleInputChange}
-                style={{ marginRight: '10px' }}
+                className="form-control"
                 required
               />
-              <label htmlFor="generoM" style={{ color: '#555' }}>Masculino</label>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <input
-                type="radio"
-                id="generoF"
-                name="genero"
-                value="F"
-                checked={formData.genero === 'F'}
-                onChange={handleInputChange}
-                style={{ marginRight: '10px' }}
-                required
-              />
-              <label htmlFor="generoF" style={{ color: '#555' }}>Femenino</label>
-            </div>
-          </div><div className="gender-options" style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <input
-                type="radio"
-                id="generoM"
-                name="genero"
-                value="M"
-                checked={formData.genero === 'M'}
-                onChange={handleInputChange}
-                required
-              />
-              <label htmlFor="generoM" style={{ color: '#555', fontWeight: 'bold' }}>Masculino</label>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <input
-                type="radio"
-                id="generoF"
-                name="genero"
-                value="F"
-                checked={formData.genero === 'F'}
-                onChange={handleInputChange}
-                required
-              />
-              <label htmlFor="generoF" style={{ color: '#555', fontWeight: 'bold' }}>Femenino</label>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="rol" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Rol:</label>
+            {/* Primer Apellido */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="primer_apellido" className="form-label">
+                Primer Apellido:
+              </label>
+              <input
+                type="text"
+                id="primer_apellido"
+                name="primer_apellido"
+                value={formData.primer_apellido}
+                onChange={handleInputChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            {/* Segundo Apellido */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="segundo_apellido" className="form-label">
+                Segundo Apellido:
+              </label>
+              <input
+                type="text"
+                id="segundo_apellido"
+                name="segundo_apellido"
+                value={formData.segundo_apellido}
+                onChange={handleInputChange}
+                className="form-control"
+              />
+            </div>
+
+            {/* Telefono */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="correo_electronico" className="form-label">
+                Telefono:
+              </label>
+              <input
+                type="number"
+                id="telefono"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleInputChange}
+                className="form-control"
+                
+              />
+            </div>
+
+
+
+            {/* C.I. */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="ci" className="form-label">
+                C.I.:
+              </label>
+              <input
+                type="text"
+                id="ci"
+                name="ci"
+                value={formData.ci}
+                onChange={handleInputChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            {/* Matrícula Profesional */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="matricula_profesional" className="form-label">
+                Matrícula Profesional:
+              </label>
+              <input
+                type="text"
+                id="matricula_profesional"
+                name="matricula_profesional"
+                value={formData.matricula_profesional}
+                onChange={handleInputChange}
+                className="form-control"
+              />
+            </div>
+
+            {/* Sexo */}
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Sexo:</label>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  id="sexoM"
+                  name="sexo"
+                  value="M"
+                  checked={formData.sexo === 'M'}
+                  onChange={handleInputChange}
+                  className="form-check-input"
+                  required
+                />
+                <label htmlFor="sexoM" className="form-check-label">
+                  Masculino
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  id="sexoF"
+                  name="sexo"
+                  value="F"
+                  checked={formData.sexo === 'F'}
+                  onChange={handleInputChange}
+                  className="form-check-input"
+                  required
+                />
+                <label htmlFor="sexoF" className="form-check-label">
+                  Femenino
+                </label>
+              </div>
+            </div>
+
+            {/* Cargo */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="cargo" className="form-label">
+                Cargo:
+              </label>
+              <input
+                type="text"
+                id="cargo"
+                name="cargo"
+                value={formData.cargo}
+                onChange={handleInputChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            {/* Correo Electrónico */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="correo_electronico" className="form-label">
+                Correo Electrónico:
+              </label>
+              <input
+                type="email"
+                id="correo_electronico"
+                name="correo_electronico"
+                value={formData.correo_electronico}
+                onChange={handleInputChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            {/* Rol */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="rol" className="form-label">
+                Rol:
+              </label>
               <select
                 id="rol"
                 name="rol"
                 value={formData.rol}
                 onChange={handleInputChange}
-                className="form-control"
-                style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+                className="form-select"
+                required
               >
-                <option value="">Seleccione una rol</option>
-                <option value="oftalmologia">Admin Sedes</option>
-                <option value="cardiologia">Doctor</option>
-                <option value="pediatria">Admin Hospital</option>
+                <option value="">Seleccione un rol</option>
+                <option value="Admin Hospital">Admin Hospital</option>
+                <option value="Doctor">Doctor</option>
+                <option value="Admin Sedes">Admin Sedes</option>
               </select>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="button-group" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
-        <button type="submit" className="btn-primary" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0056b3')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#007bff')}>
-          {isEditing ? 'Actualizar' : 'Registrar'}
-        </button>
-        <button type="reset" className="btn-secondary" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#6c757d', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#5a6268')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#6c757d')}>
-          Limpiar
-        </button>
-        <button type="button" className="btn-danger" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#dc3545', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
-          onClick={() => navigate('/personal-salud')}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#c82333')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#dc3545')}>
-          Cancelar
-        </button>
+          {/* Botones */}
+          <div className="d-flex justify-content-between mt-4">
+            <button type="submit" className="btn btn-primary">
+              Registrar
+            </button>
+            <button
+              type="reset"
+              className="btn btn-secondary"
+              onClick={handleClearForm}
+            >
+              Limpiar
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleCancel}
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
-</div>
-
+    </div>
   );
 };
 
 export default PersonalSaludCreate;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from 'react';
+// import { useNavigate, useParams } from 'react-router-dom';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
+// interface PersonalSaludCreate {
+//   isEditing: boolean;
+// }
+
+// const PersonalSaludCreate: React.FC<PersonalSaludCreate> = ({ isEditing }) => {
+//   const [formData, setFormData] = useState({
+//     nombres: '',
+//     primer_apellido: '',
+//     segundo_nombre: '',
+//     nacionalidad: '',
+//     ci: '',
+//     telefono: '',
+//     matricula_profesional: '',
+//     correo_electronico: '',
+//     especialidad: '',
+//     genero: '',
+//     establecimiento_salud_idestablecimiento_ID: '',
+//     rol:'',
+//   });
+//   const [errorMessage, setErrorMessage] = useState('');
+//   const [successMessage, setSuccessMessage] = useState('');
+//   const navigate = useNavigate();
+//   const { id } = useParams<{ id: string }>();
+
+//   useEffect(() => {
+//     if (isEditing && id) {
+//       fetch(`http://localhost:3000/personal-salud/${id}`)
+//         .then(response => response.json())
+//         .then(data => setFormData(data))
+//         .catch(() => setErrorMessage('No se pudo cargar los datos del personal de salud'));
+//     }
+//   }, [isEditing, id]);
+
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+//     const { name, value } = e.target;
+//     setFormData({
+//       ...formData,
+//       [name]: value,
+//     });
+//   };
+
+//   const handleClearForm = () => {
+//     setFormData({
+//       nombres: '',
+//       primer_apellido: '',
+//       segundo_nombre: '',
+//       nacionalidad: '',
+//       ci: '',
+//       telefono: '',
+//       matricula_profesional: '',
+//       correo_electronico: '',
+//       especialidad: '',
+//       genero: '',
+//       establecimiento_salud_idestablecimiento_ID: '',
+//       rol:'',
+
+//     });
+//     setErrorMessage('');
+//     setSuccessMessage('');
+//   };
+
+//   const handleCancel = () => {
+//     navigate('/personal-salud');
+//   };
+
+//   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+//     e.preventDefault();
+//     console.log('FormData antes del envío:', formData); // Verifica que el género esté presente
+//     const url = isEditing ? `http://localhost:3000/personal-salud/${id}` : 'http://localhost:3000/personal-salud';
+//     const method = isEditing ? 'PUT' : 'POST';
+
+//     fetch(url, {
+//       method,
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(formData),
+//     })
+//       .then(response => {
+//         if (!response.ok) {
+//           throw new Error('Error al guardar los datos');
+//         }
+//         setSuccessMessage(isEditing ? 'Personal de salud actualizado correctamente' : 'Personal de salud creado correctamente');
+//         setTimeout(() => navigate('/personal-salud'), 1500);
+//       })
+//       .catch(() => setErrorMessage('Error al guardar los datos'));
+//   };
+
+//   return (
+//     <div className="container_personal_create" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9', padding: '20px' }}>
+//   <div style={{ width: '100%', maxWidth: '800px', backgroundColor: '#ffffff', padding: '30px', borderRadius: '12px', boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)' }}>
+//     <h2 className="text-center" style={{ marginBottom: '20px', fontWeight: 'bold', color: '#333', fontSize: '1.75rem' }}>{isEditing ? 'Editar Personal de Salud' : 'Registrar Personal de Salud'}</h2>
+//     {errorMessage && <div className="alert alert-danger" style={{ marginBottom: '15px', color: '#721c24', backgroundColor: '#f8d7da', padding: '15px', borderRadius: '8px', border: '1px solid #f5c6cb', fontWeight: 'bold', textAlign: 'center' }}>{errorMessage}</div>}
+//     {successMessage && <div className="alert alert-success" style={{ marginBottom: '15px', color: '#155724', backgroundColor: '#d4edda', padding: '15px', borderRadius: '8px', border: '1px solid #c3e6cb', fontWeight: 'bold', textAlign: 'center' }}>{successMessage}</div>}
+//     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+//       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+//         <div className="form-group">
+//           <label htmlFor="nombres" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Nombres:</label>
+//           <input
+//             type="text"
+//             id="nombres"
+//             name="nombres"
+//             value={formData.nombres}
+//             onChange={handleInputChange}
+//             className="form-control"
+//             style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//             required
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="ci" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>C.I.:</label>
+//           <input
+//             type="text"
+//             id="ci"
+//             name="ci"
+//             value={formData.ci}
+//             onChange={handleInputChange}
+//             className="form-control"
+//             style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//             required
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="primer_apellido" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Primer Apellido:</label>
+//           <input
+//             type="text"
+//             id="primer_apellido"
+//             name="primer_apellido"
+//             value={formData.primer_apellido}
+//             onChange={handleInputChange}
+//             className="form-control"
+//             style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//             required
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="segundo_apellido" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Segundo Apellido:</label>
+//           <input
+//             type="text"
+//             id="segundo_nombre"
+//             name="segundo_nombre"
+//             value={formData.segundo_nombre}
+//             onChange={handleInputChange}
+//             className="form-control"
+//             style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="correo_electronico" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Correo Electrónico:</label>
+//           <input
+//             type="email"
+//             id="correo_electronico"
+//             name="correo_electronico"
+//             value={formData.correo_electronico}
+//             onChange={handleInputChange}
+//             className="form-control"
+//             style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//             required
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="matricula_profesional" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Matrícula Profesional:</label>
+//           <input
+//             type="text"
+//             id="matricula_profesional"
+//             name="matricula_profesional"
+//             value={formData.matricula_profesional}
+//             onChange={handleInputChange}
+//             className="form-control"
+//             style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="especialidad" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Especialidad:</label>
+//           <select
+//             id="especialidad"
+//             name="especialidad"
+//             value={formData.especialidad}
+//             onChange={handleInputChange}
+//             className="form-control"
+//             style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//           >
+//             <option value="">Seleccione una opción</option>
+//             <option value="oftalmologia">Oftalmología</option>
+//             <option value="cardiologia">Cardiología</option>
+//             <option value="pediatria">Pediatría</option>
+//           </select>
+//         </div>
+
+//         <div className="form-group">
+//           <label style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Género:</label>
+//           <div className="gender-options" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+//             <div style={{ display: 'flex', alignItems: 'center' }}>
+//               <input
+//                 type="radio"
+//                 id="generoM"
+//                 name="genero"
+//                 value="M"
+//                 checked={formData.genero === 'M'}
+//                 onChange={handleInputChange}
+//                 style={{ marginRight: '10px' }}
+//                 required
+//               />
+//               <label htmlFor="generoM" style={{ color: '#555' }}>Masculino</label>
+//             </div>
+//             <div style={{ display: 'flex', alignItems: 'center' }}>
+//               <input
+//                 type="radio"
+//                 id="generoF"
+//                 name="genero"
+//                 value="F"
+//                 checked={formData.genero === 'F'}
+//                 onChange={handleInputChange}
+//                 style={{ marginRight: '10px' }}
+//                 required
+//               />
+//               <label htmlFor="generoF" style={{ color: '#555' }}>Femenino</label>
+//             </div>
+//           </div><div className="gender-options" style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px' }}>
+//             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+//               <input
+//                 type="radio"
+//                 id="generoM"
+//                 name="genero"
+//                 value="M"
+//                 checked={formData.genero === 'M'}
+//                 onChange={handleInputChange}
+//                 required
+//               />
+//               <label htmlFor="generoM" style={{ color: '#555', fontWeight: 'bold' }}>Masculino</label>
+//             </div>
+//             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+//               <input
+//                 type="radio"
+//                 id="generoF"
+//                 name="genero"
+//                 value="F"
+//                 checked={formData.genero === 'F'}
+//                 onChange={handleInputChange}
+//                 required
+//               />
+//               <label htmlFor="generoF" style={{ color: '#555', fontWeight: 'bold' }}>Femenino</label>
+//             </div>
+
+//             <div className="form-group">
+//               <label htmlFor="rol" style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>Rol:</label>
+//               <select
+//                 id="rol"
+//                 name="rol"
+//                 value={formData.rol}
+//                 onChange={handleInputChange}
+//                 className="form-control"
+//                 style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #ccc' }}
+//               >
+//                 <option value="">Seleccione una rol</option>
+//                 <option value="oftalmologia">Admin Sedes</option>
+//                 <option value="cardiologia">Doctor</option>
+//                 <option value="pediatria">Admin Hospital</option>
+//               </select>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="button-group" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
+//         <button type="submit" className="btn-primary" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+//           onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0056b3')}
+//           onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#007bff')}>
+//           {isEditing ? 'Actualizar' : 'Registrar'}
+//         </button>
+//         <button type="reset" className="btn-secondary" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#6c757d', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+//           onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#5a6268')}
+//           onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#6c757d')}>
+//           Limpiar
+//         </button>
+//         <button type="button" className="btn-danger" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', backgroundColor: '#dc3545', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+//           onClick={() => navigate('/personal-salud')}
+//           onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#c82333')}
+//           onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#dc3545')}>
+//           Cancelar
+//         </button>
+//       </div>
+//     </form>
+//   </div>
+// </div>
+
+//   );
+// };
+
+// export default PersonalSaludCreate;

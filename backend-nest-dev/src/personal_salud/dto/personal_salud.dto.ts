@@ -15,5 +15,6 @@ export class CreatePersonalSaludDto {
     usuario_creacion: number;
     estado: number;
     rol: string;  // Este es el rol que pertenece al usuario
+    telefono: number;
   }
   

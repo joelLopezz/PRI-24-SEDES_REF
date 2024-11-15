@@ -143,9 +143,8 @@ function ProtectedRoutes() {
               element={hasPermission(['Admin Hospital', 'Doctor']) ? <CamaList /> : <Navigate to="/inicio" />}
             />
             <Route path="/personal-salud" element={<PersonalSaludList />} />
+            <Route path="/personal-salud/create" element={<PersonalSaludCreate />} />
             <Route path="/personal-salud/:id" element={<PersonalSaludEdit isEditing=  {true} />} />
-            <Route path="/personal-salud/crear" element={<PersonalSaludCreate isEditing = {false} />} />
-
             {/* Ruta de reporte  */}
             <Route path="/reporte-especialidades" element={<EspecialidadesReport />} />
 

@@ -26,14 +26,13 @@ export class HistoriaCama {
   @Column({ type: 'mediumint' })
   alta: number;
 
+  @Column({ type: 'boolean', default: false })
+  es_actual: boolean;
+
   @Column({ type: 'mediumint' })
   usuario_modificacion: number;
 
   @CreateDateColumn()
   fecha_modificacion: Date;
-
-  @Column({ type: 'boolean', default: false })
-  es_actual: boolean;
-
 
 }
