@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -32,6 +32,7 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { MailModule } from './correo_electronico/correo.electronico.module';
 import { CamaModule } from './cama/cama.module';
 import { ReporteModule } from './reporrte/reporte.module';
+import { AuthModule } from './Auth/auth.module';
 
 // Entidades
 import { PersonalSalud } from './personal_salud/personal_salud.entity';
@@ -87,6 +88,7 @@ import { RolTurnosModule } from './rol_turnos/rol_turnos.module';
     AreaPersonalModule,
     CodificacionTurnosModule,
     RolTurnosModule,
+    forwardRef(() => AuthModule),
   ],
   controllers: [
     AppController,

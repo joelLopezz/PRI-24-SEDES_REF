@@ -9,6 +9,7 @@ import { UsuarioService } from '../usuario/usuario.service';
 import { MailService } from '../correo_electronico/correo_electronico.service';
 import { Usuario } from '../usuario/usuario.entity';  
 import { CreatePersonalSaludDto } from './dto/personal_salud.dto';
+import { AuthService } from '../Auth/auth.service';
 
 @Injectable()
 export class PersonalSaludService {
@@ -18,6 +19,7 @@ export class PersonalSaludService {
     private usuarioService: UsuarioService, 
     private mailService: MailService,
     private dataSource: DataSource, 
+    private authService: AuthService
   ) {}
 
   // Crear un registro de personal de salud y usuario
@@ -27,9 +29,18 @@ export class PersonalSaludService {
     try {
         await queryRunner.connect(); // Conectar el queryRunner
         await queryRunner.startTransaction(); // Iniciar la transacción
+
+        // Obtener el usuario autenticado desde AuthService
+        const currentUser = this.authService.getCurrentUser();
+        if (!currentUser) {
+          throw new Error('Usuario no autenticado'); // Lanzar un error si no hay usuario autenticado
+        }
+
+
         // Variables adicionales para el usuario de creación
-        const usuarioCreacionId = 1; // Por defecto 1, se puede cambiar según la lógica del negocio
-        const establecimiento_salud_idestablecimiento_ID = 1; // Valor predeterminado para establecimiento_salud_idestablecimiento_ID
+        const usuarioCreacionId = currentUser.usuarioID; 
+        const establecimiento_salud_idestablecimiento_ID = currentUser.establecimientoID;
+        
         // Añadir la fecha de creación y el usuario que está creando este registro
         personalSaludData.fecha_creacion = new Date();
         personalSaludData.usuario_creacion = usuarioCreacionId;
