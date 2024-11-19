@@ -21,6 +21,7 @@ interface Servicio {
 }
 
 const EditService: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth();
   const { id } = useParams<{ id: string }>(); // Obtener el ID del servicio desde la URL
   const navigate = useNavigate();
@@ -42,8 +43,8 @@ const EditService: React.FC = () => {
   useEffect(() => {
     const fetchServiceAndEspecialidades = async () => {
       try {
-        const serviceResponse = await axios.get<Servicio>(`http://localhost:3000/servicio/${id}`);
-        const especialidadesResponse = await axios.get<Especialidad[]>('http://localhost:3000/specialties');
+        const serviceResponse = await axios.get<Servicio>(`${API_BASE_URL}/servicio/${id}`);
+        const especialidadesResponse = await axios.get<Especialidad[]>(`${API_BASE_URL}/specialties`);
         
         setFormData(serviceResponse.data); // Asignar los datos del servicio al estado
         setEspecialidades(especialidadesResponse.data); // Asignar las especialidades
@@ -107,7 +108,7 @@ const EditService: React.FC = () => {
         usuario_ID: usuarioID,
       };
   
-      await axios.patch(`http://localhost:3000/servicio/${id}`, formDataWithUpperCaseCode);
+      await axios.patch(`${API_BASE_URL}/servicio/${id}`, formDataWithUpperCaseCode);
       setModalOpen(true); // Mostrar el modal de éxito
     } catch (error) {
       console.error('Error al actualizar el servicio:', error);

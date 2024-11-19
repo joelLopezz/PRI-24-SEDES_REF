@@ -12,6 +12,7 @@ interface Especialidad {
 }
 
 const EspecialidadesList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth();
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,7 @@ const EspecialidadesList: React.FC = () => {
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const response = await fetch('http://localhost:3000/specialties');
+        const response = await fetch(`${API_BASE_URL}/specialties`);
         if (!response.ok) {
           throw new Error('Error al obtener las especialidades');
         }
@@ -52,7 +53,7 @@ const EspecialidadesList: React.FC = () => {
     if (!selectedEspecialidadId || !usuarioID) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/specialties/${selectedEspecialidadId}`, {
+      const response = await fetch(`${API_BASE_URL}/specialties/${selectedEspecialidadId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

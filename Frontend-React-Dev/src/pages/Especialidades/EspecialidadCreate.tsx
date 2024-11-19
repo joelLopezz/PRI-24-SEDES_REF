@@ -7,6 +7,7 @@ import { useAuth } from '../../Context/AuthContext'; // Importar useAuth
 
 
 const EspecialidadCreate: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth(); // Extraer usuarioID del contexto de autenticación
   const navigate = useNavigate();
 
@@ -52,7 +53,7 @@ const EspecialidadCreate: React.FC = () => {
   
       console.log('Enviando datos:', upperCaseData);
   
-      await axios.post('http://localhost:3000/specialties', upperCaseData);
+      await axios.post(`${API_BASE_URL}/specialties`, upperCaseData);
       setModalOpen(true);
     } catch (error) {
       console.error('Error al crear la especialidad:', error);

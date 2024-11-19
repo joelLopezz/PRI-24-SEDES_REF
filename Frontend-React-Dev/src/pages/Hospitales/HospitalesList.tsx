@@ -28,6 +28,7 @@ interface Establecimiento {
 }
 
 const HospitalesList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ const HospitalesList: React.FC = () => {
   useEffect(() => {
     const fetchEstablecimientos = async () => {
       try {
-        const response = await axios.get<Establecimiento[]>('http://localhost:3000/establecimiento');
+        const response = await axios.get<Establecimiento[]>(`${API_BASE_URL}/establecimiento`);
         setEstablecimientos(response.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {

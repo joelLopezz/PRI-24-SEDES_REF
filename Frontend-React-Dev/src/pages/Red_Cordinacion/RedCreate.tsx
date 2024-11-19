@@ -32,6 +32,7 @@ const toRoman = (num: number): string => {
 };
 
 const RedCreate: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -76,7 +77,7 @@ const RedCreate: React.FC = () => {
         usuario_ID: usuarioID, // Agregar el ID del usuario 
       };
 
-      await axios.post('http://localhost:3000/red-cordinacion', formDataWithRomanNumeration);
+      await axios.post(`${API_BASE_URL}/red-cordinacion`, formDataWithRomanNumeration);
       setModalOpen(true);
     } catch (error) {
       console.error('Error al crear la red de coordinación:', error);

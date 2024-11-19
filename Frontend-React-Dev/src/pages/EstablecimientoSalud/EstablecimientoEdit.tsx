@@ -33,6 +33,8 @@ interface Establecimiento {
 }
 
 const EstablecimientoEdit: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const { usuarioID } = useAuth(); // Obtén el usuarioID del contexto
   const { id } = useParams<{ id: string }>(); // Obtener el ID desde los parámetros de la URL
   const navigate = useNavigate();
@@ -55,7 +57,7 @@ const EstablecimientoEdit: React.FC = () => {
   useEffect(() => {
     const fetchEstablecimiento = async () => {
       try {
-        const response = await axios.get<Establecimiento>(`http://localhost:3000/establecimiento/${id}`);
+        const response = await axios.get<Establecimiento>(`${API_BASE_URL}/establecimiento/${id}`);
         setFormData({
           ...response.data,
           red_cordinacion_red_ID: response.data.red_cordinacion_red_ID,
@@ -69,7 +71,7 @@ const EstablecimientoEdit: React.FC = () => {
 
     const fetchRedesCordinacion = async () => {
       try {
-        const response = await axios.get<RedCordinacion[]>('http://localhost:3000/red-cordinacion');
+        const response = await axios.get<RedCordinacion[]>('${API_BASE_URL}/red-cordinacion');
         setRedCordinaciones(response.data);
       } catch (error) {
         console.error('Error al cargar las redes de coordinación:', error);
@@ -77,7 +79,7 @@ const EstablecimientoEdit: React.FC = () => {
     };
     const fetchMunicipios = async () => {
       try {
-        const response = await axios.get<Municipio[]>('http://localhost:3000/municipio');
+        const response = await axios.get<Municipio[]>('${API_BASE_URL}/municipio');
         setMunicipios(response.data);
       } catch (error) {
         console.error('Error al cargar los municipios:', error);
@@ -177,7 +179,7 @@ const EstablecimientoEdit: React.FC = () => {
 
       console.log("Datos enviados para la actualización:", updatedData);
 
-      await axios.patch(`http://localhost:3000/establecimiento/${id}`, updatedData);
+      await axios.patch(`${API_BASE_URL}/establecimiento/${id}`, updatedData);
       setModalOpen(true);
     } catch (error) {
       console.error('Error al actualizar el establecimiento:', error);

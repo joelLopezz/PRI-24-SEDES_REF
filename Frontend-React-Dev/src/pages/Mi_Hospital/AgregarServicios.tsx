@@ -13,6 +13,7 @@ interface Servicio {
 }
 
 const AgregarServicios: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { especialidadId } = useParams<{ especialidadId: string }>();
   const { state } = useLocation();
   const { especialidadNombre } = state as { especialidadNombre: string };
@@ -28,7 +29,7 @@ const AgregarServicios: React.FC = () => {
     const fetchServicios = async () => {
       try {
         const response = await axios.get<Servicio[]>(
-          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/disponibles`
+          `${API_BASE_URL}/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/disponibles`
         );
         setServicios(response.data);
       } catch (err) {
@@ -75,7 +76,7 @@ const AgregarServicios: React.FC = () => {
         servicio_id: servicioId,
       }));
 
-      await axios.post('http://localhost:3000/estab-servicio/multiple', serviciosData);
+      await axios.post(`${API_BASE_URL}/estab-servicio/multiple`, serviciosData);
       setIsModalOpen(true);
     } catch (err) {
       setError('Error al guardar los servicios.');

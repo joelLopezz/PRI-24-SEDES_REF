@@ -12,6 +12,7 @@ interface Especialidad {
 }
 
 const AgregarEspecialidades: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
   const { establecimientoID } = useAuth(); // Obtén establecimientoID del contexto
   const [especialidadesDisponibles, setEspecialidadesDisponibles] = useState<Especialidad[]>([]);
@@ -27,12 +28,12 @@ const AgregarEspecialidades: React.FC = () => {
       try {
         // Obtener todas las especialidades
         const todasEspecialidadesResponse = await axios.get<Especialidad[]>(
-          'http://localhost:3000/specialties'
+          `${API_BASE_URL}/specialties`
         );
 
         // Obtener las especialidades ya asociadas al hospital
         const especialidadesAsociadasResponse = await axios.get<Especialidad[]>(
-          `http://localhost:3000/estab-especialidad/especialidades/${establecimientoID}`
+          `${API_BASE_URL}/estab-especialidad/especialidades/${establecimientoID}`
         );
 
         // Obtener los IDs de las especialidades asociadas
@@ -66,7 +67,7 @@ const AgregarEspecialidades: React.FC = () => {
 
   const handleGuardar = async () => {
     try {
-      await axios.post('http://localhost:3000/estab-especialidad', {
+      await axios.post(`${API_BASE_URL}/estab-especialidad`, {
         establecimientoId: establecimientoID, // Utiliza establecimientoID del contexto
         especialidades: selectedEspecialidades,
       });

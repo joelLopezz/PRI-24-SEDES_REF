@@ -36,6 +36,7 @@ interface RedCordinacionData {
 }
 
 const RedEdit: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ const RedEdit: React.FC = () => {
   useEffect(() => {
     const fetchRed = async () => {
       try {
-        const response = await axios.get<RedCordinacionData>(`http://localhost:3000/red-cordinacion/${id}`);
+        const response = await axios.get<RedCordinacionData>(`${API_BASE_URL}/red-cordinacion/${id}`);
         const data = response.data;
 
         setFormData({
@@ -99,7 +100,7 @@ const RedEdit: React.FC = () => {
         usuario_modificacion: usuarioID, 
       };
 
-      await axios.patch(`http://localhost:3000/red-cordinacion/${id}`, formDataWithRomanNumeration);
+      await axios.patch(`${API_BASE_URL}/red-cordinacion/${id}`, formDataWithRomanNumeration);
       setModalOpen(true);
     } catch (error) {
       console.error('Error al actualizar la red de coordinación:', error);

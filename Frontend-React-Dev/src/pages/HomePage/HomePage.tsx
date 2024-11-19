@@ -22,12 +22,13 @@ const hospitalIcon = new L.Icon({
 });
 
 const HomePage: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
-        const response = await axios.get<Hospital[]>('http://localhost:3000/establecimiento');
+        const response = await axios.get<Hospital[]>(`${API_BASE_URL}/establecimiento`);
         setHospitals(response.data);
       } catch (error) {
         console.error('Error al cargar los hospitales:', error);

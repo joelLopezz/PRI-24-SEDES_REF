@@ -16,6 +16,7 @@ interface Servicio {
 }
 
 const ServiciosEspecialidad: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { especialidadId } = useParams<{ especialidadId: string }>();
   const { state } = useLocation();
   const { especialidadNombre } = state as { especialidadNombre: string };
@@ -39,7 +40,7 @@ const ServiciosEspecialidad: React.FC = () => {
 
       try {
         const response = await axios.get<Servicio[]>(
-          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/servicios`
+          `${API_BASE_URL}/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/servicios`
         );
         setServicios(response.data);
       } catch (err) {
@@ -73,7 +74,7 @@ const ServiciosEspecialidad: React.FC = () => {
   const handleDeleteService = async () => {
     if (serviceToDelete !== null) {
       try {
-        await axios.delete(`http://localhost:3000/estab-servicio/${serviceToDelete}`);
+        await axios.delete(`${API_BASE_URL}/estab-servicio/${serviceToDelete}`);
         setServicios((prevServicios) => prevServicios.filter((servicio) => servicio.id !== serviceToDelete));
         closeDeleteModal();
       } catch (err) {

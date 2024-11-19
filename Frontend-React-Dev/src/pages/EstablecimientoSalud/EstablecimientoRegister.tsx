@@ -20,6 +20,8 @@ interface Municipio {
   nombre: string;
 }
 const EstablecimientoRegister: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  
   const { usuarioID } = useAuth(); // Obtén el usuarioID del contexto
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -44,7 +46,7 @@ const EstablecimientoRegister: React.FC = () => {
   useEffect(() => {
     const fetchRedesCordinacion = async () => {
       try {
-        const response = await axios.get<RedCordinacion[]>('http://localhost:3000/red-cordinacion');
+        const response = await axios.get<RedCordinacion[]>(`${API_BASE_URL}/red-cordinacion`);
         setRedCordinaciones(response.data);
 
       } catch (error) {
@@ -54,7 +56,7 @@ const EstablecimientoRegister: React.FC = () => {
 
     const fetchMunicipios = async () => {
       try {
-        const response = await axios.get<Municipio[]>('http://localhost:3000/municipio');
+        const response = await axios.get<Municipio[]>(`${API_BASE_URL}/municipio`);
         setMunicipios(response.data);
       } catch (error) {
         console.error('Error al cargar los municipios:', error);
@@ -158,7 +160,7 @@ const EstablecimientoRegister: React.FC = () => {
     }
 
     try {
-      await axios.post('http://localhost:3000/establecimiento', {
+      await axios.post(`${API_BASE_URL}/establecimiento`, {
         ...formData,
         estado: 1,
         usuario_creacion: usuarioID,

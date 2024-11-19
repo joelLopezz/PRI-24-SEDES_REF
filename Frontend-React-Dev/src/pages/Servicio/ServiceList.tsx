@@ -18,6 +18,7 @@ interface Servicio {
 }
 
 const ServiceList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth();
   const [servicios, setServicios] = useState<Servicio[]>([]); // Estado para almacenar los servicios
   const [loading, setLoading] = useState(true); // Estado para mostrar el cargando
@@ -32,7 +33,7 @@ const ServiceList: React.FC = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch('http://localhost:3000/servicio');
+        const response = await fetch(`${API_BASE_URL}/servicio`);
         if (!response.ok) {
           throw new Error('Error al obtener los servicios');
         }
@@ -60,7 +61,7 @@ const ServiceList: React.FC = () => {
     if (!selectedServiceId) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/servicio/${selectedServiceId}`, {
+      const response = await fetch(`${API_BASE_URL}/servicio/${selectedServiceId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
