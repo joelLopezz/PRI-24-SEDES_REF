@@ -11,7 +11,6 @@ export class Cama {
   @PrimaryGeneratedColumn()
   cama_ID: number;
 
-
   @Column({ type: 'tinyint' })
   estado: number;
 
@@ -36,6 +35,7 @@ export class Cama {
   @UpdateDateColumn()
   fecha_modificacion: Date;
 
-
+  @UpdateDateColumn()
+  usuario_modificacion: Date;
   
 }  

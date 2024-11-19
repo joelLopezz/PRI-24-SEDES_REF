@@ -1,10 +1,16 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Post, Put, Param, Body, HttpStatus, NotFoundException } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
+import { AuthService } from '../Auth/auth.service';
+// import Login from '../../../Frontend-React-Dev/src/pages/Login/login';
 
 @Controller('usuario')
 export class UsuarioController {
-  constructor(private readonly usuarioService: UsuarioService) {}
+  constructor(
+    private readonly usuarioService: UsuarioService,
+    private readonly authService: AuthService, // Inyectar el AuthService aquí
+  ) {}
+
 
   // Login de usuario
   @Post('login')
@@ -12,7 +18,15 @@ export class UsuarioController {
     try {
       const { nombre_usuario, contrasenia } = loginDto;
       const usuario = await this.usuarioService.validateUsuario(nombre_usuario, contrasenia);
-  
+
+      // Almacenar los datos del usuario en el servicio de autenticación
+      this.authService.login({
+        usuarioID: usuario.usuario_ID,
+        nombre: usuario.nombre_usuario,
+        rol: usuario.rol,
+        establecimientoID: usuario.establecimiento_id,
+      });
+
       return {
         statusCode: HttpStatus.OK,
         message: 'Login exitoso',

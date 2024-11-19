@@ -109,8 +109,7 @@ const PersonalSaludList: React.FC = () => {
             <th>CI</th>
             <th>Matrícula Profesional</th>
             <th>Cargo</th>
-            <th>Editar</th>
-            <th>Eliminar</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -125,16 +124,17 @@ const PersonalSaludList: React.FC = () => {
                 <button
                   className="button-editar"
                   onClick={() => handleEdit(personal.personal_ID)}>
-                  <i className="fas fa-edit"></i> Editar
+                  <i className="fas fa-edit"></i>
+                  Editar
                 </button>
-              </td>
-              <td>
                 <button
                   className="button-eliminar"
                   onClick={() => handleDelete(personal.personal_ID)}>
-                  <i className="fas fa-trash"></i> Eliminar
+                  <i className="fas fa-trash"></i>
+                  Eliminar
                 </button>
               </td>
+
             </tr>
           ))}
         </tbody>

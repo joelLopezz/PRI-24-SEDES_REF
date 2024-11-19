@@ -28,6 +28,7 @@ export class MailService {
     email: string,
     nombre_usuario: string,
     contrasenia: string,
+    telefono: number,
   ) {
     await this.transporter.sendMail({
       from: '"No Reply" <desarrollo.dev@example.com>',
