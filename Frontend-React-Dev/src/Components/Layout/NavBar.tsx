@@ -11,6 +11,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { usuarioID } = useAuth(); 
+  const { setIsAuthenticated, setRole, setUsuarioID, setEstablecimientoID } = useAuth();
   const [userFullName, setUserFullName] = useState('');
   const [userRole, setUserRole] = useState('');
   const [hospitalId, setHospitalId] = useState('');
@@ -32,6 +33,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setRole('');
+    setUsuarioID(null);
+    setEstablecimientoID(null);
     navigate('/login');
   };
 

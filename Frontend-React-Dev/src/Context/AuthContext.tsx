@@ -1,5 +1,5 @@
-// src/context/AuthContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+// src/Context/AuthContext.tsx
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
   role: string;
@@ -8,8 +8,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   hasPermission: (allowedRoles: string[]) => boolean;
   setRole: (newRole: string) => void;
-  setUsuarioID: (id: number) => void;
-  setEstablecimientoID: (id: number) => void;
+  setUsuarioID: (id: number | null) => void;
+  setEstablecimientoID: (id: number | null) => void;
   setIsAuthenticated: (value: boolean) => void;
 }
 
@@ -20,22 +20,12 @@ interface AuthProviderProps {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [role, setRole] = useState<string>('');
-  const [usuarioID, setUsuarioID] = useState<number | null>(null);
-  const [establecimientoID, setEstablecimientoID] = useState<number | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (user && user.rol) {
-      setRole(user.rol);
-      setUsuarioID(user.usuario_ID);
-      setEstablecimientoID(user.establecimiento_id);
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-  }, []);
+  const [role, setRole] = useState<string>(storedUser?.rol || '');
+  const [usuarioID, setUsuarioID] = useState<number | null>(storedUser?.usuario_ID || null);
+  const [establecimientoID, setEstablecimientoID] = useState<number | null>(storedUser?.establecimiento_id || null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!storedUser);
 
   const hasPermission = (allowedRoles: string[]) => allowedRoles.includes(role);
 
