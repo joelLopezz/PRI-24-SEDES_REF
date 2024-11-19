@@ -32,8 +32,6 @@ const ShiftTable: React.FC = () => {
   const [turnosParaEnviar, setTurnosParaEnviar] = useState<any[]>([]);
   const [turnosParaEditar, setTurnosParaEditar] = useState<any[]>([]);
 
-  
-
 
   const handleOpenAreaModal = (areaNames: string | null, doctorId: number) => {
     const areasArray = areaNames
@@ -317,6 +315,46 @@ const ShiftTable: React.FC = () => {
   }, [mesSeleccionado, especialidadId]);
   
 
+  const [showDoctorModal, setShowDoctorModal] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState<{
+    nombres: string;
+    primer_apellido: string;
+    segundo_apellido: string;
+    ci: string;
+    correo_electronico: string;
+    telefono: number;
+  } | null>(null);
+  const [loadingDoctorInfo, setLoadingDoctorInfo] = useState(false);
+  
+
+  const handleOpenDoctorModal = async (doctorId: number) => {
+    setLoadingDoctorInfo(true); // Muestra un indicador de carga
+    try {
+      const response = await fetch(`http://localhost:3000/personal-salud/${doctorId}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener la información del médico');
+      }
+      const data = await response.json();
+      setSelectedDoctor(data.data); // Almacena los datos del doctor en el estado
+    } catch (error) {
+      console.error('Error al obtener la información del médico:', error);
+      setSelectedDoctor(null);
+    } finally {
+      setLoadingDoctorInfo(false); // Oculta el indicador de carga
+      setShowDoctorModal(true);
+    }
+  };
+  
+  
+  const handleCloseDoctorModal = () => {
+    setSelectedDoctor(null);
+    setShowDoctorModal(false);
+  };
+  
+
+  
+
+
   // Manejar cambio de mes
   const handleMesChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nuevoMes = Number(event.target.value);
@@ -458,33 +496,6 @@ const ShiftTable: React.FC = () => {
 
   const handleNewTurnoInputChange = (field: string, value: string) => {
     setNewTurno({ ...newTurno, [field]: value });
-  };
-
-  const handleAddTurno = () => {
-    if (newTurno.Turno && newTurno.Sigla && newTurno.Hora_Inicio && newTurno.Hora_Fin) {
-      // Calcular la carga horaria
-      const cargaHoraria = calcularCargaHoraria(newTurno.Hora_Inicio, newTurno.Hora_Fin);
-  
-      // Crear la fecha en formato YYYY-MM-DD
-      const fecha = `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-01`;
-  
-      const turnoData = {
-        especialidad_especialidad_ID: especialidadId, // Usar el valor dinámico del especialidadId
-        Turno: newTurno.Turno,
-        Sigla: newTurno.Sigla,
-        Hora_Inicio: newTurno.Hora_Inicio,
-        Hora_Fin: newTurno.Hora_Fin,
-        Carga_Horaria: cargaHoraria.toString(),
-        fecha: fecha, // Añadir el campo de fecha
-      };
-  
-      setTurnosParaEnviar([...turnosParaEnviar, turnoData]);
-      setTurnos([
-        ...turnos,
-        { ...newTurno, codificacion_turnos_id: turnos.length + 1, Carga_Horaria: cargaHoraria },
-      ]);
-      setNewTurno({ Turno: '', Sigla: '', Hora_Inicio: '', Hora_Fin: '' });
-    }
   };
   
   const handleGuardarTurnos = async () => {
@@ -669,7 +680,7 @@ const ShiftTable: React.FC = () => {
                 className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton} ${styles.input_sigla_hora}`}
               />
             </div>
-            <button className={`${styles.input_area_boton} ${styles.buton_sigla_agregar}`} onClick={() => {}}>Agregar</button>
+            <button className={`${styles.Btn_rol} ${styles.buton_sigla_agregar}`} onClick={() => {}}>Agregar</button>
           </div>
           )}
           <table>
@@ -829,7 +840,7 @@ const ShiftTable: React.FC = () => {
               ))}
             </tbody>
           </table>
-          <div className={styles.input_area}>
+          <div className={styles.buttons_container}>
             {!siglaEditMode ? (
               <>
               <button className={`${styles.Btn_rol} ${styles.btn_editar}`} onClick={handleEditarsigla}>
@@ -853,6 +864,34 @@ const ShiftTable: React.FC = () => {
         </div>
       </div>
       )}
+
+      {showDoctorModal && (
+        <div className={`${styles.modal_container} ${styles.show}`}>
+          <div className={styles.modal_own}>
+            {loadingDoctorInfo ? (
+              <p>Cargando información...</p>
+            ) : selectedDoctor ? (
+              <>
+                <h2>Información del Médico</h2>
+                <p><strong>Nombre Completo:</strong> {`${selectedDoctor.nombres} ${selectedDoctor.primer_apellido} ${selectedDoctor.segundo_apellido}`}</p>
+                <p><strong>CI:</strong> {selectedDoctor.ci}</p>
+                <p><strong>Correo Electrónico:</strong> {selectedDoctor.correo_electronico}</p>
+                <p><strong>Teléfono:</strong> {selectedDoctor.telefono}</p>
+                <button
+                  className={`${styles.Btn_rol} ${styles.btn_cancelar}`}
+                  onClick={handleCloseDoctorModal}
+                >
+                  Cerrar
+                </button>
+              </>
+            ) : (
+              <p>No se pudo cargar la información del médico.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+
 
       {showAreaModal && (
         <div className={`${styles.modal_container} ${styles.show}`}>
@@ -1047,7 +1086,11 @@ const ShiftTable: React.FC = () => {
               return (
                 <tr key={doctor.doctor_id}>
                   <td>{doctor.doctor_id}</td>
-                  <td>{doctor.name}</td>
+                  <td onClick={() => handleOpenDoctorModal(doctor.doctor_id)}>
+                    {doctor.name}
+                  </td>
+
+
                   {/* Mostrar los nombres de las áreas concatenados */}
                   <td onClick={() => handleOpenAreaModal(doctor.area || '', doctor.doctor_id)}>
                     {areaNames || 'Agregar área'}
