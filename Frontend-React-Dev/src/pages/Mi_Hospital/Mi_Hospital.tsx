@@ -13,6 +13,7 @@ interface Especialidad {
 }
 
 const MiHospital: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
   const { establecimientoID } = useAuth(); // Extraemos establecimientoID del contexto de autenticación
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
@@ -24,7 +25,7 @@ const MiHospital: React.FC = () => {
 
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get<Especialidad[]>(`http://localhost:3000/estab-especialidad/especialidades/${establecimientoID}`);
+        const response = await axios.get<Especialidad[]>(`${API_BASE_URL}/estab-especialidad/especialidades/${establecimientoID}`);
         setEspecialidades(response.data);
       } catch (err) {
         setError('Error al cargar las especialidades del hospital');

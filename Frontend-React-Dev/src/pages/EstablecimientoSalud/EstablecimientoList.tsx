@@ -29,6 +29,8 @@ interface Establecimiento {
   redCordinacion: RedCordinacion; // Relación con Red de Coordinación
 }
 const EstablecimientoList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const { usuarioID } = useAuth(); // Obtén el usuario_ID del contexto
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,7 @@ const EstablecimientoList: React.FC = () => {
   useEffect(() => {
     const fetchEstablecimientos = async () => {
       try {
-        const response = await fetch('http://localhost:3000/establecimiento');
+        const response = await fetch(`${API_BASE_URL}/establecimiento`);
         if (!response.ok) {
           throw new Error('Error al obtener los establecimientos');
         }
@@ -68,7 +70,7 @@ const EstablecimientoList: React.FC = () => {
     if (!selectedEstablecimientoId) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/establecimiento/${selectedEstablecimientoId}`, {
+      const response = await fetch(`${API_BASE_URL}/establecimiento/${selectedEstablecimientoId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

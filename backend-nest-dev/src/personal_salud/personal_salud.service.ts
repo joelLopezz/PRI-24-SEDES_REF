@@ -19,12 +19,12 @@ export class PersonalSaludService {
     private usuarioService: UsuarioService, 
     private mailService: MailService,
     private dataSource: DataSource, 
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   // Crear un registro de personal de salud y usuario
   async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
-    const { rol, ...personalSaludData } = createPersonalSaludDto;
+    const { rol, especialidad, ...personalSaludData } = createPersonalSaludDto;
     const queryRunner = this.dataSource.createQueryRunner();
     try {
         await queryRunner.connect(); // Conectar el queryRunner
@@ -36,7 +36,6 @@ export class PersonalSaludService {
           throw new Error('Usuario no autenticado'); // Lanzar un error si no hay usuario autenticado
         }
 
-
         // Variables adicionales para el usuario de creación
         const usuarioCreacionId = currentUser.usuarioID; 
         const establecimiento_salud_idestablecimiento_ID = currentUser.establecimientoID;
@@ -45,9 +44,11 @@ export class PersonalSaludService {
         personalSaludData.fecha_creacion = new Date();
         personalSaludData.usuario_creacion = usuarioCreacionId;
         personalSaludData.establecimiento_salud_idestablecimiento_ID = establecimiento_salud_idestablecimiento_ID;
+
         // Crear el registro de personal de salud
         const personalSalud = this.personalSaludRepository.create(personalSaludData);
         const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
+
         // Generar nombre de usuario y contraseña
         const nombreUsuario = this.generarNombreUsuario(
             personalSaludData.nombres, 
@@ -55,6 +56,7 @@ export class PersonalSaludService {
             personalSaludData.segundo_apellido
         );
         const contrasenia = this.generarContrasenia();
+
         // Crear el usuario asociado al personal de salud creado
         const usuarioData: Partial<Usuario> = {
             nombre_usuario: nombreUsuario,
@@ -65,9 +67,16 @@ export class PersonalSaludService {
             establecimiento_id: establecimiento_salud_idestablecimiento_ID, // Se utiliza el valor establecido anteriormente
             fecha_creacion: new Date(),
         };
+
         await this.usuarioService.createUsuario(usuarioData, queryRunner);
+
+        // Crear la relación entre PersonalSalud, Especialidad y Hospital
+        const especialidadId = especialidad;
+        const personalId = savedPersonalSalud.personal_ID;
+
         // Confirmar la transacción
         await queryRunner.commitTransaction();
+
         // Enviar las credenciales por correo electrónico
         await this.mailService.sendUserCredentials(
             personalSaludData.nombres,
@@ -79,6 +88,7 @@ export class PersonalSaludService {
             personalSaludData.telefono
         );
         return savedPersonalSalud;
+
     } catch (error) {
         if (queryRunner.isTransactionActive) { // Solo hacer rollback si la transacción está activa
             await queryRunner.rollbackTransaction();

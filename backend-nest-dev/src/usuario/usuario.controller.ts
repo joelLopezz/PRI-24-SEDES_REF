@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Put, Param, Body, HttpStatus, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Put, Param, Body, HttpStatus, NotFoundException, Logger } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { AuthService } from '../Auth/auth.service';
 // import Login from '../../../Frontend-React-Dev/src/pages/Login/login';
 
 @Controller('usuario')
 export class UsuarioController {
+  [x: string]: any;
   constructor(
     private readonly usuarioService: UsuarioService,
     private readonly authService: AuthService, // Inyectar el AuthService aquí
@@ -49,25 +50,75 @@ export class UsuarioController {
   }
   
 
-  // Actualizar la contraseña del usuario
-  @Put(':usuario_ID/contrasenia')
-  async updatePassword(
-    @Param('usuario_ID') usuario_ID: number,
-    @Body('contraseniaActual') contraseniaActual: string, // Incluye la contraseña actual
+
+
+  // Recuperar contraseña del usuario
+  @Put('recuperar-contrasenia')
+  async recoverPassword(
+    @Body('correoElectronico') correoElectronico: string,
+    @Body('contraseniaActual') contraseniaActual: string,
     @Body('nuevaContrasenia') nuevaContrasenia: string,
   ) {
     try {
-      await this.usuarioService.updatePassword(usuario_ID, contraseniaActual, nuevaContrasenia);
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) {
+        return {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Usuario no autenticado',
+        };
+      }
+
+      const usuario = await this.usuarioService.findUsuarioByEmailAndUsername(currentUser.nombre, correoElectronico);
+      if (!usuario) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'No se encontró un usuario con el correo proporcionado',
+        };
+      }
+
+      // Validar la contraseña actual
+      const isPasswordMatching = await this.usuarioService.validatePassword(contraseniaActual, usuario.contrasenia);
+      if (!isPasswordMatching) {
+        return {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'La contraseña actual es incorrecta',
+        };
+      }
+
+      await this.usuarioService.updatePassword(usuario.usuario_ID, nuevaContrasenia);
 
       return {
         statusCode: HttpStatus.OK,
         message: 'Contraseña actualizada exitosamente',
       };
     } catch (error) {
+      this.logger.error(`Error al recuperar contraseña: ${error.message}`);
       return {
         statusCode: error instanceof NotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST,
         message: error.message,
       };
     }
   }
+
+  // Actualizar la contraseña del usuario
+  // @Put(':usuario_ID/contrasenia')
+  // async updatePassword(
+  //   @Param('usuario_ID') usuario_ID: number,
+  //   @Body('contraseniaActual') contraseniaActual: string, // Incluye la contraseña actual
+  //   @Body('nuevaContrasenia') nuevaContrasenia: string,
+  // ) {
+  //   try {
+  //     await this.usuarioService.updatePassword(usuario_ID, contraseniaActual, nuevaContrasenia);
+
+  //     return {
+  //       statusCode: HttpStatus.OK,
+  //       message: 'Contraseña actualizada exitosamente',
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       statusCode: error instanceof NotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST,
+  //       message: error.message,
+  //     };
+  //   }
+  // }
 }

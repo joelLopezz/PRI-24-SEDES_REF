@@ -20,6 +20,8 @@ const PersonalSaludEdit: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+
+
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -32,7 +34,10 @@ const PersonalSaludEdit: React.FC = () => {
         if (!response.ok) {
           throw new Error('Error al cargar los datos del personal de salud');
         }
-        const data = await response.json();
+        const personalData = await response.json();
+        // Asumimos que los datos están en la propiedad 'data'
+       const data = personalData.data;
+        console.log('Datos del personal cargados:', data); // Verifica los datos
         setFormData({
           nombres: data.nombres,
           primer_apellido: data.primer_apellido,
@@ -52,11 +57,12 @@ const PersonalSaludEdit: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     if (id) {
       fetchPersonalData();
     }
   }, [id]);
+  
 
   // Manejo de cambios en los inputs del formulario
   const handleInputChange = (

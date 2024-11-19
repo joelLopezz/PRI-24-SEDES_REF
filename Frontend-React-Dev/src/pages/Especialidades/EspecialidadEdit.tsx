@@ -16,6 +16,7 @@ interface Especialidad {
 }
 
 const EspecialidadEdit: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const { usuarioID } = useAuth();
   const { id } = useParams<{ id: string }>();
@@ -34,7 +35,7 @@ const EspecialidadEdit: React.FC = () => {
   useEffect(() => {
     const fetchEspecialidad = async () => {
       try {
-        const response = await axios.get<Especialidad>(`http://localhost:3000/specialties/${id}`);
+        const response = await axios.get<Especialidad>(`${API_BASE_URL}/specialties/${id}`);
         setFormData(response.data);
         setLoading(false);
       } catch (error) {
@@ -74,7 +75,7 @@ const EspecialidadEdit: React.FC = () => {
         usuario_modificacion: usuarioID,
       };
   
-      await axios.put(`http://localhost:3000/specialties/${id}`, upperCaseData);
+      await axios.put(`${API_BASE_URL}/specialties/${id}`, upperCaseData);
       setModalOpen(true); // Abrimos el modal de éxito
     } catch (error) {
       console.error('Error al actualizar la especialidad:', error);

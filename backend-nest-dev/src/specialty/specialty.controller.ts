@@ -29,17 +29,16 @@ export class SpecialtyController {
     return this.specialtyService.getAllSpecialties();
   }
 
+  @Get('list') // Cambia 'select' a algo más específico como 'list'
+  async getSpecialtiesForSelect(): Promise<Partial<Specialty[]>> {
+    return this.specialtyService.getSpecialtiesForSelect();
+  }
+
   // Obtener una especialidad por ID
   @Get(':id')
   async getSpecialtyById(@Param('id') id: number): Promise<Specialty> {
     return this.specialtyService.getSpecialtyById(id);
   }
-
-  @Get('select')
-    async getSpecialtiesForSelect(): Promise<Partial<Specialty[]>> {
-      return this.specialtyService.getSpecialtiesForSelect();
-    }
-
 
   // Actualizar una especialidad por ID
   @Put(':id')

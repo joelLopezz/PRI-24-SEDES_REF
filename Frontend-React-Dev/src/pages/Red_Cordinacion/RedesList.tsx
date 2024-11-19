@@ -12,6 +12,7 @@ interface RedCordinacion {
 }
 
 const RedesList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth();
   const [redes, setRedes] = useState<RedCordinacion[]>([]);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
@@ -23,7 +24,7 @@ const RedesList: React.FC = () => {
 
   const fetchRedes = async () => {
     try {
-      const response = await axios.get<RedCordinacion[]>('http://localhost:3000/red-cordinacion');
+      const response = await axios.get<RedCordinacion[]>(`${API_BASE_URL}/red-cordinacion`);
       setRedes(response.data);
     } catch (error) {
       console.error('Error al cargar las redes de coordinación:', error);
@@ -39,7 +40,7 @@ const RedesList: React.FC = () => {
     if (selectedId !== null) {
       try {
         await axios.request({
-          url: `http://localhost:3000/red-cordinacion/${selectedId}`,
+          url: `${API_BASE_URL}/red-cordinacion/${selectedId}`,
           method: 'DELETE',
           data: {
             usuario_ID: usuarioID, // Aquí envías el usuario_ID desde el contexto

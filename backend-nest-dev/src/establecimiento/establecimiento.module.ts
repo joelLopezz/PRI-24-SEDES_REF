@@ -14,5 +14,6 @@ import { MunicipioModule } from '../municipio/municipio.module'; // Importar el 
   ],
   controllers: [EstablecimientoController],
   providers: [EstablecimientoService],
+  exports: [TypeOrmModule, EstablecimientoModule],
 })
 export class EstablecimientoModule {}

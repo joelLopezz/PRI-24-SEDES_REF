@@ -3,6 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+interface specialty {
+  id: number;
+  nombre: string;
+}
+
+
 const PersonalSaludCreate: React.FC = () => {
   // Definir el estado inicial del formulario, sin incluir establecimiento_id
   const [formData, setFormData] = useState({
@@ -16,13 +22,51 @@ const PersonalSaludCreate: React.FC = () => {
     correo_electronico: '',
     rol: '',
     telefono: '',
+    especialidad: '',
   });
 
+  const [specialties, setSpecialties] = useState<specialty[]>([]); // Estado para almacenar las especialidades
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const especialidadId = formData.especialidad; // Obtenido del formulario
+
+
+  // Enviar solicitud POST al backend
+  fetch('http://localhost:3000/personal-especialidad-hospital', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ especialidadId }),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error('Error:', error));
+
+  useEffect(() => {
+    // Función para obtener las especialidades desde el backend
+    const fetchSpecialties = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/specialties/list');
+        if (!response.ok) {
+          throw new Error('Error al obtener las especialidades');
+        }
+        const data = await response.json();
+        setSpecialties(data); // Almacenar las especialidades en el estado
+      } catch (error) {
+        console.error('Error al obtener las especialidades:', error);
+        setErrorMessage('Error al cargar las especialidades');
+      }
+    };
+
+    fetchSpecialties();
+  }, []); // Ejecutar una vez al montar el componente
+
+
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -43,6 +87,7 @@ const PersonalSaludCreate: React.FC = () => {
       correo_electronico: '',
       rol: '',
       telefono: '',
+      especialidad: '',
     });
     setErrorMessage('');
     setSuccessMessage('');
@@ -86,7 +131,30 @@ const PersonalSaludCreate: React.FC = () => {
   
       // Mostrar mensaje de éxito si la solicitud fue exitosa
       setSuccessMessage('Personal de salud creado correctamente');
-      setTimeout(() => navigate('/personal-salud'), 1500);
+
+      //envio de especiañidad al back
+      const especialidadId = formData.especialidad;
+      await fetch('http://localhost:3000/personal-especialidad-hospital', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ especialidadId }),
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error al crear la relación Personal-Especialidad-Hospital');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Relación creada correctamente:', data);
+      })
+      .catch((error) => {
+        console.error('Error al crear la relación:', error);
+      });
+
+      setTimeout(() => navigate('/personal-salud'), 1000);
   
     } catch (error) {
       console.error('Error al hacer la solicitud:', error);
@@ -209,40 +277,6 @@ const PersonalSaludCreate: React.FC = () => {
               />
             </div>
 
-            {/* Sexo */}
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Sexo:</label>
-              <div className="form-check">
-                <input
-                  type="radio"
-                  id="sexoM"
-                  name="sexo"
-                  value="M"
-                  checked={formData.sexo === 'M'}
-                  onChange={handleInputChange}
-                  className="form-check-input"
-                  required
-                />
-                <label htmlFor="sexoM" className="form-check-label">
-                  Masculino
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  type="radio"
-                  id="sexoF"
-                  name="sexo"
-                  value="F"
-                  checked={formData.sexo === 'F'}
-                  onChange={handleInputChange}
-                  className="form-check-input"
-                  required
-                />
-                <label htmlFor="sexoF" className="form-check-label">
-                  Femenino
-                </label>
-              </div>
-            </div>
 
             {/* Cargo */}
             <div className="col-md-6 mb-3">
@@ -293,7 +327,86 @@ const PersonalSaludCreate: React.FC = () => {
                 <option value="Admin Hospital">Admin Hospital</option>
                 <option value="Doctor">Doctor</option>
                 <option value="Admin Sedes">Admin Sedes</option>
+                <option value="Admin Sedes">Enfermera</option>
               </select>
+            </div>
+
+
+            {/*Especialidad */}
+            <div className="col-md-6 mb-3">
+              <label htmlFor="especialidad" className="form-label">
+                Especialidad:
+              </label>
+              <select
+                id="especialidad"
+                name="especialidad"
+                value={formData.especialidad}
+                onChange={handleInputChange}
+                className="form-select"
+                required
+              >
+                <option value="">Seleccione una especialidad</option>
+                {specialties.map((specialty) => (
+                  <option key={specialty.id} value={specialty.id}>
+                    {specialty.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+
+
+
+            {/* <div className="col-md-6 mb-3">
+              <label htmlFor="rol" className="form-label">
+                Especialidad:
+              </label>
+              <select
+                id="especialidad"
+                name="especialidad"
+                value={formData.especialidad}
+                onChange={handleInputChange}
+                className="form-select"
+                required
+              >
+                
+              </select>
+            </div> */}
+
+
+            {/* Sexo */}
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Sexo:</label>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  id="sexoM"
+                  name="sexo"
+                  value="M"
+                  checked={formData.sexo === 'M'}
+                  onChange={handleInputChange}
+                  className="form-check-input"
+                  required
+                />
+                <label htmlFor="sexoM" className="form-check-label">
+                  Masculino
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  id="sexoF"
+                  name="sexo"
+                  value="F"
+                  checked={formData.sexo === 'F'}
+                  onChange={handleInputChange}
+                  className="form-check-input"
+                  required
+                />
+                <label htmlFor="sexoF" className="form-check-label">
+                  Femenino
+                </label>
+              </div>
             </div>
           </div>
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,6 +12,7 @@ interface Especialidad {
 }
 
 const HospitalInfo: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { id: establecimientoId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
@@ -20,7 +22,7 @@ const HospitalInfo: React.FC = () => {
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get<Especialidad[]>(`http://localhost:3000/estab-especialidad/especialidades/${establecimientoId}`);
+        const response = await axios.get<Especialidad[]>(`${API_BASE_URL}/estab-especialidad/especialidades/${establecimientoId}`);
         setEspecialidades(response.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {

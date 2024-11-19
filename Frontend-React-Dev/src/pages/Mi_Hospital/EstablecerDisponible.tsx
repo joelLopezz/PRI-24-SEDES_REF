@@ -18,6 +18,7 @@ interface Servicio {
 }
 
 const EstablecerDisponible: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { especialidadId } = useParams<{ especialidadId: string }>();
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const EstablecerDisponible: React.FC = () => {
       }
       try {
         const response = await axios.get<Servicio[]>(
-          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/servicios`
+          `${API_BASE_URL}/estab-servicio/establecimiento/${establecimientoID}/especialidad/${especialidadId}/servicios`
         );
         setServicios(response.data);
       } catch (err) {
@@ -73,7 +74,7 @@ const EstablecerDisponible: React.FC = () => {
       await Promise.all(
         updates.map((update) =>
           axios.patch(
-            `http://localhost:3000/estab-servicio/${update.id}`,
+            `${API_BASE_URL}/estab-servicio/${update.id}`,
             update
           )
         )

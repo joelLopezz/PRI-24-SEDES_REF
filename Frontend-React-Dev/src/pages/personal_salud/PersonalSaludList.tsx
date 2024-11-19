@@ -87,8 +87,8 @@ const PersonalSaludList: React.FC = () => {
   };
 
   // Redirigir a la página de edición
-  const handleEdit = (id: number) => {
-    navigate(`/personal-salud/edit/${id}`);
+  const handleEdit = (personal_ID:number) => {
+    navigate(`/personal-salud/edit/${personal_ID}`);
   };
 
   return (
@@ -131,7 +131,7 @@ const PersonalSaludList: React.FC = () => {
                   className="button-eliminar"
                   onClick={() => handleDelete(personal.personal_ID)}>
                   <i className="fas fa-trash"></i>
-                  Eliminar
+                  Eliminar1
                 </button>
               </td>
 

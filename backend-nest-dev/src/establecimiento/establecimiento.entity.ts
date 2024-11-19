@@ -78,4 +78,6 @@ export class EstablecimientoSalud {
   // Definir la relación inversa con la entidad PersonalSalud
   @OneToMany(() => PersonalSalud, (personal) => personal.establecimientoSalud)
   personalSalud: PersonalSalud[]; // Relación inversa para conectar con `PersonalSalud`
+
+
 }

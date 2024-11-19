@@ -89,6 +89,13 @@ import { RolTurnosModule } from './rol_turnos/rol_turnos.module';
     CodificacionTurnosModule,
     RolTurnosModule,
     forwardRef(() => AuthModule),
+
+    PersonalSaludModule,
+    UsuarioModule,
+    AuthModule,
+    MailModule,
+    SpecialtyModule,
+    EstablecimientoModule,
   ],
   controllers: [
     AppController,

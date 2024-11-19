@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 
 const Login: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  
   const { setRole, setUsuarioID, setEstablecimientoID, setIsAuthenticated } = useAuth();
   const [focusInput, setFocusInput] = useState({ username: false, password: false });
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -38,7 +40,7 @@ const Login: React.FC = () => {
       contrasenia: formData.password,
     };
 
-    fetch('http://localhost:3000/usuario/login', {
+    fetch(`${API_BASE_URL}/usuario/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

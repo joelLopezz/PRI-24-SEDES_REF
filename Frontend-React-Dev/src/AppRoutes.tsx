@@ -14,11 +14,10 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<Login />} />
 
       {/* Rutas protegidas */}
-      {isAuthenticated ? (
-        <Route path="/*" element={<ProtectedRoutes />} />
-      ) : (
-        <Route path="/*" element={<Navigate to="/login" />} />
-      )}
+      <Route
+        path="/*"
+        element={isAuthenticated ? <ProtectedRoutes /> : <Navigate to="/login" replace />}
+      />
     </Routes>
   );
 };

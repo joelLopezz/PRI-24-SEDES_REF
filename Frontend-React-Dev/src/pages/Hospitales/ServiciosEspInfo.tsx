@@ -12,6 +12,7 @@ interface Servicio {
 }
 
 const ServiciosEspInfo: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { especialidadId } = useParams<{ especialidadId: string }>();
   const { state } = useLocation();
   const { especialidadNombre, establecimientoId } = state as { especialidadNombre: string; establecimientoId: string };
@@ -24,7 +25,7 @@ const ServiciosEspInfo: React.FC = () => {
     const fetchServicios = async () => {
       try {
         const response = await axios.get<Servicio[]>(
-          `http://localhost:3000/estab-servicio/establecimiento/${establecimientoId}/especialidad/${especialidadId}/servicios`
+          `${API_BASE_URL}/estab-servicio/establecimiento/${establecimientoId}/especialidad/${especialidadId}/servicios`
         );
         setServicios(response.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

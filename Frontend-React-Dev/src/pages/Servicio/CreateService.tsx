@@ -13,6 +13,7 @@ interface Especialidad {
 }
 
 const CreateService: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { usuarioID } = useAuth();
   const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ const CreateService: React.FC = () => {
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get<Especialidad[]>('http://localhost:3000/specialties'); // Endpoints de especialidades
+        const response = await axios.get<Especialidad[]>(`${API_BASE_URL}/specialties`); // Endpoints de especialidades
         setEspecialidades(response.data); // Ahora TypeScript sabrá que response.data es de tipo Especialidad[]
       } catch (error) {
         console.error('Error al obtener las especialidades:', error);
@@ -91,7 +92,7 @@ const CreateService: React.FC = () => {
         usuario_ID: usuarioID,  // Utiliza el usuarioID del contexto
       };
   
-      await axios.post('http://localhost:3000/servicio', formDataUpperCase);
+      await axios.post(`${API_BASE_URL}/servicio`, formDataUpperCase);
       setModalOpen(true);
     } catch (error) {
       console.error('Error al crear el servicio:', error);

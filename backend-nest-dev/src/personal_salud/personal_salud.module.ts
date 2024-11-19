@@ -62,7 +62,7 @@ import { AuthModule } from '../Auth/auth.module'; // Importar el AuthModule
   ],
   providers: [PersonalSaludService],
   controllers: [PersonalSaludController],
-  exports: [TypeOrmModule], // Exportamos el TypeOrmModule para que otros módulos puedan acceder al repositorio de PersonalSalud
+  exports: [TypeOrmModule, PersonalSaludService], // Exportamos el TypeOrmModule para que otros módulos puedan acceder al repositorio de PersonalSalud
 })
 export class PersonalSaludModule {}
 

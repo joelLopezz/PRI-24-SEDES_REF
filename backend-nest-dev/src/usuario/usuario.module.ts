@@ -17,8 +17,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsuarioService } from './usuario.service';
 import { Usuario } from './usuario.entity';
 import { UsuarioController } from './usuario.controller';
-import { PersonalSaludModule } from '../personal_salud/personal_salud.module';
+import { PersonalSaludModule } from '../personal_salud/personal_salud.module'; //
 import { AuthModule } from '../Auth/auth.module';
+
+
 
 @Module({
   imports: [
