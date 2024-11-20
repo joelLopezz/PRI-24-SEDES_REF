@@ -6,6 +6,7 @@ import { Municipio } from '../municipio/municipio.entity';
 import {Cama}  from '../cama/cama.entity'; 
 import {RolTurno}  from '../rol_turnos/rol_turno.entity'; 
 import { PersonalSalud } from '../personal_salud/personal_salud.entity';
+import {PersoEspeciaHospital} from '../perso_especia_hospital/entities/perso_especia_hospital.entity'
 
 import {
   Entity,
@@ -79,5 +80,6 @@ export class EstablecimientoSalud {
   @OneToMany(() => PersonalSalud, (personal) => personal.establecimientoSalud)
   personalSalud: PersonalSalud[]; // Relación inversa para conectar con `PersonalSalud`
 
-
+  @OneToMany(() => PersoEspeciaHospital, (especial) => especial.hospital)
+  personalEspecialidadHospital: PersoEspeciaHospital[];
 }
