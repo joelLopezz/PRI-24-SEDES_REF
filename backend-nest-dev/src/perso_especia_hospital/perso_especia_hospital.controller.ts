@@ -12,15 +12,34 @@ export class PersoEspeciaHospitalController {
     return this.persoEspeciaHospitalService.create(createPersoEspeciaHospitalDto);
   }
 
+  @Patch('update-by-personal-salud/:personalSaludId')
+  async updateByPersonalSalud(
+    @Param('personalSaludId') personalSaludId: number,
+    @Body() updateDto: UpdatePersoEspeciaHospitalDto,
+  ) {
+    return await this.persoEspeciaHospitalService.updateByPersonalSalud(personalSaludId, updateDto);
+  }
+
+  @Delete('delete-by-personal-salud/:personalSaludId')
+  async deleteByPersonalSalud(
+    @Param('personalSaludId') personalSaludId: number,
+  ) {
+    return await this.persoEspeciaHospitalService.deleteByPersonalSalud(personalSaludId);
+  }
+  
+
   @Get()
   findAll() {
     return this.persoEspeciaHospitalService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.persoEspeciaHospitalService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    console.log(`Fetching record with ID: ${id}`);
+
+    return await this.persoEspeciaHospitalService.findOne(id);
   }
+
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePersoEspeciaHospitalDto: UpdatePersoEspeciaHospitalDto) {
