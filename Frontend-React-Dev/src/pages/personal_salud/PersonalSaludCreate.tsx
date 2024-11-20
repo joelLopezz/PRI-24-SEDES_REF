@@ -35,17 +35,7 @@ const PersonalSaludCreate: React.FC = () => {
   const especialidadId = formData.especialidad; // Obtenido del formulario
 
 
-  // Enviar solicitud POST al backend
-  fetch('http://localhost:3000/personal-especialidad-hospital', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ especialidadId }),
-  })
-    .then((response) => response.json())
-    .then((data) => console.log(data))
-    .catch((error) => console.error('Error:', error));
+  
 
   useEffect(() => {
     // Función para obtener las especialidades desde el backend
@@ -101,68 +91,73 @@ const PersonalSaludCreate: React.FC = () => {
     e.preventDefault();
   
     // Verificar que los campos requeridos estén llenos
-    if (!formData.nombres || !formData.primer_apellido || !formData.ci || !formData.telefono || !formData.correo_electronico || !formData.rol) {
+    if (
+      !formData.nombres ||
+      !formData.primer_apellido ||
+      !formData.ci ||
+      !formData.telefono ||
+      !formData.correo_electronico ||
+      !formData.rol
+    ) {
       setErrorMessage("Todos los campos obligatorios deben ser completados.");
       return;
     }
   
-    console.log('Datos enviados al servidor:', formData); // Mostrar datos en consola para depuración
+    console.log("Datos enviados al servidor:", formData); // Mostrar datos en consola para depuración
   
-    const url = 'http://localhost:3000/personal-salud';
+    const url = "http://localhost:3000/personal-salud";
     setLoading(true);
   
+    // Construir el JSON a enviar
+    const payload = {
+      personal: {
+        nombres: formData.nombres,
+        primer_apellido: formData.primer_apellido,
+        segundo_apellido: formData.segundo_apellido,
+        ci: formData.ci,
+        matricula_profesional: formData.matricula_profesional,
+        sexo: formData.sexo,
+        cargo: formData.cargo,
+        correo_electronico: formData.correo_electronico,
+        rol: formData.rol,
+        telefono: formData.telefono,
+      },
+      especialidad: {
+        especialidad_id: formData.especialidad,
+      },
+    };
+  
     try {
-      // Enviar solicitud POST al backend sin incluir establecimiento_id
+      // Enviar solicitud POST al backend con el nuevo JSON
       const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
   
       // Manejo de la respuesta del servidor
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Error en el servidor:', errorData);
-        setErrorMessage(errorData.message || 'Error al guardar los datos');
+        console.error("Error en el servidor:", errorData);
+        setErrorMessage(errorData.message || "Error al guardar los datos");
         return;
       }
   
       // Mostrar mensaje de éxito si la solicitud fue exitosa
-      setSuccessMessage('Personal de salud creado correctamente');
-
-      //envio de especiañidad al back
-      const especialidadId = formData.especialidad;
-      await fetch('http://localhost:3000/personal-especialidad-hospital', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ especialidadId }),
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error al crear la relación Personal-Especialidad-Hospital');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Relación creada correctamente:', data);
-      })
-      .catch((error) => {
-        console.error('Error al crear la relación:', error);
-      });
-
-      setTimeout(() => navigate('/personal-salud'), 1000);
+      setSuccessMessage("Personal de salud creado correctamente");
   
+      // Navegar después de un pequeño retraso para que se vea el mensaje
+      setTimeout(() => navigate("/personal-salud"), 1000);
     } catch (error) {
-      console.error('Error al hacer la solicitud:', error);
-      setErrorMessage('Ocurrió un error inesperado al enviar los datos.');
+      console.error("Error al hacer la solicitud:", error);
+      setErrorMessage("Ocurrió un error inesperado al enviar los datos.");
     } finally {
       setLoading(false);
     }
   };
+   
 
   
 
