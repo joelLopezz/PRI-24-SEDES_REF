@@ -19,6 +19,7 @@ import { EstablecimientoSalud } from 'src/establecimiento/establecimiento.entity
   ],
   controllers: [PersoEspeciaHospitalController],
   providers: [PersoEspeciaHospitalService],
+  exports: [PersoEspeciaHospitalService],
 })
 export class PersoEspeciaHospitalModule {}
 

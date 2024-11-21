@@ -11,12 +11,16 @@ import { Usuario } from '../usuario/usuario.entity';
 import { CreatePersonalSaludDto } from './dto/personal_salud.dto';
 import { AuthService } from '../Auth/auth.service';
 
+import { PersoEspeciaHospitalService } from '../perso_especia_hospital/perso_especia_hospital.service';
+import { CreatePersoEspeciaHospitalDto } from '../perso_especia_hospital/dto/create-perso_especia_hospital.dto';
+
 @Injectable()
 export class PersonalSaludService {
   constructor(
     @InjectRepository(PersonalSalud)
     private personalSaludRepository: Repository<PersonalSalud>,
     private usuarioService: UsuarioService, 
+    private persoEspeciaHospitalService: PersoEspeciaHospitalService,
     private mailService: MailService,
     private dataSource: DataSource, 
     private authService: AuthService,
@@ -24,107 +28,77 @@ export class PersonalSaludService {
 
   //Prueba
 
-  async createNewPersonalSalud(data: any): Promise<PersonalSalud> {
+  
+  async createPersonalSalud_v2(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
     const queryRunner = this.dataSource.createQueryRunner();
-  
     try {
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-  
-      const { personal, especialidad } = data;
-  
-      // Obtener datos del usuario autenticado desde AuthService
+      await queryRunner.connect(); // Conectar el queryRunner
+      await queryRunner.startTransaction(); // Iniciar la transacción
+
+      // Obtener el usuario autenticado desde AuthService
       const currentUser = this.authService.getCurrentUser();
       if (!currentUser) {
-        throw new Error('Usuario no autenticado');
+        throw new Error('Usuario no autenticado'); // Lanzar un error si no hay usuario autenticado
       }
-  
+
+      // Variables adicionales para el usuario de creación
       const usuarioCreacionId = currentUser.usuarioID;
-      const establecimientoId = currentUser.establecimientoID;
-  
-      // 1. Insertar Personal de Salud
-      const newPersonalSalud = this.personalSaludRepository.create({
-        ...personal,
-        establecimiento_salud_idestablecimiento_ID: establecimientoId,
+      const establecimientoSaludId = currentUser.establecimientoID;
+
+      // Añadir la fecha de creación y el usuario que está creando este registro
+      const personalSaludData = {
+        ...createPersonalSaludDto,
+        fecha_creacion: new Date(),
         usuario_creacion: usuarioCreacionId,
-        fecha_creacion: new Date(),
-      });
-      
-      
-      console.log('Contenido de newPersonalSalud antes de guardar:', newPersonalSalud);
-      
-      const savedPersonalSalud: PersonalSalud = await queryRunner.manager
-      .getRepository(PersonalSalud)
-      .save(newPersonalSalud);
+        establecimiento_salud_idestablecimiento_ID: establecimientoSaludId,
+      };
 
-    console.log('savedPersonalSalud:', savedPersonalSalud); // Asegúrate de que sea un único objeto
+      // Crear el registro de personal de salud
+      const personalSalud = this.personalSaludRepository.create(personalSaludData);
+      const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
 
-
-      
-      console.log('PersonalSalud guardado:', savedPersonalSalud);
-      
-  
-      // 2. Crear Usuario asociado al Personal de Salud
-      const username = this.generarNombreUsuario(
-        personal.nombres,
-        personal.primer_apellido,
-        personal.segundo_apellido
+      // Crear el usuario asociado al personal de salud creado
+      const nombreUsuario = this.generarNombreUsuario(
+        personalSaludData.nombres,
+        personalSaludData.primer_apellido,
+        personalSaludData.segundo_apellido
       );
-      const password = this.generarContrasenia();
-  
-      const newUser = {
-        nombre_usuario: username,
-        contrasenia: password,
-        rol: personal.rol,
+      const contrasenia = this.generarContrasenia();
+      const usuarioData: Partial<Usuario> = {
+        nombre_usuario: nombreUsuario,
+        contrasenia,
         estado: 1,
-        personal: savedPersonalSalud, // Esto debe ser un único objeto
-        establecimiento_id: establecimientoId,
+        personal: savedPersonalSalud,
+        establecimiento_id: establecimientoSaludId,
         fecha_creacion: new Date(),
       };
-      
-  
-      await this.usuarioService.createUsuario(newUser, queryRunner);
 
-  
-      // 3. Insertar en PersoEspeciaHospital
-      const newPersoEspeciaHospital = {
-        personal_salud: savedPersonalSalud,
-        especialidad: { id: especialidad.especialidad_id }, // Especialidad desde el JSON
-        hospital: { id: establecimientoId }, // Hospital desde el usuario autenticado
+      await this.usuarioService.createUsuario(usuarioData, queryRunner);
+
+      // Crear la relación entre PersonalSalud, Especialidad y Hospital
+      const createPersoEspeciaHospitalDto: CreatePersoEspeciaHospitalDto = {
+        personal_salud: savedPersonalSalud.personal_ID,
+        especialidad: createPersonalSaludDto.especialidad,
+        hospital: establecimientoSaludId,
       };
-  
-      await queryRunner.manager
-        .getRepository('PersoEspeciaHospital')
-        .save(newPersoEspeciaHospital);
-  
-      // Confirmar transacción
+      await this.persoEspeciaHospitalService.create(createPersoEspeciaHospitalDto);
+
+      // Confirmar la transacción
       await queryRunner.commitTransaction();
-  
-      // Enviar credenciales por correo electrónico
-      await this.mailService.sendUserCredentials(
-        personal.nombres,
-        personal.primer_apellido,
-        personal.segundo_apellido,
-        personal.correo_electronico,
-        username,
-        password,
-        personal.telefono
-      );
-  
-      return savedPersonalSalud; // Retornar el registro recién creado de PersonalSalud
+
+      // Retornar el personal de salud creado
+      return savedPersonalSalud;
     } catch (error) {
       if (queryRunner.isTransactionActive) {
-        await queryRunner.rollbackTransaction();
+        await queryRunner.rollbackTransaction(); // Hacer rollback si ocurre un error
       }
       throw error;
     } finally {
       if (!queryRunner.isReleased) {
-        await queryRunner.release();
+        await queryRunner.release(); // Liberar el queryRunner
       }
     }
   }
-  
-  
   
 
   //fin de prueba

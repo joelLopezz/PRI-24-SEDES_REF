@@ -9,8 +9,8 @@ export class PersonalSaludController {
   constructor(private readonly personalSaludService: PersonalSaludService) {}
 
   @Post('create-new-personal-salud')
-  async createNewPersonalSalud(@Body() data: any) {
-    return await this.personalSaludService.createNewPersonalSalud(data);
+  async createPersonalSalud_v2(@Body() data: any) {
+    return await this.personalSaludService.createPersonalSalud_v2(data);
   }
 
 
