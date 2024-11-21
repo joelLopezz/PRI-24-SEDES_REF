@@ -35,15 +35,23 @@ export class PersonalSaludService {
       await queryRunner.connect(); // Conectar el queryRunner
       await queryRunner.startTransaction(); // Iniciar la transacción
 
+      console.log('Paso 1: Conexión y transacción iniciada.');
+
       // Obtener el usuario autenticado desde AuthService
+      console.log('Paso 2: Intentando obtener el usuario autenticado...');
       const currentUser = this.authService.getCurrentUser();
       if (!currentUser) {
+        console.error('Error: Usuario no autenticado.');
         throw new Error('Usuario no autenticado'); // Lanzar un error si no hay usuario autenticado
       }
+      console.log('Paso 3: Usuario autenticado:', currentUser);
 
       // Variables adicionales para el usuario de creación
-      const usuarioCreacionId = currentUser.usuarioID;
-      const establecimientoSaludId = currentUser.establecimientoID;
+      const usuarioCreacionId = 1;
+      const establecimientoSaludId = 1;
+
+      console.log('Paso 4: Usuario de creación ID:', usuarioCreacionId);
+      console.log('Paso 5: Establecimiento de salud ID:', establecimientoSaludId);
 
       // Añadir la fecha de creación y el usuario que está creando este registro
       const personalSaludData = {
@@ -53,9 +61,13 @@ export class PersonalSaludService {
         establecimiento_salud_idestablecimiento_ID: establecimientoSaludId,
       };
 
+      console.log('Paso 6: Datos del personal de salud a crear:', personalSaludData);
+
       // Crear el registro de personal de salud
       const personalSalud = this.personalSaludRepository.create(personalSaludData);
       const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
+
+      console.log('Paso 7: Personal de salud creado exitosamente:', savedPersonalSalud);
 
       // Crear el usuario asociado al personal de salud creado
       const nombreUsuario = this.generarNombreUsuario(
@@ -68,12 +80,17 @@ export class PersonalSaludService {
         nombre_usuario: nombreUsuario,
         contrasenia,
         estado: 1,
+        rol: createPersonalSaludDto.rol,
         personal: savedPersonalSalud,
         establecimiento_id: establecimientoSaludId,
         fecha_creacion: new Date(),
       };
 
+      console.log('Paso 8: Datos del usuario a crear:', usuarioData);
+
       await this.usuarioService.createUsuario(usuarioData, queryRunner);
+
+      console.log('Paso 9: Usuario creado exitosamente.');
 
       // Crear la relación entre PersonalSalud, Especialidad y Hospital
       const createPersoEspeciaHospitalDto: CreatePersoEspeciaHospitalDto = {
@@ -81,21 +98,43 @@ export class PersonalSaludService {
         especialidad: createPersonalSaludDto.especialidad,
         hospital: establecimientoSaludId,
       };
-      await this.persoEspeciaHospitalService.create(createPersoEspeciaHospitalDto);
+      console.log('Paso 10: Datos para la relación entre personal, especialidad y hospital:', createPersoEspeciaHospitalDto);
+      await this.persoEspeciaHospitalService.create(createPersoEspeciaHospitalDto, queryRunner);
+
+      console.log('Paso 11: Relación entre personal, especialidad y hospital creada exitosamente.');
+
+      // Enviar las credenciales por correo electrónico
+      console.log('Paso 12: Enviando credenciales al correo electrónico del personal de salud.');
+      await this.mailService.sendUserCredentials(
+        personalSaludData.nombres,
+        personalSaludData.primer_apellido,
+        personalSaludData.segundo_apellido,
+        personalSaludData.correo_electronico,
+        nombreUsuario,
+        contrasenia,
+        personalSaludData.telefono
+      );
+
+      console.log('Paso 13: Correo electrónico enviado exitosamente.');
 
       // Confirmar la transacción
       await queryRunner.commitTransaction();
 
+      console.log('Paso 14: Transacción confirmada.');
+
       // Retornar el personal de salud creado
       return savedPersonalSalud;
     } catch (error) {
+      console.error('Error durante la creación del personal de salud:', error);
       if (queryRunner.isTransactionActive) {
         await queryRunner.rollbackTransaction(); // Hacer rollback si ocurre un error
+        console.log('Transacción revertida debido a un error.');
       }
       throw error;
     } finally {
       if (!queryRunner.isReleased) {
         await queryRunner.release(); // Liberar el queryRunner
+        console.log('QueryRunner liberado.');
       }
     }
   }

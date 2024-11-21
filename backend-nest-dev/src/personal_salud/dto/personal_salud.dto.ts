@@ -2,7 +2,7 @@
 // src/personal_salud/dto/create-personal-salud.dto.ts
 
 export class CreatePersonalSaludDto {
-  personalId: number;
+    personalId: number;
     nombres: string;
     primer_apellido: string;
     segundo_apellido: string;

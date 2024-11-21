@@ -7,10 +7,7 @@ import { UpdatePersoEspeciaHospitalDto } from './dto/update-perso_especia_hospit
 export class PersoEspeciaHospitalController {
   constructor(private readonly persoEspeciaHospitalService: PersoEspeciaHospitalService) {}
 
-  @Post()
-  create(@Body() createPersoEspeciaHospitalDto: CreatePersoEspeciaHospitalDto) {
-    return this.persoEspeciaHospitalService.create(createPersoEspeciaHospitalDto);
-  }
+  
 
   @Patch('update-by-personal-salud/:personalSaludId')
   async updateByPersonalSalud(
