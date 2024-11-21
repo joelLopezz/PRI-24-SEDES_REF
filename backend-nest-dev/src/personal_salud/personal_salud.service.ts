@@ -22,6 +22,113 @@ export class PersonalSaludService {
     private authService: AuthService,
   ) {}
 
+  //Prueba
+
+  async createNewPersonalSalud(data: any): Promise<PersonalSalud> {
+    const queryRunner = this.dataSource.createQueryRunner();
+  
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+  
+      const { personal, especialidad } = data;
+  
+      // Obtener datos del usuario autenticado desde AuthService
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('Usuario no autenticado');
+      }
+  
+      const usuarioCreacionId = currentUser.usuarioID;
+      const establecimientoId = currentUser.establecimientoID;
+  
+      // 1. Insertar Personal de Salud
+      const newPersonalSalud = this.personalSaludRepository.create({
+        ...personal,
+        establecimiento_salud_idestablecimiento_ID: establecimientoId,
+        usuario_creacion: usuarioCreacionId,
+        fecha_creacion: new Date(),
+      });
+      
+      
+      console.log('Contenido de newPersonalSalud antes de guardar:', newPersonalSalud);
+      
+      const savedPersonalSalud: PersonalSalud = await queryRunner.manager
+      .getRepository(PersonalSalud)
+      .save(newPersonalSalud);
+
+    console.log('savedPersonalSalud:', savedPersonalSalud); // Asegúrate de que sea un único objeto
+
+
+      
+      console.log('PersonalSalud guardado:', savedPersonalSalud);
+      
+  
+      // 2. Crear Usuario asociado al Personal de Salud
+      const username = this.generarNombreUsuario(
+        personal.nombres,
+        personal.primer_apellido,
+        personal.segundo_apellido
+      );
+      const password = this.generarContrasenia();
+  
+      const newUser = {
+        nombre_usuario: username,
+        contrasenia: password,
+        rol: personal.rol,
+        estado: 1,
+        personal: savedPersonalSalud, // Esto debe ser un único objeto
+        establecimiento_id: establecimientoId,
+        fecha_creacion: new Date(),
+      };
+      
+  
+      await this.usuarioService.createUsuario(newUser, queryRunner);
+
+  
+      // 3. Insertar en PersoEspeciaHospital
+      const newPersoEspeciaHospital = {
+        personal_salud: savedPersonalSalud,
+        especialidad: { id: especialidad.especialidad_id }, // Especialidad desde el JSON
+        hospital: { id: establecimientoId }, // Hospital desde el usuario autenticado
+      };
+  
+      await queryRunner.manager
+        .getRepository('PersoEspeciaHospital')
+        .save(newPersoEspeciaHospital);
+  
+      // Confirmar transacción
+      await queryRunner.commitTransaction();
+  
+      // Enviar credenciales por correo electrónico
+      await this.mailService.sendUserCredentials(
+        personal.nombres,
+        personal.primer_apellido,
+        personal.segundo_apellido,
+        personal.correo_electronico,
+        username,
+        password,
+        personal.telefono
+      );
+  
+      return savedPersonalSalud; // Retornar el registro recién creado de PersonalSalud
+    } catch (error) {
+      if (queryRunner.isTransactionActive) {
+        await queryRunner.rollbackTransaction();
+      }
+      throw error;
+    } finally {
+      if (!queryRunner.isReleased) {
+        await queryRunner.release();
+      }
+    }
+  }
+  
+  
+  
+
+  //fin de prueba
+
   // Crear un registro de personal de salud y usuario
   async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
     const { rol, especialidad, ...personalSaludData } = createPersonalSaludDto;
