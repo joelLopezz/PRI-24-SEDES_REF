@@ -42,6 +42,7 @@ import { ConsultaExternaModule } from './consulta_externa/consulta_externa.modul
 import { AreaPersonalModule } from './area_personal/area_personal.module';
 import { CodificacionTurnosModule } from './codificacion_turnos/codificacion_turnos.module';
 import { RolTurnosModule } from './rol_turnos/rol_turnos.module';
+import { PersoEspeciaHospitalModule } from './perso_especia_hospital/perso_especia_hospital.module';
 
 @Module({
   imports: [
@@ -89,6 +90,14 @@ import { RolTurnosModule } from './rol_turnos/rol_turnos.module';
     CodificacionTurnosModule,
     RolTurnosModule,
     forwardRef(() => AuthModule),
+
+    PersonalSaludModule,
+    UsuarioModule,
+    AuthModule,
+    MailModule,
+    SpecialtyModule,
+    EstablecimientoModule,
+    PersoEspeciaHospitalModule,
   ],
   controllers: [
     AppController,

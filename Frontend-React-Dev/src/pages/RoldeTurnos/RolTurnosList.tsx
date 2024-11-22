@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Style.module.css';
+import { useAuth } from '../../Context/AuthContext';
 
 
 
@@ -21,6 +22,7 @@ const ShiftTable: React.FC = () => {
   const [newAreas, setNewAreas] = useState<{ areaId: number; areaName: string }[]>([]);
   const [areaEditMode, setAreaEditMode] = useState<boolean>(false);
   const [siglaEditMode, setSiglaEditMode] = useState<boolean>(false);
+  const [siglaAgregarMode, setSiglaAgregarMode] = useState<boolean>(false);
   const [newAreaValue, setNewAreaValue] = useState<string>('');
   const [fixedAreas, setFixedAreas] = useState<string[]>([]);
   const [areasToDelete, setAreasToDelete] = useState<number[]>([]);
@@ -32,8 +34,25 @@ const ShiftTable: React.FC = () => {
   const [turnosParaEnviar, setTurnosParaEnviar] = useState<any[]>([]);
   const [turnosParaEditar, setTurnosParaEditar] = useState<any[]>([]);
 
+  const [hospitalId, setHospitalId] = useState('');
+  const [usuarioID, setUsuarioID] = useState('');
   
 
+  const [hospitales, setHospitales] = useState<{ id: number; nombre: string }[]>([]);
+  const [establecimientoID, setEstablecimientoID] = useState<number>(() => {
+    console.log('Valor de hospitalId antes de la conversión:', hospitalId);
+    const id = Number(hospitalId);
+    console.log('Valor de id después de la conversión:', id);
+  return isNaN(id) ? 0 : id; // Si `hospitalId` no es un número válido, se establece como 0 por defecto.
+  });
+   // `hospitalId` ya está definido
+
+
+  const [modifiedFixedAreas, setModifiedFixedAreas] = useState<{ [key: string]: boolean }>({
+    "Emergencia": false,
+    "Consulta Externa": false,
+    "Internado": false,
+  });
 
   const handleOpenAreaModal = (areaNames: string | null, doctorId: number) => {
     const areasArray = areaNames
@@ -56,7 +75,29 @@ const ShiftTable: React.FC = () => {
   
     setShowAreaModal(true);
     setCurrentDoctorId(doctorId);
+    setModifiedFixedAreas({
+      "Emergencia": false,
+      "Consulta Externa": false,
+      "Internado": false,
+    });
   };
+  useEffect(() => {
+    const fetchHospitales = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/establecimiento');
+        if (!response.ok) {
+          throw new Error('Error al cargar los hospitales');
+        }
+        const data = await response.json();
+        setHospitales(data);
+      } catch (error) {
+        console.error('Error al cargar los hospitales:', error);
+      }
+    };
+  
+    fetchHospitales();
+  }, []);
+  
   
   // Función para alternar la selección de áreas fijas
   const toggleFixedArea = (areaName: string) => {
@@ -65,21 +106,14 @@ const ShiftTable: React.FC = () => {
     if (areaExists) {
       // Eliminar área fija de las seleccionadas
       setFixedAreas(fixedAreas.filter((area) => area !== areaName));
-  
-      // Buscar si el área que se está deseleccionando tiene un ID (área existente)
       const existingArea = areaInputs.find((area) => area.areaName === areaName && area.areaPersonalSaludId !== undefined);
       if (existingArea) {
-        // Si tiene un `areaPersonalSaludId`, añadirlo a `areasToDelete`
         setAreasToDelete((prev) => [...prev, existingArea.areaPersonalSaludId!]);
       }
-  
-      // Eliminar del `areaInputs` si ya está presente
       setAreaInputs((prevAreas) => prevAreas.filter((area) => area.areaName !== areaName));
     } else {
       // Agregar área fija a las seleccionadas
       setFixedAreas([...fixedAreas, areaName]);
-  
-      // Verificar si el área ya existe en los inputs (para evitar duplicados)
       const isAlreadyInAreaInputs = areaInputs.some((area) => area.areaName === areaName);
       if (!isAlreadyInAreaInputs) {
         setAreaInputs((prevAreas) => [
@@ -91,7 +125,16 @@ const ShiftTable: React.FC = () => {
         ]);
       }
     }
+  
+    // Marcar el área como modificada
+    setModifiedFixedAreas((prevModified) => ({
+      ...prevModified,
+      [areaName]: true,
+    }));
   };
+  
+
+  
 
   const handleDeleteArea = (areaId: number, areaPersonalSaludId?: number) => {
     const areaToDelete = areaInputs.find((area) => area.areaId === areaId);
@@ -145,28 +188,29 @@ const ShiftTable: React.FC = () => {
     const horaFinFormateada = horaFin.length === 8 ? horaFin.substring(0, 5) : horaFin;
   
     try {
-      const inicio = new Date(`1970-01-01T${horaInicioFormateada}:00`);
-      const fin = new Date(`1970-01-01T${horaFinFormateada}:00`);
-      const diferenciaMilisegundos = fin.getTime() - inicio.getTime();
+      let inicio = new Date(`1970-01-01T${horaInicioFormateada}:00`);
+      let fin = new Date(`1970-01-01T${horaFinFormateada}:00`);
   
-      if (diferenciaMilisegundos < 0) {
-        return 'N/A';
+      // Si la hora de fin es menor o igual que la hora de inicio, se asume que la hora de fin es al día siguiente
+      if (fin <= inicio) {
+        fin.setDate(fin.getDate() + 1);
       }
+  
+      const diferenciaMilisegundos = fin.getTime() - inicio.getTime();
   
       const diferenciaHoras = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60));
       const diferenciaMinutos = Math.floor((diferenciaMilisegundos % (1000 * 60 * 60)) / (1000 * 60));
   
       // Devolver solo horas si minutos es 0
-      if (diferenciaMinutos > 0) {
-        return `${diferenciaHoras}h ${diferenciaMinutos}m`;
-      } else {
-        return `${diferenciaHoras}h`;
-      }
+      return diferenciaMinutos > 0
+        ? `${diferenciaHoras}h ${diferenciaMinutos}m`
+        : `${diferenciaHoras}h`;
     } catch (error) {
       console.error('Error al calcular la carga horaria:', error);
       return 'N/A';
     }
   };
+  
   
   const [especialidadId, setEspecialidadId] = useState<number | "">("");
   const [anioSeleccionado] = useState<number>(2024); 
@@ -189,13 +233,22 @@ const ShiftTable: React.FC = () => {
     fetchTurnos();
   }, [especialidadId, anioSeleccionado, mesSeleccionado]);
 
-  
+
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user) {
+      setHospitalId(user.establecimiento_id);
+      setUsuarioID(user.usuario_ID);
+    }
+  }, []);
 
 
   const fetchDoctors_actualizar = async () => {
     if (especialidadId !== "") {
       try {
-        const establecimientoID = 1; // Dato estático por ahora
+        const establecimientoID = hospitalId; // Dato estático por ahora
+        console.log('Establecimiendo q ' + establecimientoID);
         const response = await fetch(
           `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimientoID}`
         );
@@ -234,7 +287,8 @@ const ShiftTable: React.FC = () => {
     if (especialidadId !== "") {
       const fetchDoctors = async () => {
         try {
-          const establecimientoID = 1; // Dato estático por ahora
+          const establecimientoID = hospitalId; // Dato estático por ahora
+          console.log('Establecimiendo w ' + establecimientoID);
           const response = await fetch(
             `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimientoID}`
           );
@@ -281,7 +335,8 @@ const ShiftTable: React.FC = () => {
     const fetchDoctors = async () => {
       if (especialidadId !== "") {
         try {
-          const establecimientoID = 1; // Dato estático por ahora
+          const establecimientoID = hospitalId; // Dato estático por ahora
+          console.log('Establecimiendo e ' + establecimientoID);
           const response = await fetch(
             `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimientoID}`
           );
@@ -315,6 +370,47 @@ const ShiftTable: React.FC = () => {
   
     fetchDoctors();
   }, [mesSeleccionado, especialidadId]);
+  
+
+  const [showDoctorModal, setShowDoctorModal] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState<{
+    nombres: string;
+    primer_apellido: string;
+    segundo_apellido: string;
+    ci: string;
+    correo_electronico: string;
+    telefono: number;
+  } | null>(null);
+  const [loadingDoctorInfo, setLoadingDoctorInfo] = useState(false);
+  
+
+  const handleOpenDoctorModal = async (doctorId: number) => {
+    setLoadingDoctorInfo(true); // Muestra un indicador de carga
+    try {
+      const response = await fetch(`http://localhost:3000/personal-salud/${doctorId}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener la información del médico');
+      }
+      const data = await response.json();
+      setSelectedDoctor(data.data); // Almacena los datos del doctor en el estado
+    } catch (error) {
+      console.error('Error al obtener la información del médico:', error);
+      setSelectedDoctor(null);
+    } finally {
+      setLoadingDoctorInfo(false); // Oculta el indicador de carga
+      setShowDoctorModal(true);
+    }
+  };
+  
+  
+  const handleCloseDoctorModal = () => {
+    setSelectedDoctor(null);
+    setShowDoctorModal(false);
+  };
+  
+
+  
+
   
 
   // Manejar cambio de mes
@@ -359,18 +455,25 @@ const ShiftTable: React.FC = () => {
   };
 
   const handleAreaSave = async () => {
-    setAreaEditMode(false);
-    // Guardar las áreas nuevas
-    if (currentDoctorId !== null) {
-      const areasToSave = [...newAreas, ...fixedAreas.map((areaName, index) => ({
+  setAreaEditMode(false);
+
+  // Guardar las áreas nuevas
+  if (currentDoctorId !== null) {
+    const newFixedAreasToSave = fixedAreas.filter((areaName) => modifiedFixedAreas[areaName]);
+
+    const areasToSave = [
+      ...newAreas,
+      ...newFixedAreasToSave.map((areaName, index) => ({
         areaId: index,
         areaName
-      }))].map((area) => ({
-        area: area.areaName,
-        personal_salud_personal_ID: currentDoctorId,
-        fecha: `2024-${mesSeleccionado.toString().padStart(2, '0')}-01`,
-      }));
+      }))
+    ].map((area) => ({
+      area: area.areaName,
+      personal_salud_personal_ID: currentDoctorId,
+      fecha: `2024-${mesSeleccionado.toString().padStart(2, '0')}-01`,
+    }));
 
+    if (areasToSave.length > 0) {
       try {
         const response = await fetch('http://localhost:3000/area-personal/multiple', {
           method: 'POST',
@@ -387,73 +490,86 @@ const ShiftTable: React.FC = () => {
         console.error('Error al guardar las áreas:', error);
       }
     }
+  }
 
-    // Actualizar las áreas existentes
-    const areasToUpdate = areaInputs.filter(area => area.areaPersonalSaludId !== undefined && area.areaName !== doctorsOriginal.find(doc => doc.doctor_id === currentDoctorId)?.area.split(',').find(a => a.includes(area.areaPersonalSaludId?.toString() || ''))?.split(':')[1].trim());
-    const updateData = areasToUpdate.map(area => ({
-      area_personal_salud_ID: area.areaPersonalSaludId,
-      area: area.areaName
-    }));
+  // Actualizar las áreas existentes
+  const areasToUpdate = areaInputs.filter(
+    (area) =>
+      area.areaPersonalSaludId !== undefined &&
+      area.areaName !==
+        doctorsOriginal
+          .find((doc) => doc.doctor_id === currentDoctorId)
+          ?.area.split(',')
+          .find((a) => a.includes(area.areaPersonalSaludId?.toString() || ''))
+          ?.split(':')[1]
+          .trim()
+  );
+  const updateData = areasToUpdate.map((area) => ({
+    area_personal_salud_ID: area.areaPersonalSaludId,
+    area: area.areaName,
+  }));
 
-    if (updateData.length > 0) {
-      try {
-        const response = await fetch('http://localhost:3000/area-personal/update-multiple', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updateData),
-        });
-        if (!response.ok) {
-          throw new Error('Error al actualizar las áreas');
-        }
-        console.log('Áreas actualizadas correctamente');
-      } catch (error) {
-        console.error('Error al actualizar las áreas:', error);
+  if (updateData.length > 0) {
+    try {
+      const response = await fetch('http://localhost:3000/area-personal/update-multiple', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+      if (!response.ok) {
+        throw new Error('Error al actualizar las áreas');
       }
+      console.log('Áreas actualizadas correctamente');
+    } catch (error) {
+      console.error('Error al actualizar las áreas:', error);
     }
+  }
 
-    // Eliminar las áreas marcadas para eliminar
-    if (areasToDelete.length > 0) {
-      console.log('Áreas a eliminar despues del if:', areasToDelete); // Log para verificar los IDs de las áreas a eliminar
-      try {
-        console.log('Enviando solicitud para eliminar áreas...');
-        const response = await fetch('http://localhost:3000/area-personal/delete-multiple', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ids: areasToDelete }),
-        });
+  // Eliminar las áreas marcadas para eliminar
+  if (areasToDelete.length > 0) {
+    console.log('Áreas a eliminar despues del if:', areasToDelete); // Log para verificar los IDs de las áreas a eliminar
+    try {
+      console.log('Enviando solicitud para eliminar áreas...');
+      const response = await fetch('http://localhost:3000/area-personal/delete-multiple', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: areasToDelete }),
+      });
 
-        console.log('Response received:', response.status); // Log response status
+      console.log('Response received:', response.status); // Log response status
 
-        if (!response.ok) {
-          throw new Error('Error al eliminar las áreas');
-        }
-
-        console.log('Áreas eliminadas correctamente');
-      } catch (error) {
-        console.error('Error al eliminar las áreas:', error);
+      if (!response.ok) {
+        throw new Error('Error al eliminar las áreas');
       }
-    } else {
-      console.log('No hay áreas para eliminar');
-    }
 
-    fetchDoctors_actualizar();
-    setShowAreaModal(false);
+      console.log('Áreas eliminadas correctamente');
+    } catch (error) {
+      console.error('Error al eliminar las áreas:', error);
+    }
+  } else {
+    console.log('No hay áreas para eliminar');
+  }
+
+  fetchDoctors_actualizar();
+  setShowAreaModal(false);
 };
-
-
-  const handleAreaCancel = () => {
-    setAreaEditMode(false);
-  };
   const handleSiglaCancel = () => {
     setSiglaEditMode(false);
+    setSiglaAgregarMode(false);
   };
   const handleAreaSalir = () => {
     setAreaEditMode(false);
     setShowAreaModal(false);
+
+    setModifiedFixedAreas({
+      "Emergencia": false,
+      "Consulta Externa": false,
+      "Internado": false,
+    });
   };
 
   const handleNewTurnoInputChange = (field: string, value: string) => {
@@ -543,6 +659,10 @@ const ShiftTable: React.FC = () => {
       setSiglaEditMode(true);
     };
 
+    const handleAgregarsigla = () => {
+      setSiglaAgregarMode(true);
+    };
+
     const [turnosParaActualizar, setTurnosParaActualizar] = useState<any[]>([]); // Estado para turnos que necesitan ser actualizados
 
     const [especialidades, setEspecialidades] = useState<{ ID: number; nombre: string }[]>([]);
@@ -622,7 +742,7 @@ const ShiftTable: React.FC = () => {
       {showSiglaModal && (
         <div className={`${styles.modal_container} ${styles.show}`}>
         <div className={`${styles.modal_own} ${styles.modal_sigla}`}>
-          {siglaEditMode && (
+          {siglaAgregarMode && (
             <div className={`${styles.button_agregar} ${styles.box_sigla_agregar}`}>
             <div className={styles.input_group_time}>
               <label htmlFor="turno" className={styles.input_label}>Turno</label>
@@ -669,7 +789,7 @@ const ShiftTable: React.FC = () => {
                 className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton} ${styles.input_sigla_hora}`}
               />
             </div>
-            <button className={`${styles.input_area_boton} ${styles.buton_sigla_agregar}`} onClick={() => {}}>Agregar</button>
+            <button className={`${styles.Btn_rol} ${styles.buton_sigla_agregar}`} onClick={handleAddTurno}>Agregar</button>
           </div>
           )}
           <table>
@@ -829,9 +949,12 @@ const ShiftTable: React.FC = () => {
               ))}
             </tbody>
           </table>
-          <div className={styles.input_area}>
-            {!siglaEditMode ? (
+          <div className={styles.buttons_container}>
+            {!siglaEditMode && !siglaAgregarMode ? (
               <>
+              <button className={`${styles.Btn_rol} ${styles.btn_editar}`} onClick={handleAgregarsigla}>
+                Agregar
+              </button>
               <button className={`${styles.Btn_rol} ${styles.btn_editar}`} onClick={handleEditarsigla}>
                 Editar
               </button>
@@ -854,6 +977,34 @@ const ShiftTable: React.FC = () => {
       </div>
       )}
 
+      {showDoctorModal && (
+        <div className={`${styles.modal_container} ${styles.show}`}>
+          <div className={styles.modal_own}>
+            {loadingDoctorInfo ? (
+              <p>Cargando información...</p>
+            ) : selectedDoctor ? (
+              <>
+                <h2>Información del Médico</h2>
+                <p><strong>Nombre Completo:</strong> {`${selectedDoctor.nombres} ${selectedDoctor.primer_apellido} ${selectedDoctor.segundo_apellido}`}</p>
+                <p><strong>CI:</strong> {selectedDoctor.ci}</p>
+                <p><strong>Correo Electrónico:</strong> {selectedDoctor.correo_electronico}</p>
+                <p><strong>Teléfono:</strong> {selectedDoctor.telefono}</p>
+                <button
+                  className={`${styles.Btn_rol} ${styles.btn_cancelar}`}
+                  onClick={handleCloseDoctorModal}
+                >
+                  Cerrar
+                </button>
+              </>
+            ) : (
+              <p>No se pudo cargar la información del médico.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+
+
       {showAreaModal && (
         <div className={`${styles.modal_container} ${styles.show}`}>
           <div className={styles.modal_own}>
@@ -866,7 +1017,7 @@ const ShiftTable: React.FC = () => {
                     onChange={handleNewAreaInputChange}
                     className={`${styles.input_area} ${styles.agregar_imput} ${styles.input_area_boton}`}
                   />
-                  <button className={styles.input_area_boton} onClick={handleAddArea}>Agregar</button>
+                  <button className={`${styles.Btn_rol} ${styles.btn_guardar} ${styles.input_area_boton}`} onClick={handleAddArea}>Agregar</button>
                 </div>
               )}
               {areaEditMode && (
@@ -938,7 +1089,7 @@ const ShiftTable: React.FC = () => {
               {areaEditMode && (
                 <>
                   <button className={`${styles.Btn_rol} ${styles.btn_guardar}`} onClick={handleAreaSave}>Guardar</button>
-                  <button className={`${styles.Btn_rol} ${styles.btn_cancelar}`} onClick={handleAreaCancel}>Cancelar</button>
+                  <button className={`${styles.Btn_rol} ${styles.btn_cancelar}`} onClick={handleAreaSalir}>Cancelar</button>
                 </>
               )}
             </div>
@@ -994,6 +1145,24 @@ const ShiftTable: React.FC = () => {
                 ))}
               </select>
             </th>
+            <th colSpan={6} className={styles.highlight}>
+              <select
+                value={establecimientoID || ""}
+                onChange={(e) => {
+                  const selectedId = Number(e.target.value) || Number(hospitalId);
+                  setEstablecimientoID(selectedId);
+                }}
+              >
+                <option value="">Seleccionar Hospital</option>
+                {hospitales.map((hospital) => (
+                  <option key={hospital.id} value={hospital.id}>
+                    {hospital.nombre}
+                  </option>
+                ))}
+              </select>
+            </th>
+
+
           </tr>
           <tr>
             <th rowSpan={2}>N°</th>
@@ -1034,7 +1203,7 @@ const ShiftTable: React.FC = () => {
         <tbody>
           {doctors
             .filter((doctor) => doctor.name !== "S/D") // Filtrar doctores sin datos
-            .map((doctor) => {
+            .map((doctor, index) => {
               // Procesar las áreas del doctor
               const areasArray = doctor.area.split(',').map((areaString) => {
                 const [areaId, areaName] = areaString.split(':');
@@ -1046,8 +1215,12 @@ const ShiftTable: React.FC = () => {
 
               return (
                 <tr key={doctor.doctor_id}>
-                  <td>{doctor.doctor_id}</td>
-                  <td>{doctor.name}</td>
+                   <td>{index + 1}</td>
+                  <td onClick={() => handleOpenDoctorModal(doctor.doctor_id)}>
+                    {doctor.name}
+                  </td>
+
+
                   {/* Mostrar los nombres de las áreas concatenados */}
                   <td onClick={() => handleOpenAreaModal(doctor.area || '', doctor.doctor_id)}>
                     {areaNames || 'Agregar área'}
@@ -1100,12 +1273,13 @@ const ShiftTable: React.FC = () => {
                                     t.personal_salud_personal_ID !== doctor.doctor_id
                                 ),
                                 {
+                                  
                                   fecha: `${anioSeleccionado}-${mesSeleccionado.toString().padStart(2, '0')}-${dia.padStart(2, '0')}`,
                                   personal_salud_personal_ID: doctor.doctor_id,
-                                  establecimiento_salud_idestablecimiento_ID: 1, // Dato estático por ahora
+                                  establecimiento_salud_idestablecimiento_ID: hospitalId, // Dato estático por ahora
                                   especialidad_especialidad_ID: especialidadId, // Dato estático por ahora
                                   codificacion_codificacion_turno_ID: codificacionTurno,
-                                  usuario_creacion: 1, // Dato estático por ahora
+                                  usuario_creacion: usuarioID, // Dato estático por ahora
                                 },
                               ]);
                             } else if (turno !== '' && newValue !== '') {

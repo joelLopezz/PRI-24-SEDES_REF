@@ -27,6 +27,7 @@ import HospitalesList from './pages/Hospitales/HospitalesList';
 import HospitalInfo from './pages/Hospitales/HospitalInfo';
 import ServiciosEspInfo from './pages/Hospitales/ServiciosEspInfo';
 import Credits from './pages/HomePage/Credits';
+import CambiarContrasenia from './pages/Login/CambiarContrasenia';
 
 import PersonalSaludList from    './pages/personal_salud/PersonalSaludList';
 import PersonalSaludEdit from    './pages/personal_salud/PersonalSaludEdit';
@@ -143,6 +144,7 @@ function ProtectedRoutes() {
               element={hasPermission(['Admin Hospital', 'Doctor']) ? <CamaList /> : <Navigate to="/inicio" />}
             />
             <Route path="/personal-salud" element={<PersonalSaludList />} />
+            <Route path="/personal-salud/create" element={<PersonalSaludCreate />} />
             {/* <Route path="/personal-salud/edit/:id" element={<PersonalSaludEdit isEditing=  {true} />} /> */}
             <Route path="/personal-salud/edit/:id" element={<PersonalSaludEdit />} />
 
@@ -154,6 +156,9 @@ function ProtectedRoutes() {
             {/* Ruta de Cronograma de turnos  */}
             <Route path='/cronograma-turnos' element={<RolTurnosList/>}/>
             <Route path='/consulta-externa' element={<ConsultaExternaList/>}/>
+
+            {/*Actualizar contrasenia*/}
+            <Route path="/cambiar-contrasenia" element={<CambiarContrasenia />} />
         </Route>
       </Routes>
   );

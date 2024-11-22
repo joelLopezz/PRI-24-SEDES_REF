@@ -52,17 +52,19 @@ import { PersonalSalud } from './personal_salud.entity';
 import { UsuarioModule } from '../usuario/usuario.module';
 import { MailModule } from '../correo_electronico/correo.electronico.module';
 import { AuthModule } from '../Auth/auth.module'; // Importar el AuthModule
+import { PersoEspeciaHospitalModule } from '../perso_especia_hospital/perso_especia_hospital.module'; // Importa el módulo
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PersonalSalud]),  
     forwardRef(() => UsuarioModule), // Utilizamos forwardRef para evitar la dependencia circular
     MailModule,  
-    forwardRef(() => AuthModule), // Importar AuthModule utilizando forwardRef para evitar dependencias circulares
+    forwardRef(() => AuthModule),
+    PersoEspeciaHospitalModule, // Importar AuthModule utilizando forwardRef para evitar dependencias circulares
   ],
   providers: [PersonalSaludService],
   controllers: [PersonalSaludController],
-  exports: [TypeOrmModule], // Exportamos el TypeOrmModule para que otros módulos puedan acceder al repositorio de PersonalSalud
+  exports: [TypeOrmModule, PersonalSaludService], // Exportamos el TypeOrmModule para que otros módulos puedan acceder al repositorio de PersonalSalud
 })
 export class PersonalSaludModule {}
 

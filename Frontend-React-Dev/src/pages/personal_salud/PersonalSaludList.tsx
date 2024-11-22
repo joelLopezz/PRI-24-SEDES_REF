@@ -55,7 +55,7 @@ const PersonalSaludList: React.FC = () => {
 
   // Función para eliminar un personal de salud
   const handleDelete = (id: number) => {
-    console.log('Intentando eliminar el ID:', id);
+    //console.log('Intentando eliminar el ID:', id);
     if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
       fetch(`http://localhost:3000/personal-salud/${id}`, {
         method: 'DELETE',
@@ -87,8 +87,8 @@ const PersonalSaludList: React.FC = () => {
   };
 
   // Redirigir a la página de edición
-  const handleEdit = (id: number) => {
-    navigate(`/personal-salud/edit/${id}`);
+  const handleEdit = (personal_ID:number) => {
+    navigate(`/personal-salud/edit/${personal_ID}`);
   };
 
   return (
@@ -131,7 +131,7 @@ const PersonalSaludList: React.FC = () => {
                   className="button-eliminar"
                   onClick={() => handleDelete(personal.personal_ID)}>
                   <i className="fas fa-trash"></i>
-                  Eliminar
+                  Eliminar1
                 </button>
               </td>
 

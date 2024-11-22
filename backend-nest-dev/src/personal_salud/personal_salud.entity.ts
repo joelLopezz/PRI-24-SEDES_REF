@@ -4,6 +4,7 @@ import { Usuario } from '../usuario/usuario.entity';
 import {AreaPersonal}  from '../area_personal/area_personal.entity'; 
 import {RolTurno}  from '../rol_turnos/rol_turno.entity'; 
 import { EstablecimientoSalud } from '../establecimiento/establecimiento.entity'; // Importa la entidad correcta
+import {PersoEspeciaHospital} from '../perso_especia_hospital/entities/perso_especia_hospital.entity'
 
 @Entity('personal_salud')
 export class PersonalSalud {
@@ -68,4 +69,7 @@ export class PersonalSalud {
   @ManyToOne(() => EstablecimientoSalud, (establecimiento) => establecimiento.personalSalud, { nullable: true })
   @JoinColumn({ name: 'establecimiento_salud_idestablecimiento_ID' }) // Relación con la columna en la base de datos
   establecimientoSalud: EstablecimientoSalud; // Relación a la entidad `EstablecimientoSalud`
+
+  @OneToMany(() => PersoEspeciaHospital, (especial) => especial.personal_salud)
+  personalEspecialidadHospital: PersoEspeciaHospital[];
 }

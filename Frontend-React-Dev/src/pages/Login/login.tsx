@@ -93,40 +93,41 @@ const Login: React.FC = () => {
             <h2 className="title">Inicio de sesión</h2>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} {/* Mostrar mensaje de error */}
             {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>} {/* Mostrar mensaje de éxito */}
-            <div className={`input-div one ${focusInput.username ? 'focus' : ''}`}>
-              <div className="i">
-                <i className="fas fa-user"></i>
-              </div>
-              <div className="div">
-                <h5>Usuario</h5>
-                <input
-                  type="text"
-                  className="input"
-                  name="username"
-                  value={formData.username}
-                  onFocus={() => handleFocus('username')}
-                  onBlur={() => handleBlur('username')}
-                  onChange={handleInputChange}
-                />
-              </div>
+            <div className={`input-div one ${focusInput.username || formData.username ? 'focus' : ''}`}>
+            <div className="i">
+              <i className="fas fa-user"></i>
             </div>
-            <div className={`input-div pass ${focusInput.password ? 'focus' : ''}`}>
-              <div className="i">
-                <i className="fas fa-lock"></i>
-              </div>
-              <div className="div">
-                <h5>Contraseña</h5>
-                <input
-                  type="password"
-                  className="input"
-                  name="password"
-                  value={formData.password}
-                  onFocus={() => handleFocus('password')}
-                  onBlur={() => handleBlur('password')}
-                  onChange={handleInputChange}
-                />
-              </div>
+            <div className="div">
+              <h5>Usuario</h5>
+              <input
+                type="text"
+                className="input"
+                name="username"
+                value={formData.username}
+                onFocus={() => handleFocus('username')}
+                onBlur={() => handleBlur('username')}
+                onChange={handleInputChange}
+              />
             </div>
+          </div>
+          <div className={`input-div pass ${focusInput.password || formData.password ? 'focus' : ''}`}>
+            <div className="i">
+              <i className="fas fa-lock"></i>
+            </div>
+            <div className="div">
+              <h5>Contraseña</h5>
+              <input
+                type="password"
+                className="input"
+                name="password"
+                value={formData.password}
+                onFocus={() => handleFocus('password')}
+                onBlur={() => handleBlur('password')}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
             <input type="submit" className="btn" value="Ingresar" />
           </form>
         </div>

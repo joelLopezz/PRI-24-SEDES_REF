@@ -8,6 +8,12 @@ import { CreatePersonalSaludDto } from './dto/personal_salud.dto';
 export class PersonalSaludController {
   constructor(private readonly personalSaludService: PersonalSaludService) {}
 
+  @Post('create-new-personal-salud')
+  async createPersonalSalud_v2(@Body() data: any) {
+    return await this.personalSaludService.createPersonalSalud_v2(data);
+  }
+
+
   // Crear un nuevo registro de personal de salud
   @Post()
   async createPersonalSalud(@Body() createPersonalSaludDto: CreatePersonalSaludDto) {

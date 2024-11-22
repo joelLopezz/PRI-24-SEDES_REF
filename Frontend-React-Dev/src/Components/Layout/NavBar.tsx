@@ -40,6 +40,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     navigate('/login');
   };
 
+  const handleChangePassword = () => {
+    navigate('/cambiar-contrasenia');
+  };
+
   return (
     <header className="bg-gradient-to-r from-blue-500 to-blue-400 shadow-md p-4 sticky top-0 z-50">
       <div className="flex justify-between items-center">
@@ -83,6 +87,16 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               <div className="px-4 py-2 text-gray-700">
                 <strong>Rol:</strong> {userRole}
               </div>
+
+              
+              <button
+                onClick={handleChangePassword}
+                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
+                Cambiar Contraseña
+              </button>
+
+
               <button
                 onClick={handleLogout}
                 className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
