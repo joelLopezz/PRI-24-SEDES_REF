@@ -55,7 +55,7 @@ const PersonalSaludList: React.FC = () => {
 
   // Función para eliminar un personal de salud
   const handleDelete = (id: number) => {
-    console.log('Intentando eliminar el ID:', id);
+    //console.log('Intentando eliminar el ID:', id);
     if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
       fetch(`http://localhost:3000/personal-salud/${id}`, {
         method: 'DELETE',

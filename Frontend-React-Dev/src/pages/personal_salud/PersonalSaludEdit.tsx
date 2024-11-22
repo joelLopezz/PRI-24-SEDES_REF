@@ -37,7 +37,7 @@ const PersonalSaludEdit: React.FC = () => {
         const personalData = await response.json();
         // Asumimos que los datos están en la propiedad 'data'
        const data = personalData.data;
-        console.log('Datos del personal cargados:', data); // Verifica los datos
+        //console.log('Datos del personal cargados:', data); // Verifica los datos
         setFormData({
           nombres: data.nombres,
           primer_apellido: data.primer_apellido,

@@ -12,8 +12,7 @@ export class PersoEspeciaHospitalController {
   @Patch('update-by-personal-salud/:personalSaludId')
   async updateByPersonalSalud(
     @Param('personalSaludId') personalSaludId: number,
-    @Body() updateDto: UpdatePersoEspeciaHospitalDto,
-  ) {
+    @Body() updateDto: UpdatePersoEspeciaHospitalDto,) {
     return await this.persoEspeciaHospitalService.updateByPersonalSalud(personalSaludId, updateDto);
   }
 
