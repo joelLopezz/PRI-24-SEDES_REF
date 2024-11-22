@@ -81,7 +81,7 @@ export class PersoEspeciaHospitalService {
       throw new Error(`Record with personal_salud ID ${personalSaludId} not found.`);
     }
   
-    // Eliminar el registro
+    // Eliminar el registro 2
     await this.persoEspeciaHospitalRepository.remove(record);
   
     return { message: `Record with personal_salud ID ${personalSaludId} deleted successfully.` };
