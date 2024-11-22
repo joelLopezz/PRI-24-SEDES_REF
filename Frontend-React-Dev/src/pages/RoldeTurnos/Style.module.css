@@ -253,6 +253,7 @@ font-size: 14px;
 
 .agregar_imput:enabled{
     background: white;
+    color: #000;
 }
 
 .inputs_fijos{
