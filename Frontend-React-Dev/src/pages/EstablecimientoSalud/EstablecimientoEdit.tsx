@@ -71,7 +71,7 @@ const EstablecimientoEdit: React.FC = () => {
 
     const fetchRedesCordinacion = async () => {
       try {
-        const response = await axios.get<RedCordinacion[]>('${API_BASE_URL}/red-cordinacion');
+        const response = await axios.get<RedCordinacion[]>(`${API_BASE_URL}/red-cordinacion`);
         setRedCordinaciones(response.data);
       } catch (error) {
         console.error('Error al cargar las redes de coordinación:', error);
@@ -79,7 +79,7 @@ const EstablecimientoEdit: React.FC = () => {
     };
     const fetchMunicipios = async () => {
       try {
-        const response = await axios.get<Municipio[]>('${API_BASE_URL}/municipio');
+        const response = await axios.get<Municipio[]>(`${API_BASE_URL}/municipio`);
         setMunicipios(response.data);
       } catch (error) {
         console.error('Error al cargar los municipios:', error);

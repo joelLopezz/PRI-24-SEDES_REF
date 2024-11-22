@@ -52,22 +52,15 @@ export class EstabEspecialidadService {
       .getMany();
   }
 
-  // Eliminar una relación
-  async deleteRelacion(
-    establecimientoId: number,
-    especialidadId: number,
-  ): Promise<void> {
-    const relacion = await this.relacionRepository.findOne({
-      where: {
-        establecimiento_salud_idestablecimiento_ID: establecimientoId,
-        especialidad_ID: especialidadId,
-      },
-    });
+  async deleteRelacion(id: number): Promise<void> {
+    console.log(`Buscando relación con ID: ${id}`); // Log adicional
+    const relacion = await this.relacionRepository.findOne({ where: { id } });
 
     if (!relacion) {
       throw new NotFoundException('Relación no encontrada');
     }
 
+    console.log(`Eliminando relación con ID: ${id}`);
     await this.relacionRepository.remove(relacion);
   }
 }

@@ -30,14 +30,10 @@ export class EstabEspecialidadController {
   }
 
   // Eliminar una especialidad de un establecimiento
-  @Delete()
-  async removeEspecialidad(
-    @Body('establecimientoId') establecimientoId: number,
-    @Body('especialidadId') especialidadId: number,
-  ) {
-    return this.estabEspecialidadService.deleteRelacion(
-      establecimientoId,
-      especialidadId,
-    );
+  // En estab-especialidad.controller.ts
+  @Delete(':id')
+  async removeEspecialidad(@Param('id') id: number) {
+    console.log(`ID recibido: ${id}`); // Log para verificar el valor del ID
+    return this.estabEspecialidadService.deleteRelacion(id);
   }
 }
