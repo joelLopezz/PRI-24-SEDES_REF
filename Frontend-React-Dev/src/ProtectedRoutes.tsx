@@ -39,6 +39,10 @@ import ConsultaExternaList from './pages/ConsultaExterna/ConsultaExternaList';
 
 import CamaList from './pages/Cama/CamaList';
 
+import ReferenciaList from './pages/Referencia/ReferenciaList';
+import ReferenciaCreate from './pages/Referencia/FormularioReferencias';
+import ReferenciaPendiente from './pages/Referencia/ReferenciaPendientes';
+
 function ProtectedRoutes() {
   const { hasPermission } = useAuth();
 
@@ -159,6 +163,11 @@ function ProtectedRoutes() {
 
             {/*Actualizar contrasenia*/}
             <Route path="/cambiar-contrasenia" element={<CambiarContrasenia />} />
+
+            {/* Referencias rutas*/}
+            <Route path="/referencia" element={<ReferenciaList />} />
+            <Route path="/referencia/create" element={<ReferenciaCreate />} />
+            <Route path="/referencia/pendiente" element={<ReferenciaPendiente />} />
         </Route>
       </Routes>
   );

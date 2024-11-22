@@ -1,0 +1,39 @@
+.expandable-section {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  
+  .section-header {
+    background-color: #f5f5f5;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .section-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .toggle-icon {
+    font-size: 1.5rem;
+    user-select: none;
+  }
+  
+  .section-content {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+  }
+  
+  .section-content.expanded {
+    max-height: 1000px; /* Un valor suficientemente alto para contener el contenido */
+    opacity: 1;
+  }
+  
