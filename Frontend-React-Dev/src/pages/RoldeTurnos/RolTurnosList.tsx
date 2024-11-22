@@ -1073,7 +1073,7 @@ const ShiftTable: React.FC = () => {
         <tbody>
           {doctors
             .filter((doctor) => doctor.name !== "S/D") // Filtrar doctores sin datos
-            .map((doctor) => {
+            .map((doctor, index) => {
               // Procesar las áreas del doctor
               const areasArray = doctor.area.split(',').map((areaString) => {
                 const [areaId, areaName] = areaString.split(':');
@@ -1085,7 +1085,7 @@ const ShiftTable: React.FC = () => {
 
               return (
                 <tr key={doctor.doctor_id}>
-                  <td>{doctor.doctor_id}</td>
+                   <td>{index + 1}</td>
                   <td onClick={() => handleOpenDoctorModal(doctor.doctor_id)}>
                     {doctor.name}
                   </td>
