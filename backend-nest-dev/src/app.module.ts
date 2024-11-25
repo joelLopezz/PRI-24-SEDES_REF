@@ -21,8 +21,9 @@ import { CamaController } from './cama/cama.controller';
 import { CamaService } from './cama/cama.service';
 
 // Módulos
-import { ReferenciaModule } from './referencias/referencia.module';
-import { DatosPacienteModule } from './pacientes/paciente.module';
+import { ReferenciaModule } from './referencia/referencia.module';
+import { PacienteModule } from './paciente/paciente.module';
+import { RegistroModule } from './registro/registro.module';
 import { DatosAcompananteModule } from './acompañante/acompañante.module';
 import { DatosDiagnosticoModule } from './diagnosticos/diagnostico.module';
 import { DatosClinicoModule } from './datosclinicos/datoclinico.module';
@@ -71,8 +72,6 @@ import { PersoEspeciaHospitalModule } from './perso_especia_hospital/perso_espec
     MunicipioModule,
     EstabEspecialidadModule,
     EstabServicioModule,
-    ReferenciaModule,
-    DatosPacienteModule,
     DatosAcompananteModule,
     DatosDiagnosticoModule,
     DatosClinicoModule,
@@ -98,6 +97,9 @@ import { PersoEspeciaHospitalModule } from './perso_especia_hospital/perso_espec
     SpecialtyModule,
     EstablecimientoModule,
     PersoEspeciaHospitalModule,
+    ReferenciaModule,
+    PacienteModule,
+    RegistroModule
   ],
   controllers: [
     AppController,

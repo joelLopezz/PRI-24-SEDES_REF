@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, BadRequestException } from '@nestjs/common';
 import { CamaService } from './cama.service';
 
 @Controller('cama')
@@ -21,5 +21,11 @@ export class CamaController {
   @Get('comboServicio')
   async getServicios() {
     return await this.camaService.findAllServicios();
+  }
+
+  @Post()
+  async crearCama(@Body() datos: any) {
+    const { datosCama, datosHistorial } = datos;
+    return this.camaService.crearCamaConHistorial(datosCama, datosHistorial);
   }
 }

@@ -167,6 +167,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </div>
             </Link>
           </li> 
+
+          {/* Opción de reporte */}
+          <li className="group">
+            <Link
+              to="/referencia"
+              className="block px-4 py-2 text-gray-200 group-hover:bg-blue-700 group-hover:text-white rounded-md transform transition-transform duration-200 ease-in-out group-hover:translate-x-1"
+            >
+              <div className="flex items-center space-x-2">
+                <img src={miHospitalIcon} alt="Mi Hospital" className="w-6 h-6 group-hover:opacity-80 transition-opacity duration-300" />
+                <span className="group-hover:font-bold">Referencias</span>
+              </div>
+            </Link>
+          </li> 
+
+          
         </ul>
       </nav>
     </div>

@@ -1,0 +1,151 @@
+/* Contenedor principal */
+.container_referencias_list {
+  margin: 20px auto;
+  max-width: 90%; /* Más ancho para la tabla */
+}
+
+/* Estilo del título */
+.titulo-listado {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #2f4fbb;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Botón de crear nueva referencia */
+.button-insertar button {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  text-align: center;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-insertar button:hover {
+  background-color: #218838;
+}
+
+/* Tabla con mayor ancho */
+.table-container {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-container th, .table-container td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.table-container th {
+  background-color: #343a40;
+  color: white;
+  text-transform: uppercase;
+}
+
+.table-container tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table-container tr:hover {
+  background-color: #ddd;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Estilo de botones dentro de la tabla */
+.botones {
+  display: flex;
+  justify-content: center; /* Centra los botones en la celda */
+  gap: 10px; /* Espaciado entre botones */
+}
+
+.button-editar,
+.button-eliminar {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.button-editar {
+  background-color: #007bff;
+}
+
+.button-editar:hover {
+  background-color: #0056b3;
+}
+
+.button-eliminar {
+  background-color: #dc3545;
+}
+
+.button-eliminar:hover {
+  background-color: #c82333;
+}
+
+/* Estilo para las alertas de error */
+.text-error {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Botones alineados horizontalmente */
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.form-buttons .btn {
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-buttons .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-buttons .btn-cancelar {
+  background-color: #dc3545;
+}
+
+.form-buttons .btn-cancelar:hover {
+  background-color: #c82333;
+}
+
+.form-buttons .btn-editar {
+  background-color: #007bff;
+}
+
+.form-buttons .btn-editar:hover {
+  background-color: #0056b3;
+}
+
+/* Contenedor de botones: separación horizontal */
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Separa los botones a extremos opuestos */
+  margin-top: 20px;
+}

@@ -38,14 +38,7 @@ const ShiftTable: React.FC = () => {
   const [usuarioID, setUsuarioID] = useState('');
   
 
-  const [hospitales, setHospitales] = useState<{ id: number; nombre: string }[]>([]);
-  const [establecimientoID, setEstablecimientoID] = useState<number>(() => {
-    console.log('Valor de hospitalId antes de la conversión:', hospitalId);
-    const id = Number(hospitalId);
-    console.log('Valor de id después de la conversión:', id);
-  return isNaN(id) ? 0 : id; // Si `hospitalId` no es un número válido, se establece como 0 por defecto.
-  });
-   // `hospitalId` ya está definido
+  
 
 
   const [modifiedFixedAreas, setModifiedFixedAreas] = useState<{ [key: string]: boolean }>({
@@ -242,15 +235,31 @@ const ShiftTable: React.FC = () => {
       setUsuarioID(user.usuario_ID);
     }
   }, []);
+  
 
+  const [hospitales, setHospitales] = useState<{ id: number; nombre: string }[]>([]);
+
+
+  const [establecimientoID, setEstablecimientoID] = useState<number>(0);
+  useEffect(() => {
+    if (hospitalId) {
+      const id = Number(hospitalId);
+      if (!isNaN(id)) {
+        setEstablecimientoID(id);
+      }
+    }
+  }, [hospitalId]);
+  
+   // `hospitalId` ya está definido
 
   const fetchDoctors_actualizar = async () => {
     if (especialidadId !== "") {
       try {
-        const establecimientoID = hospitalId; // Dato estático por ahora
-        console.log('Establecimiendo q ' + establecimientoID);
+        const establecimiento = establecimientoID || hospitalId; // Usar el valor del combo de hospital si está disponible
+  // Dato estático por ahora
+        console.log('Establecimiendo q ' + establecimiento);
         const response = await fetch(
-          `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimientoID}`
+          `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
         );
         if (!response.ok) {
           throw new Error("Error al cargar la lista de doctores");
@@ -287,10 +296,10 @@ const ShiftTable: React.FC = () => {
     if (especialidadId !== "") {
       const fetchDoctors = async () => {
         try {
-          const establecimientoID = hospitalId; // Dato estático por ahora
-          console.log('Establecimiendo w ' + establecimientoID);
+          const establecimiento = establecimientoID || hospitalId; // Dato estático por ahora
+          console.log('Establecimiendo w ' + establecimiento);
           const response = await fetch(
-            `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimientoID}`
+            `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
           );
           if (!response.ok) {
             throw new Error('Error al cargar la lista de doctores');
@@ -335,10 +344,10 @@ const ShiftTable: React.FC = () => {
     const fetchDoctors = async () => {
       if (especialidadId !== "") {
         try {
-          const establecimientoID = hospitalId; // Dato estático por ahora
-          console.log('Establecimiendo e ' + establecimientoID);
+          const establecimiento = establecimientoID || hospitalId; // Dato estático por ahora
+          console.log('Establecimiendo e ' + establecimiento);
           const response = await fetch(
-            `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimientoID}`
+            `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
           );
           if (!response.ok) {
             throw new Error("Error al cargar la lista de doctores");
@@ -1146,20 +1155,21 @@ const ShiftTable: React.FC = () => {
               </select>
             </th>
             <th colSpan={6} className={styles.highlight}>
-              <select
-                value={establecimientoID || ""}
-                onChange={(e) => {
-                  const selectedId = Number(e.target.value) || Number(hospitalId);
-                  setEstablecimientoID(selectedId);
-                }}
-              >
-                <option value="">Seleccionar Hospital</option>
-                {hospitales.map((hospital) => (
-                  <option key={hospital.id} value={hospital.id}>
-                    {hospital.nombre}
-                  </option>
-                ))}
-              </select>
+            <select
+              value={establecimientoID || ""}
+              onChange={(e) => {
+                const selectedId = Number(e.target.value);
+                setEstablecimientoID(selectedId);
+              }}
+            >
+              <option value="">Seleccionar Hospital</option>
+              {hospitales.map((hospital) => (
+                <option key={hospital.id} value={hospital.id}>
+                  {hospital.nombre}
+                </option>
+              ))}
+            </select>
+
             </th>
 
 

@@ -20,6 +20,7 @@ const EspecialidadesList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState(''); // Estado para el mensaje de confirmación
   const navigate = useNavigate(); // Inicializa useNavigate
+
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
@@ -64,6 +65,8 @@ const EspecialidadesList = () => {
           historia_ID: selectedEspecialidad.historia_ID,
           ...dataToSend
         });
+
+        
         // Hacer la solicitud POST solo con los datos requeridos
         await axios.post(`http://localhost:3000/historia-cama/reinsertar/${selectedEspecialidad.historia_ID}`, dataToSend);
         setConfirmationMessage('DATOS ACTUALIZADOS CORRECTAMENTE'); // Muestra el mensaje de confirmación
@@ -89,6 +92,9 @@ const EspecialidadesList = () => {
   return (
     <div className="container_cama_list">
       <h2 className="title">Especialidades por Hospital</h2>
+      <div>
+      <button onClick={() => navigate('/crearCama')}  className="btn btn-success">Crear Nueva Cama</button>
+      </div>
       {especialidades.length === 0 ? (
         <p>Cargando datos de especialidades o no hay especialidades disponibles.</p>
       ) : (

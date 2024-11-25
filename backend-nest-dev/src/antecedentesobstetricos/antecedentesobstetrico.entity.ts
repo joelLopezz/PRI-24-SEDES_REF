@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, NumericType } from "typeorm";
-import { Paciente } from '../pacientes/paciente.entity';
+import { Paciente } from '../paciente/paciente.entity';
 
 @Entity('antecedentesobstetricos')
 export class AntecedenteObstetrico {
