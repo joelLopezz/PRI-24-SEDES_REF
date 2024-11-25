@@ -1,9 +1,16 @@
+ 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 import { validateNombre } from '../../Components/validations/Validations';
 import { useAuth } from '../../Context/AuthContext'; // Importar useAuth
+import axios, { AxiosError } from 'axios';
+
+interface AxiosErrorResponse {
+  statusCode: number;
+  message: string | string[]; // Puede ser una cadena o un arreglo de cadenas
+  error: string;
+}
 
 
 const EspecialidadCreate: React.FC = () => {
@@ -46,19 +53,35 @@ const EspecialidadCreate: React.FC = () => {
       // Convertir el nombre a mayúsculas antes de enviar
       const upperCaseData = {
         ...formData,
-        nombre: formData.nombre.toUpperCase(), // Asegurarse de enviar en mayúsculas
+        nombre: formData.nombre.toUpperCase(),
         estado: 1,
-        usuario_creacion: usuarioID, 
+        usuario_creacion: usuarioID,
       };
   
       console.log('Enviando datos:', upperCaseData);
   
       await axios.post(`${API_BASE_URL}/specialties`, upperCaseData);
       setModalOpen(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al crear la especialidad:', error);
+  
+      // Manejar errores de Axios
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<AxiosErrorResponse>;
+        const errorMessage =
+          axiosError.response?.data?.message ||
+          'Ocurrió un error al crear la especialidad. Por favor, inténtalo de nuevo.';
+  
+        // Si el mensaje es un arreglo, unirlo en una cadena
+        alert(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+      } else {
+        alert('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
+      }
     }
   };
+  
+  
+
 
   const handleCloseModal = () => {
     setModalOpen(false);

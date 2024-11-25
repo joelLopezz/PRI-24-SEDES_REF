@@ -1,10 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Servicio } from './servicio.entity';
 import { Specialty } from '../specialty/specialty.entity'; // Importar la entidad Especialidad
-
 @Injectable()
 export class ServicioService {
   constructor(
@@ -13,16 +12,23 @@ export class ServicioService {
     @InjectRepository(Specialty)
     private specialtyRepository: Repository<Specialty>, // Repositorio para Especialidad
   ) {}
-
   // Crear un nuevo servicio
   async create(servicioData: Partial<Servicio> & { usuario_ID: number }): Promise<Servicio> {
+    // Convertir el código a mayúsculas para consistencia
+    servicioData.codigo = servicioData.codigo.toUpperCase();
+
+    // Verificar si ya existe un servicio con el mismo código
+    const existingServicio = await this.servicioRepository.findOne({ where: { codigo: servicioData.codigo } });
+    if (existingServicio) {
+      throw new BadRequestException(`Ya existe un servicio con el código ${servicioData.codigo}`);
+    }
+
     const newServicio = this.servicioRepository.create({
       ...servicioData,
       usuario_creacion: servicioData.usuario_ID,
     });
     return await this.servicioRepository.save(newServicio);
   }
-
   // Obtener todos los servicios (relacionado con especialidad si es necesario)
   async findAll(): Promise<Servicio[]> {
     return await this.servicioRepository.find({
@@ -30,7 +36,6 @@ export class ServicioService {
       relations: ['especialidad'], // Incluir la relación con Especialidad
     });
   }
-
   // Obtener un servicio por su ID
   async findOne(id: number): Promise<Servicio> {
     const servicio = await this.servicioRepository.findOne({
@@ -42,11 +47,9 @@ export class ServicioService {
     }
     return servicio;
   }
-
   // Actualizar un servicio
   async updateServicio(id: number, data: Partial<Servicio> & { usuario_ID: number }): Promise<Servicio> {
     const { usuario_ID, ...updateData } = data; // Extrae usuario_ID y el resto de datos
-  
     if (updateData.especialidad_ID) {
       const especialidad = await this.specialtyRepository.findOne({
         where: { id: updateData.especialidad_ID },
@@ -56,7 +59,6 @@ export class ServicioService {
       }
       updateData.especialidad = especialidad;
     }
-  
     updateData.fecha_modificacion = new Date();
     updateData.usuario_modificacion = usuario_ID; // Asigna usuario_ID a usuario_modificacion
   
@@ -67,8 +69,6 @@ export class ServicioService {
       relations: ['especialidad'],
     });
   }
-  
-
   // Eliminar un servicio (eliminación lógica)
   async deleteServicio(id: number, usuario_ID: number): Promise<void> {
     await this.servicioRepository.update(id, {

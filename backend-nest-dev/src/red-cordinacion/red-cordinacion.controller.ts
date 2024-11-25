@@ -13,7 +13,6 @@ import { RedCordinacion } from './red-cordinacion.entity';
 @Controller('red-cordinacion')
 export class RedCordinacionController {
   constructor(private readonly redCordinacionService: RedCordinacionService) {}
-
   // Crear una nueva red de coordinación
   @Post()
   async create(
@@ -21,25 +20,21 @@ export class RedCordinacionController {
   ): Promise<RedCordinacion> {
     return this.redCordinacionService.create(data);
   }
-
   // Obtener todas las redes de coordinación
   @Get()
   async findAll(): Promise<RedCordinacion[]> {
     return this.redCordinacionService.findAll();
   }
-
   // Obtener solo ID, nombre y numeración de redes activas
   @Get('activos')
   async findActive(): Promise<Partial<RedCordinacion[]>> {
     return this.redCordinacionService.findActive();
   }
-
   // Obtener una red por su ID
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<RedCordinacion> {
     return this.redCordinacionService.findOne(id);
   }
-
   // Actualizar una red de coordinación en el controlador
   @Patch(':id')
   async update(
@@ -48,7 +43,6 @@ export class RedCordinacionController {
   ): Promise<RedCordinacion> {
     return this.redCordinacionService.update(id, data);
   }
-
   // Eliminar una red (eliminación lógica)
   @Delete(':id')
   async delete(

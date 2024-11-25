@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RedCordinacion } from './red-cordinacion.entity';
@@ -13,6 +13,17 @@ export class RedCordinacionService {
 
   // Crear una nueva red de coordinación
   async create(data: Partial<RedCordinacion> & { usuario_ID: number }): Promise<RedCordinacion> {
+    // Convertir el nombre a mayúsculas para consistencia
+    data.nombre = data.nombre.toUpperCase();
+
+    // Verificar si ya existe una red con el mismo nombre
+    const existingRed = await this.redCordinacionRepository.findOne({
+      where: { nombre: data.nombre },
+    });
+    if (existingRed) {
+      throw new BadRequestException(`Ya existe una red de coordinación con el nombre ${data.nombre}`);
+    }
+
     const nuevaRed = this.redCordinacionRepository.create({
       ...data,
       usuario_creacion: data.usuario_ID,

@@ -17,7 +17,7 @@ export class Servicio {
   @Column({ type: 'varchar', length: 500 }) // Ajuste del tamaño del campo "nombre"
   nombre: string;
 
-  @Column({ type: 'varchar', length: 15 })
+  @Column({ type: 'varchar', length: 15, unique: true }) // Agrega unique: true
   codigo: string; // Campo nuevo para el código del servicio
 
   @Column({ type: 'tinyint', default: 1 })

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal';
 import { validateNombre, validateNumeracion } from '../../Components/validations/Validations';
 import { useAuth } from '../../Context/AuthContext';
+import axios, { AxiosError } from 'axios';
+
 
 const toRoman = (num: number): string => {
   const romanNumerals: { [key: number]: string } = {
@@ -46,10 +47,11 @@ const RedCreate: React.FC = () => {
     const { name, value } = e.target;
 
     if (name === "nombre") {
-      if (validateNombre(value) || value === '') {
+      const upperCaseValue = value.toUpperCase();
+      if (validateNombre(upperCaseValue) || upperCaseValue === '') {
         setFormData({
           ...formData,
-          [name]: value,
+          [name]: upperCaseValue,
         });
       } else {
         alert("El nombre solo debe contener letras, sin espacios al inicio y solo un espacio entre palabras.");
@@ -72,15 +74,27 @@ const RedCreate: React.FC = () => {
     try {
       const formDataWithRomanNumeration = {
         ...formData,
-        numeracion: toRoman(parseInt(formData.numeracion, 10)), // Convertimos el número a romano
+        nombre: formData.nombre.toUpperCase(), // Convertir a mayúsculas
+        numeracion: toRoman(parseInt(formData.numeracion, 10)),
         estado: 1,
-        usuario_ID: usuarioID, // Agregar el ID del usuario 
+        usuario_ID: usuarioID,
       };
 
       await axios.post(`${API_BASE_URL}/red-cordinacion`, formDataWithRomanNumeration);
       setModalOpen(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al crear la red de coordinación:', error);
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message: string | string[] }>;
+        const errorMessage =
+          axiosError.response?.data?.message ||
+          'Ocurrió un error al crear la red de coordinación. Por favor, inténtalo de nuevo.';
+
+        alert(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+      } else {
+        alert('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
+      }
     }
   };
 

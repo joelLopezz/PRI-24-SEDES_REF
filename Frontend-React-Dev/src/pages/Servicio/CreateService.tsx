@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import SuccessModal from '../../Components/SuccessModal'; // Importamos el modal de éxito
 import { validateCodigo, validateNombreServicio } from '../../Components/validations/Validations';
 import { useAuth } from '../../Context/AuthContext';
+import axios, { AxiosError } from 'axios';
 
 
 // Definir la interfaz para las especialidades
@@ -83,19 +83,31 @@ const CreateService: React.FC = () => {
       alert("Por favor, selecciona una especialidad válida.");
       return;
     }
-  
+
     try {
       const formDataUpperCase = {
         ...formData,
-        nombre: formData.nombre.toUpperCase(), // Convertir a mayúsculas antes de enviar
+        codigo: formData.codigo.toUpperCase(), // Convertir a mayúsculas
+        nombre: formData.nombre.toUpperCase(), // Convertir a mayúsculas
         estado: 1,
-        usuario_ID: usuarioID,  // Utiliza el usuarioID del contexto
+        usuario_ID: usuarioID,
       };
-  
+
       await axios.post(`${API_BASE_URL}/servicio`, formDataUpperCase);
       setModalOpen(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al crear el servicio:', error);
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message: string | string[] }>;
+        const errorMessage =
+          axiosError.response?.data?.message ||
+          'Ocurrió un error al crear el servicio. Por favor, inténtalo de nuevo.';
+
+        alert(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+      } else {
+        alert('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
+      }
     }
   };
   

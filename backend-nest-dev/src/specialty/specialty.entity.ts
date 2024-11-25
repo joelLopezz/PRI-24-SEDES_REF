@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Servicio } from '../servicio/servicio.entity';
 import { Cama } from 'src/cama/cama.entity';
 import {RolTurno}  from '../rol_turnos/rol_turno.entity'; 
@@ -17,8 +18,8 @@ export class Specialty {
   @PrimaryGeneratedColumn({ name: 'especialidad_ID', type: 'smallint' })
   id: number;
 
-  @Column({ type: 'varchar', length: 60 })
-  nombre: string;
+  @Column({ type: 'varchar', length: 60, unique: true })
+  nombre: string;  
 
   @Column({ type: 'tinyint', default: 1 })
   estado: number;

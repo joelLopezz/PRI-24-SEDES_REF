@@ -11,7 +11,7 @@ export class RedCordinacion {
   @PrimaryGeneratedColumn({ type: 'tinyint' })
   red_ID: number;
 
-  @Column({ type: 'varchar', length: 65 })
+  @Column({ type: 'varchar', length: 65, unique: true }) // Agrega unique: true
   nombre: string;
 
   @Column({ type: 'char', length: 6 })
