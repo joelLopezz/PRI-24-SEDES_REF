@@ -29,6 +29,12 @@ export class ServicioController {
     return this.servicioService.findAll();
   }
 
+  //Lista todos los serivicioc(id y jnombre)
+  @Get('list')
+  async getSpecialtiesForSelect(): Promise<Partial<Servicio[]>> {
+    return this.servicioService.getServiceForSelect();
+  }
+
   // Obtener un servicio por su ID (incluye la relación con Especialidad)
   @Get(':id')
   findOne(@Param('id') id: string) {

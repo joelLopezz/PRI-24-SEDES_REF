@@ -36,6 +36,6 @@ export class Cama {
   fecha_modificacion: Date;
 
   @UpdateDateColumn()
-  usuario_modificacion: Date;
+  usuario_creacion: number;
   
 }  

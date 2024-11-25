@@ -1,4 +1,5 @@
 import { Specialty } from '../specialty/specialty.entity'; // Importar la entidad Especialidad
+import { Cama } from '../cama/cama.entity'; // Asegúrate de importar la entidad Cama   ==> Cod añadido
 import {
   Entity,
   Column,
@@ -7,6 +8,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('servicio')
@@ -46,4 +48,8 @@ export class Servicio {
   @ManyToOne(() => Specialty, (especialidad) => especialidad.servicios)
   @JoinColumn({ name: 'especialidad_ID' }) // Vincula esta columna con el ID de Especialidad
   especialidad: Specialty;
+
+  // Relación con la entidad Cama  ==> Codigo añadido
+  @OneToMany(() => Cama, (cama) => cama.servicio)
+  camas: Cama[]; // Esta propiedad establece la relación con la entidad Cama
 }

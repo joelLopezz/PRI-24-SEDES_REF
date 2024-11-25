@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cama } from '../cama/cama.entity';
 import { Specialty } from '../specialty/specialty.entity';
-import { Servicio } from '../servicio/servico.entity';
+import { Servicio } from '../servicio/servicio.entity';
+import {HistoriaCama } from '../historial_cama/historial_cama.entity';
+import {AuthService} from '../Auth/auth.service';
 import {EstablecimientoSalud} from '../establecimiento/establecimiento.entity';
 
 @Injectable()
@@ -20,8 +20,9 @@ export class CamaService {
     @InjectRepository(Servicio)
     private readonly servicioRepository: Repository<Servicio>,
 
-    @InjectRepository(EstablecimientoSalud)
-    private readonly establecimientoRepository: Repository<EstablecimientoSalud>,
+    @InjectRepository(HistoriaCama)
+    private readonly historialCamaRepository: Repository<HistoriaCama>,
+    private authService: AuthService,
   ) {}
 
   async getEspecialidadesPorHospital(): Promise<any[]> {
@@ -72,147 +73,82 @@ export class CamaService {
       .select(['servicio.servicio_ID', 'servicio.nombre'])
       .getRawMany();
   }
+
+
+  //Crear nueva cama, solo Admin Hospital
+  async crearCamaConHistorial(datosCama: any, datosHistorial: any): Promise<{ cama: Cama; historial: HistoriaCama }> {
+    // Validar que los datos de cama no sean un arreglo
+    if (Array.isArray(datosCama)) {
+      throw new BadRequestException('Se esperaba un único objeto para la cama, pero se recibió un arreglo.');
+    }
+
+    // Obtener el usuario autenticado desde AuthService
+    const currentUser = this.authService.getCurrentUser();   
+    const establecimientoID = currentUser.establecimientoID;
+    const usuarioID = currentUser.usuarioID;
+
+    // Crear una nueva instancia de EstablecimientoSalud con el ID
+    const establecimientoSalud = new EstablecimientoSalud();
+    establecimientoSalud.id = establecimientoID;
+
+    // Buscar la especialidad seleccionada
+    const especialidad = await this.especialidadRepository.findOne({
+      where: { id: datosCama.especialidad },
+    });
+
+    // Buscar el servicio seleccionado
+    const servicio = await this.servicioRepository.findOne({
+      where: { servicio_ID: datosCama.servicio },
+    });
+
+    if (!establecimientoSalud || !especialidad || !servicio) {
+      throw new BadRequestException('Alguna de las entidades relacionadas no fue encontrada.');
+    }
+
+    // Crear la nueva cama
+    const nuevaCama = new Cama();
+    nuevaCama.estado = 1; // Estado por defecto
+    nuevaCama.establecimientoSalud = establecimientoSalud;
+    nuevaCama.especialidad = especialidad;
+    nuevaCama.servicio = servicio;
+    nuevaCama.usuario_creacion = usuarioID; // Usuario autenticado
+    nuevaCama.fecha_creacion = new Date(); // Fecha de creación automática
+
+    // Guardar la cama
+    let camaInsertada: Cama;
+    try {
+      camaInsertada = await this.camaRepository.save(nuevaCama);
+    } catch (error) {
+      throw new BadRequestException('Error al crear la cama: ' + error.message);
+    }
+
+    // Validar que los datos de historial no sean un arreglo
+    if (Array.isArray(datosHistorial)) {
+      throw new BadRequestException('Se esperaba un único objeto para el historial, pero se recibió un arreglo.');
+  }
+
+
+    // Crear el historial asociado
+    const nuevoHistorial = new HistoriaCama();
+    nuevoHistorial.cama = camaInsertada;
+    nuevoHistorial.instalada = datosHistorial.instalada;
+    nuevoHistorial.ofertada = datosHistorial.ofertada;
+    nuevoHistorial.disponible = datosHistorial.disponible;
+    nuevoHistorial.ocupada = datosHistorial.ocupada;
+    nuevoHistorial.alta = datosHistorial.alta;
+    nuevoHistorial.es_actual = 1; // es_actual por defecto
+    nuevoHistorial.usuario_modificacion = usuarioID; // Usuario autenticado
+    nuevoHistorial.fecha_modificacion = new Date(); // Fecha de modificación automática
+
+    // Guardar el historial
+    let historialInsertado: HistoriaCama;
+    try {
+        historialInsertado = await this.historialCamaRepository.save(nuevoHistorial);
+    } catch (error) {
+        throw new BadRequestException('Error al crear el historial de la cama: ' + error.message);
+    }
+
+    // Retornar los registros creados
+    return { cama: camaInsertada, historial: historialInsertado };
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-// import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
-// import { Cama } from '../cama/cama.entity';
-// import { Especialidad } from '../especiaidad/especialidad.entity';
-// import  { Servicio } from '../servicio/servico.entity';
-
-
-
-// @Injectable()
-// export class CamaService {
-//   constructor(
-//     @InjectRepository(Cama)
-//     private readonly camaRepository: Repository<Cama>,
-
-//     @InjectRepository(Especialidad)
-//     private readonly especialidadRepository :  Repository<Especialidad>,
-
-//     @InjectRepository(Servicio)
-//     private readonly servicioRepository :  Repository<Servicio>,
-
-
-//   ) {}
-
-//   async create(camaData: Partial<Cama>): Promise<Cama> {
-//     // Creación de la nueva cama
-//     try {
-//       const newCama = this.camaRepository.create(camaData);
-//       return await this.camaRepository.save(newCama);
-//     } catch (error) {
-//       throw new BadRequestException('Error al crear la cama: datos inválidos');
-//     }
-//   }
-
-
-//   async findAll(): Promise<Cama[]> {
-//     try {
-//       const camas = await this.camaRepository.find({
-//         where: { estado: 1 }, // Filtra solo las camas con estado = 1
-//         relations: ['establecimientoSalud', 'especialidad', 'servicio'],
-//       });
-//       console.log('Camas encontradas:', camas);
-//       return camas;
-//     } catch (error) {
-//       console.error('Error al obtener la lista de camas:', error);
-//       throw new Error('Error al obtener la lista de camas');
-//     }
-//   }
-  
-
-//   async findOne(id: number): Promise<Cama> {
-//     // Buscar una cama específica por ID
-//     const cama = await this.camaRepository.findOne({ where: { cama_ID: id }, relations: ['establecimientoSalud', 'especialidad', 'servicio'] });
-//     if (!cama) {
-//       throw new NotFoundException(`Cama con ID ${id} no encontrada`);
-//     }
-//     return cama;
-//   }
-
-//   async update(id: number, camaData: Partial<Cama>): Promise<Cama> {
-//     // Actualizar una cama existente
-//     const cama = await this.findOne(id);
-//     if (!cama) {
-//       throw new NotFoundException(`Cama con ID ${id} no encontrada`);
-//     }
-
-//     // Actualizar los datos de la cama
-//     try {
-//       Object.assign(cama, camaData);
-//       return await this.camaRepository.save(cama);
-//     } catch (error) {
-//       throw new BadRequestException('Error al actualizar la cama: datos inválidos');
-//     }
-//   }
-
-
-//   // Método para realizar el eliminado lógico
-//   async remove(id: number): Promise<void> {
-//     const cama = await this.findOne(id);
-//     if (!cama) {
-//       throw new NotFoundException(`Cama con ID ${id} no encontrada`);
-//     }
-
-//     try {
-//       // Cambiar el estado de la cama a "eliminado"
-//       cama.estado = 0; // Supongamos que 0 significa "eliminado"
-//       await this.camaRepository.save(cama);
-//     } catch (error) {
-//       throw new BadRequestException('Error al eliminar lógicamente la cama');
-//     }
-//   }
-
-
-
-
-//     //Update
-//     async updateCama(id: number, camaData: Partial<Cama>): Promise<Cama> {
-//       const cama = await this.camaRepository.findOneBy({ cama_ID: id });
-//       if (!cama) {
-//         throw new NotFoundException(`Cama con ID ${id} no encontrada`);
-//       }
-//       Object.assign(cama, camaData);
-//       return await this.camaRepository.save(cama);
-//     }
-
-//     // Método para actualizar solo las relaciones de especialidad y servicio
-//     async updateServicioYEspecialidad(
-//       camaId: number,
-//       especialidadId: number,
-//       servicioId: number,
-//     ): Promise<Cama> {
-//       const cama = await this.camaRepository.findOne({ where: { cama_ID: camaId } });
-//       if (!cama) {
-//         throw new NotFoundException(`Cama con ID ${camaId} no encontrada`);
-//       }
-    
-//       const especialidad = await this.especialidadRepository.findOne({ where: { especialidad_ID: especialidadId } });
-//       if (!especialidad) {
-//         throw new NotFoundException(`Especialidad con ID ${especialidadId} no encontrada`);
-//       }
-//       cama.especialidad = especialidad;
-    
-//       const servicio = await this.servicioRepository.findOne({ where: { servicio_ID: servicioId } });
-//       if (!servicio) {
-//         throw new NotFoundException(`Servicio con ID ${servicioId} no encontrado`);
-//       }
-//       cama.servicio = servicio;
-    
-//       console.log('Actualizando cama:', cama);  // Log para verificar los cambios antes de guardar
-//       return await this.camaRepository.save(cama);
-//     }
-// }

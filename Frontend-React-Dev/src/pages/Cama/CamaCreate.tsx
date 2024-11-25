@@ -1,44 +1,62 @@
-// src/pages/cama/CamaCreate.tsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+interface Specialty {
+  id: number;
+  nombre: string;
+}
+
+interface Servicio {
+  servicio_ID: number;
+  nombre: string;
+}
 
 const CamaCreate = () => {
   const [formData, setFormData] = useState({
-    numero: '',
     establecimientoSalud: '',
     especialidad: '',
     servicio: '',
+    instalada:'',
+    ofertada:'',
+    disponible: '',
+    ocupada:'',
+    alta:'',
   });
 
-  const [especialidades, setEspecialidades] = useState<{ especialidad_nombre: string; especialidad_especialidad_ID: number }[]>([]);
-  const [servicios, setServicios] = useState<{ servicio_nombre: string; servicio_servicio_ID: number }[]>([]);
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
+  const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); // Estado para el mensaje de éxito
+  const navigate = useNavigate(); // Inicializa useNavigate
+  
 
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/specialties/combo');
-        console.log('Especialidades recibidas:', response.data);
-        setEspecialidades(response.data);
+        const specialtiesResponse = await axios.get<Specialty[]>('http://localhost:3000/specialties/list');
+        setSpecialties(specialtiesResponse.data);
       } catch (error) {
         console.error('Error al obtener las especialidades:', error);
+        setErrorMessage('Error al cargar las especialidades');
       }
     };
 
     const fetchServicios = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/servicio/combo');
-        console.log('Servicios recibidos:', response.data);
-        setServicios(response.data);
+        const serviciosResponse = await axios.get<Servicio[]>('http://localhost:3000/servicio/list');
+        setServicios(serviciosResponse.data);
       } catch (error) {
         console.error('Error al obtener los servicios:', error);
+        setErrorMessage('Error al cargar los servicios');
       }
     };
 
     fetchEspecialidades();
     fetchServicios();
   }, []);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -47,49 +65,112 @@ const CamaCreate = () => {
     });
   };
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/cama', formData);
+      // Preparar los datos a ser enviados
+      const camaData = {
+        especialidad: formData.especialidad,
+        servicio: formData.servicio,
+        estado: 1, // Estado por defecto
+      };
+
+      const historialData = {
+        instalada: formData.instalada,
+        ofertada: formData.ofertada,
+        disponible: formData.disponible,
+        ocupada: formData.ocupada,
+        alta: formData.alta,
+        es_actual: 1, // Por defecto es 1
+        usuario_modificacion: 'user_id', // Este valor deberá ser obtenido de alguna manera (por ejemplo, del estado global de autenticación)
+      };
+
+      // Hacer la solicitud POST para crear la cama y el historial asociado
+      const response = await axios.post('http://localhost:3000/cama', { datosCama: camaData, datosHistorial: historialData });
+
       console.log('Cama creada:', response.data);
-      alert('Cama creada exitosamente');
-      //navigate('/cama');
+      //alert('Cama creada exitosamente');ç
+      setSuccessMessage('Personal de salud creado correctamente');
+      setTimeout(() => navigate('/cama'), 1500);
+
     } catch (error) {
       console.error('Error al crear la cama:', error);
-      alert('Error al crear la cama');
+      setErrorMessage('Error desconocido al crear la cama');
     }
   };
+
 
   return (
     <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
       <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '600px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)', backgroundColor: '#ffffff' }}>
         <h2 className="text-center" style={{ marginBottom: '20px', fontWeight: 'bold', color: '#333' }}>Registrar Cama</h2>
 
+        {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
+
         <div className="form-group" style={{ marginBottom: '15px' }}>
-          <label htmlFor="numero" style={{ fontWeight: 'bold', color: '#555' }}>Número:</label>
+          <label htmlFor="instalada" style={{ fontWeight: 'bold', color: '#555' }}>Instalada:</label>
           <input
-            type="text"
-            id="numero"
-            name="numero"
-            value={formData.numero}
+            type="number"
+            id="instalada"
+            name="instalada"
+            value={formData.instalada}
             onChange={handleChange}
             className="form-control"
-            style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-            placeholder="Número de cama"
+            placeholder="Número de camas Instaladas"
           />
         </div>
 
         <div className="form-group" style={{ marginBottom: '15px' }}>
-          <label htmlFor="establecimientoSalud" style={{ fontWeight: 'bold', color: '#555' }}>Establecimiento Salud:</label>
+          <label htmlFor="ofertada" style={{ fontWeight: 'bold', color: '#555' }}>Ofertada:</label>
           <input
-            type="text"
-            id="establecimientoSalud"
-            name="establecimientoSalud"
-            value={formData.establecimientoSalud}
+            type="number"
+            id="ofertada"
+            name="ofertada"
+            value={formData.ofertada}
             onChange={handleChange}
             className="form-control"
-            style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-            placeholder="Establecimiento de salud"
+            placeholder="Número de camas ofertadas"
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: '15px' }}>
+          <label htmlFor="disponible" style={{ fontWeight: 'bold', color: '#555' }}>Disponible:</label>
+          <input
+            type="number"
+            id="disponible"
+            name="disponible"
+            value={formData.disponible}
+            onChange={handleChange}
+            className="form-control"
+            placeholder="Número de camas disponibles"
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: '15px' }}>
+          <label htmlFor="ocupada" style={{ fontWeight: 'bold', color: '#555' }}>Ocupada:</label>
+          <input
+            type="number"
+            id="ocupada"
+            name="ocupada"
+            value={formData.ocupada}
+            onChange={handleChange}
+            className="form-control"
+            placeholder="Número de camas ocupadas"
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: '15px' }}>
+          <label htmlFor="alta" style={{ fontWeight: 'bold', color: '#555' }}>Alta:</label>
+          <input
+            type="number"
+            id="alta"
+            name="alta"
+            value={formData.alta}
+            onChange={handleChange}
+            className="form-control"
+            placeholder="Número de cama"
           />
         </div>
 
@@ -101,12 +182,11 @@ const CamaCreate = () => {
             value={formData.especialidad}
             onChange={handleChange}
             className="form-control"
-            style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
           >
             <option value="">Seleccione una especialidad</option>
-            {especialidades.map((especialidad) => (
-              <option key={especialidad.especialidad_especialidad_ID} value={especialidad.especialidad_especialidad_ID}>
-                {especialidad.especialidad_nombre}
+            {specialties.map((especialidad) => (
+              <option key={especialidad.id} value={especialidad.id}>
+                {especialidad.nombre}
               </option>
             ))}
           </select>
@@ -120,24 +200,38 @@ const CamaCreate = () => {
             value={formData.servicio}
             onChange={handleChange}
             className="form-control"
-            style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
           >
             <option value="">Seleccione un servicio</option>
             {servicios.map((servicio) => (
-              <option key={servicio.servicio_servicio_ID} value={servicio.servicio_servicio_ID}>
-                {servicio.servicio_nombre}
+              <option key={servicio.servicio_ID} value={servicio.servicio_ID}>
+                {servicio.nombre}
               </option>
             ))}
           </select>
         </div>
 
-        <div className="text-center">
-          <button type="submit" style={{ padding: '12px 25px', border: 'none', borderRadius: '4px', backgroundColor: '#228B22', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#008000')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#008000')}>
+        {/* Mostrar mensaje de éxito si existe */}
+        {successMessage && <p className="text-success text-center">{successMessage}</p>}
+
+        {/* Mostrar mensaje de error si existe */}
+        {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
+
+        <div className="text-center" style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          {/* Botón Crear */}
+          <button  type="submit" style={{ padding: '12px 25px', border: 'none', borderRadius: '4px', backgroundColor: '#228B22', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#006400')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#228B22')}>
             Crear
           </button>
+
+          {/* Botón Cancelar */}
+          <button  type="button" style={{ padding: '12px 25px', border: 'none', borderRadius: '4px', backgroundColor: '#B22222', color: '#fff', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#8B0000')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#B22222')}>
+            Cancelar
+          </button>
         </div>
+
       </form>
     </div>
   );

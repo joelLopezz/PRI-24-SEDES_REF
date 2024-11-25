@@ -27,7 +27,7 @@ export class HistoriaCama {
   alta: number;
 
   @Column({ type: 'boolean', default: false })
-  es_actual: boolean;
+  es_actual: number;
 
   @Column({ type: 'mediumint' })
   usuario_modificacion: number;

@@ -84,4 +84,12 @@ export class ServicioService {
       select: ['servicio_ID', 'codigo', 'nombre'], // Seleccionamos solo los campos necesarios
     });
   }
+
+
+  //List de servicios(id y nombre servicio)
+  async getServiceForSelect(): Promise<Partial<Servicio[]>> {
+    return this.servicioRepository.find({
+      select: ['servicio_ID', 'nombre'],
+    });
+  }
 }
