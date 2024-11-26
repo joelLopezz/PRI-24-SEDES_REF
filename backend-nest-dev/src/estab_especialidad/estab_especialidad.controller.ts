@@ -1,11 +1,31 @@
-import { Controller, Post, Get, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, Body, NotFoundException } from '@nestjs/common';
 import { EstabEspecialidadService } from './estab_especialidad.service';
+import { Specialty } from 'src/specialty/specialty.entity';
+import { AuthService } from '../Auth/auth.service';
 
 @Controller('estab-especialidad')
 export class EstabEspecialidadController {
   constructor(
     private readonly estabEspecialidadService: EstabEspecialidadService,
+    private authService: AuthService,
   ) {}
+
+
+  // Obtener todas las especialidades del establecimiento del usuario logueado
+  @Get('especialidades')
+  async getEspecialidadHospital() {
+    // Obtener el usuario autenticado (que contiene el establecimientoID)
+    const currentUser = await this.authService.getCurrentUser();
+
+    // Verificar que el usuario tenga el establecimientoID
+    // if (!currentUser || !currentUser.establecimientoID) {
+    //   throw new NotFoundException('No se pudo obtener el establecimiento del usuario.');
+    // }
+
+    // Llamar al servicio para obtener las especialidades asociadas al establecimiento
+    return this.estabEspecialidadService.getEspecialidadesPorEstablecimiento();
+  }
+
 
   // Agregar especialidades a un establecimiento (múltiples especialidades o una sola)
   @Post()

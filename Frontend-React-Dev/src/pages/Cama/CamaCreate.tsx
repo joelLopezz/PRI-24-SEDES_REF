@@ -35,7 +35,8 @@ const CamaCreate = () => {
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const specialtiesResponse = await axios.get<Specialty[]>('http://localhost:3000/specialties/list');
+        //const specialtiesResponse = await axios.get<Specialty[]>('http://localhost:3000/specialties/list');
+        const specialtiesResponse = await axios.get<Specialty[]>('http://localhost:3000/estab-especialidad/especialidades');
         setSpecialties(specialtiesResponse.data);
       } catch (error) {
         console.error('Error al obtener las especialidades:', error);
