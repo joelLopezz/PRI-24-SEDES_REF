@@ -35,10 +35,11 @@ const ScheduleTable: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedTurnos, setSelectedTurnos] = useState<Turno[]>([]);
   const [selectedDay, setSelectedDay] = useState<string>('');
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     // Obtener los datos del backend de hospitales
-    fetch('http://localhost:3000/establecimiento')
+    fetch(`${API_BASE_URL}/establecimiento`)
       .then((response) => response.json())
       .then((data) => setHospitales(data));
   }, []);
@@ -46,7 +47,7 @@ const ScheduleTable: React.FC = () => {
   useEffect(() => {
     // Obtener los datos del backend de especialidades
     if (establecimientoID) {
-      fetch(`http://localhost:3000/consulta-externa/reporte-completov2?hospitalId=${establecimientoID}`)
+      fetch(`${API_BASE_URL}/consulta-externa/reporte-completov2?hospitalId=${establecimientoID}`)
         .then((response) => response.json())
         .then((data) => setEspecialidades(data));
     }

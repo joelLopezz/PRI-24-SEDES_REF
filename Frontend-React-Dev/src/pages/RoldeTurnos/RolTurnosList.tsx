@@ -37,7 +37,7 @@ const ShiftTable: React.FC = () => {
   const [hospitalId, setHospitalId] = useState('');
   const [usuarioID, setUsuarioID] = useState('');
   
-
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   
 
 
@@ -77,7 +77,7 @@ const ShiftTable: React.FC = () => {
   useEffect(() => {
     const fetchHospitales = async () => {
       try {
-        const response = await fetch('http://localhost:3000/establecimiento');
+        const response = await fetch(`${API_BASE_URL}/establecimiento`);
         if (!response.ok) {
           throw new Error('Error al cargar los hospitales');
         }
@@ -240,7 +240,7 @@ const ShiftTable: React.FC = () => {
       try {
         console.log('hospital'+ establecimiento);
         const response = await fetch(
-          `http://localhost:3000/codificacion-turnos/filter?especialidadId=${especialidadId}&year=${anioSeleccionado}&month=${mesSeleccionado}&hospital=${establecimiento}`
+          `${API_BASE_URL}/codificacion-turnos/filter?especialidadId=${especialidadId}&year=${anioSeleccionado}&month=${mesSeleccionado}&hospital=${establecimiento}`
         );
         const data = await response.json();
         setTurnos(data);
@@ -265,7 +265,7 @@ const ShiftTable: React.FC = () => {
   // Dato estático por ahora
         console.log('Establecimiendo q ' + establecimiento);
         const response = await fetch(
-          `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
+          `${API_BASE_URL}/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
         );
         if (!response.ok) {
           throw new Error("Error al cargar la lista de doctores");
@@ -305,7 +305,7 @@ const ShiftTable: React.FC = () => {
           const establecimiento = establecimientoID || hospitalId; // Dato estático por ahora
           console.log('Establecimiendo w ' + establecimiento);
           const response = await fetch(
-            `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
+            `${API_BASE_URL}/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
           );
           if (!response.ok) {
             throw new Error('Error al cargar la lista de doctores');
@@ -353,7 +353,7 @@ const ShiftTable: React.FC = () => {
           const establecimiento = establecimientoID || hospitalId; // Usa el valor del combo de hospital si está disponible
           console.log('Establecimiendo e ' + establecimiento);
           const response = await fetch(
-            `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
+            `${API_BASE_URL}/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
           );
           if (!response.ok) {
             throw new Error("Error al cargar la lista de doctores");
@@ -403,7 +403,7 @@ const ShiftTable: React.FC = () => {
   const handleOpenDoctorModal = async (doctorId: number) => {
     setLoadingDoctorInfo(true); // Muestra un indicador de carga
     try {
-      const response = await fetch(`http://localhost:3000/personal-salud/${doctorId}`);
+      const response = await fetch(`${API_BASE_URL}/personal-salud/${doctorId}`);
       if (!response.ok) {
         throw new Error('Error al obtener la información del médico');
       }
@@ -491,7 +491,7 @@ const ShiftTable: React.FC = () => {
 
     if (areasToSave.length > 0) {
       try {
-        const response = await fetch('http://localhost:3000/area-personal/multiple', {
+        const response = await fetch(`${API_BASE_URL}/area-personal/multiple`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -527,7 +527,7 @@ const ShiftTable: React.FC = () => {
 
   if (updateData.length > 0) {
     try {
-      const response = await fetch('http://localhost:3000/area-personal/update-multiple', {
+      const response = await fetch(`${API_BASE_URL}/area-personal/update-multiple`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -548,7 +548,7 @@ const ShiftTable: React.FC = () => {
     console.log('Áreas a eliminar despues del if:', areasToDelete); // Log para verificar los IDs de las áreas a eliminar
     try {
       console.log('Enviando solicitud para eliminar áreas...');
-      const response = await fetch('http://localhost:3000/area-personal/delete-multiple', {
+      const response = await fetch(`${API_BASE_URL}/area-personal/delete-multiple`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -625,7 +625,7 @@ const ShiftTable: React.FC = () => {
     // Guardar nuevos turnos
     if (turnosParaEnviar.length > 0) {
       try {
-        const response = await fetch('http://localhost:3000/codificacion-turnos/multiple', {
+        const response = await fetch(`${API_BASE_URL}/codificacion-turnos/multiple`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -647,7 +647,7 @@ const ShiftTable: React.FC = () => {
     // Guardar ediciones de turnos existentes
     if (turnosParaEditar.length > 0) {
       try {
-        const response = await fetch('http://localhost:3000/codificacion-turnos/update-multiple', {
+        const response = await fetch(`${API_BASE_URL}/codificacion-turnos/update-multiple`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -687,7 +687,7 @@ const ShiftTable: React.FC = () => {
     useEffect(() => {
       const fetchEspecialidades = async () => {
         try {
-          const response = await fetch('http://localhost:3000/rol-turnos/Especialidades');
+          const response = await fetch(`${API_BASE_URL}/rol-turnos/Especialidades`);
           if (!response.ok) {
             throw new Error('Error al cargar las especialidades');
           }
@@ -708,7 +708,7 @@ const ShiftTable: React.FC = () => {
       // Guardar nuevos turnos (inserts)
       if (turnosParaEnviar.length > 0) {
         try {
-          const response = await fetch('http://localhost:3000/rol-turnos/Registro', {
+          const response = await fetch(`${API_BASE_URL}/rol-turnos/Registro`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -730,7 +730,7 @@ const ShiftTable: React.FC = () => {
       // Guardar ediciones de turnos existentes (updates)
       if (turnosParaActualizar.length > 0) {
         try {
-          const response = await fetch('http://localhost:3000/rol-turnos/update-multiple', {
+          const response = await fetch(`${API_BASE_URL}/rol-turnos/update-multiple`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
