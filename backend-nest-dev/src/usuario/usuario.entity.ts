@@ -1,16 +1,15 @@
-/* eslint-disable prettier/prettier */
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { PersonalSalud } from '../personal_salud/personal_salud.entity';
 
 @Entity('usuario')
 export class Usuario {
-    @PrimaryGeneratedColumn() // Clave primaria autogenerada
+    @PrimaryGeneratedColumn() 
     usuario_ID: number;
 
     @Column({ type: 'varchar', length: 50 })
     nombre_usuario: string;
 
-    @Column({ type: 'varchar', length: 255 }) // Contraseña encriptada
+    @Column({ type: 'varchar', length: 255 })
     contrasenia: string;
 
     @Column({ type: 'tinyint' })
@@ -29,7 +28,7 @@ export class Usuario {
     establecimiento_id: number;
 
     @ManyToOne(() => PersonalSalud, (personal) => personal.usuarios, { nullable: false })
-    @JoinColumn({ name: 'personal_ID' }) // Define el nombre de la columna de clave foránea
+    @JoinColumn({ name: 'personal_ID' })
     personal: PersonalSalud;
 }
 

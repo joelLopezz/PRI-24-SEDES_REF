@@ -10,7 +10,7 @@ import {AuthModule} from '../Auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([HistoriaCama, Cama]),
-    AuthModule, // Importa AuthModule para gestionar la autenticación si es necesario
+    AuthModule, 
   ],
   providers: [HistoriaCamaService],
   controllers: [HistoriaCamaController],

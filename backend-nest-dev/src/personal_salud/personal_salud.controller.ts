@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { PersonalSaludService } from './personal_salud.service';
 import { PersonalSalud } from './personal_salud.entity';
@@ -13,28 +12,6 @@ export class PersonalSaludController {
     return await this.personalSaludService.createPersonalSalud_v2(data);
   }
 
-
-  // Crear un nuevo registro de personal de salud
-  @Post()
-  async createPersonalSalud(@Body() createPersonalSaludDto: CreatePersonalSaludDto) {
-    try {
-      const newPersonalSalud = await this.personalSaludService.createPersonalSalud(createPersonalSaludDto);
-      return {
-        statusCode: HttpStatus.CREATED,
-        message: 'Personal de salud creado exitosamente',
-        data: newPersonalSalud,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Error al crear el personal de salud',
-          error: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
 
   // Obtener todos los registros de personal de salud
   @Get()

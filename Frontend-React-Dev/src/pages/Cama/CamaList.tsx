@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// src/pages/cama/EspecialidadesList.tsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../Cama/style/camaList.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useAuth } from '../../Context/AuthContext'; // Asegúrate de importar useAuth
+import { useAuth } from '../../Context/AuthContext';
 
 interface EspecialidadData {
   historia_ID: number;
@@ -20,8 +18,8 @@ const EspecialidadesList = () => {
   const [especialidades, setEspecialidades] = useState<EspecialidadData[]>([]);
   const [selectedEspecialidad, setSelectedEspecialidad] = useState<EspecialidadData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState(''); // Estado para el mensaje de confirmación
-  const navigate = useNavigate(); // Inicializa 
+  const [confirmationMessage, setConfirmationMessage] = useState(''); 
+  const navigate = useNavigate(); 
    const { role } = useAuth();
 
   useEffect(() => {
@@ -37,25 +35,25 @@ const EspecialidadesList = () => {
   }, []);
   
   const handleNavigation = () => {
-    navigate('/reporte-especialidades'); // Cambia '/otra-pagina' por la ruta de destino deseada
+    navigate('/reporte-especialidades'); 
   };
 
   const handleEdit = (especialidad: EspecialidadData) => {
     setSelectedEspecialidad(especialidad);
-    setConfirmationMessage(''); // Resetea el mensaje de confirmación al abrir el modal
-    setIsModalOpen(true); // Abre el modal
+    setConfirmationMessage(''); 
+    setIsModalOpen(true); 
   };
 
   const handleEditCama = (especialidad: EspecialidadData) => {
     setSelectedEspecialidad(especialidad);
-    setConfirmationMessage(''); // Resetea el mensaje de confirmación al abrir el modal
-    setIsModalOpen(true); // Abre el modal
+    setConfirmationMessage('');
+    setIsModalOpen(true); 
   };
 
   const handleModalClose = () => {
-    setIsModalOpen(false); // Cierra el modal
-    setSelectedEspecialidad(null); // Limpia la selección al cerrar el modal
-    setConfirmationMessage(''); // Resetea el mensaje de confirmación al cerrar el modal
+    setIsModalOpen(false); 
+    setSelectedEspecialidad(null); 
+    setConfirmationMessage(''); 
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -67,10 +65,9 @@ const EspecialidadesList = () => {
     if (selectedEspecialidad) {
       const totalSum = selectedEspecialidad.ocupadas + selectedEspecialidad.disponibles + selectedEspecialidad.alta;
   
-      // Validación: Si la suma es diferente a la cantidad ofertada, mostrar advertencia
       if (totalSum !== selectedEspecialidad.ofertadas) {
         setConfirmationMessage('La suma de los campos: Ocupadas, Disponibles y Altas no coincide con las ofertadas. Verifique el conteo de cama.');
-        return; // No continuar si la validación falla
+        return; 
       }
   
       try {
@@ -251,11 +248,11 @@ const EspecialidadesList = () => {
                       />
                     </div>
                   </div>
-                  {/* Mensaje de confirmación */}
+
                   {confirmationMessage && (
                     <p className="text-success text-center fw-bold">{confirmationMessage}</p>
                   )}
-                  {/* Botones alineados con los campos */}
+                  
                   <div className="row mt-4 align-items-center">
                     <div className="col-md-3"></div>
                     <div className="col-md-6 d-flex justify-content-between">

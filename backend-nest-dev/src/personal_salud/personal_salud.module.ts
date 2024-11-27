@@ -19,7 +19,7 @@ import { EstablecimientoSalud } from '../establecimiento/establecimiento.entity'
   ],
   providers: [PersonalSaludService],
   controllers: [PersonalSaludController],
-  exports: [TypeOrmModule, PersonalSaludService], // Exportamos el TypeOrmModule para que otros módulos puedan acceder al repositorio de PersonalSalud
+  exports: [TypeOrmModule, PersonalSaludService],
 })
 export class PersonalSaludModule {}
 

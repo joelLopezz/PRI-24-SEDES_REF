@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-// Cama Entity
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn } from 'typeorm';
 import { Specialty } from '../specialty/specialty.entity';
 import { Servicio } from '../servicio/servico.entity';

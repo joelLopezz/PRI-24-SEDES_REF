@@ -15,33 +15,23 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   login(user: DataUser) {
-    // Almacenar la información del usuario logueado
     this.currentUser = user;
-    //mostrar info
     this.logger.log(`Usuario logueado: ${user.nombre}`);
-    //this.logger.log(`Usuario ID: ${user.usuarioID}`);
-    //this.logger.log(`Establecimiento ID: ${user.establecimientoID}`);
-
-    //this.logCurrentUser();
   }
 
   logout() {
-    // Limpiar la información del usuario logueado
     this.currentUser = null;
   }
 
   getCurrentUser(): DataUser | null {
-    // Retornar la información del usuario logueado
     return this.currentUser;
   }
 
   isAuthenticated(): boolean {
-    // Validar si el usuario está autenticado
     return this.currentUser !== null;
   }
 
   hasPermission(allowedRoles: string[]): boolean {
-    // Validar si el usuario tiene uno de los roles permitidos
     return this.currentUser ? allowedRoles.includes(this.currentUser.rol) : false;
   }
 

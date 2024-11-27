@@ -1,14 +1,13 @@
 import { Controller, Post, Put, Param, Body, HttpStatus, NotFoundException, Logger } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { AuthService } from '../Auth/auth.service';
-// import Login from '../../../Frontend-React-Dev/src/pages/Login/login';
 
 @Controller('usuario')
 export class UsuarioController {
   [x: string]: any;
   constructor(
     private readonly usuarioService: UsuarioService,
-    private readonly authService: AuthService, // Inyectar el AuthService aquí
+    private readonly authService: AuthService,
   ) {}
 
 
@@ -19,7 +18,6 @@ export class UsuarioController {
       const { nombre_usuario, contrasenia } = loginDto;
       const usuario = await this.usuarioService.validateUsuario(nombre_usuario, contrasenia);
 
-      // Almacenar los datos del usuario en el servicio de autenticación
       this.authService.login({
         usuarioID: usuario.usuario_ID,
         nombre: usuario.nombre_usuario,
@@ -35,9 +33,9 @@ export class UsuarioController {
           nombre_usuario: usuario.nombre_usuario,
           rol: usuario.rol,
           estado: usuario.estado,
-          establecimiento_id: usuario.establecimiento_id, // Agregar establecimiento_id
-          nombres: usuario.personal.nombres, // Agregar nombres desde la relación personal_salud
-          primer_apellido: usuario.personal.primer_apellido, // Agregar primer_apellido
+          establecimiento_id: usuario.establecimiento_id, 
+          nombres: usuario.personal.nombres,
+          primer_apellido: usuario.personal.primer_apellido,
         },
       };
     } catch (error) {
@@ -48,9 +46,6 @@ export class UsuarioController {
     }
   }
   
-
-
-
   // Recuperar contraseña del usuario
   @Put('recuperar-contrasenia')
   async recoverPassword(

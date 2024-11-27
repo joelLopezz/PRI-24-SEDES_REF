@@ -63,11 +63,10 @@ export class PersonalSalud {
 
   @Column({type:'mediumint'})
   telefono:number;
-
-  // Definir la relación con EstablecimientoSalud
+  
   @ManyToOne(() => EstablecimientoSalud, (establecimiento) => establecimiento.personalSalud, { nullable: true })
-  @JoinColumn({ name: 'establecimiento_salud_idestablecimiento_ID' }) // Relación con la columna en la base de datos
-  establecimientoSalud: EstablecimientoSalud; // Relación a la entidad `EstablecimientoSalud`
+  @JoinColumn({ name: 'establecimiento_salud_idestablecimiento_ID' }) 
+  establecimientoSalud: EstablecimientoSalud; 
 
   @OneToMany(() => PersoEspeciaHospital, (especial) => especial.personal_salud)
   personalEspecialidadHospital: PersoEspeciaHospital[];

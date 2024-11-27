@@ -60,11 +60,13 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               ></path>
             </svg>
           </button>
-          <img
+          0<img
             src={logo}
             alt="App Logo"
             className="h-12 ml-4 hover:scale-110 transition-transform duration-300 ease-in-out transform shadow-lg"
-          />
+          /> 
+
+          
         </div>
 
         {/* Icono y menú desplegable de usuario */}

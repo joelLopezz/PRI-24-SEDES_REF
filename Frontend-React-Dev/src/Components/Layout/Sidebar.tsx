@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from './../../Context/AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from './../../Context/AuthContext';
 
-// Importamos los iconos personalizados
 import hospitalIcon from '../../assets/Images/hospital.png';
 import especialidadesIcon from '../../assets/Images/especialista.png';
 import serviciosIcon from '../../assets/Images/servicio.png';
 import miHospitalIcon from '../../assets/Images/MyHospital.png';
-import redIcon from '../../assets/Images/red.png'; // Importa el nuevo icono para Red Coordinación
+import redIcon from '../../assets/Images/red.png';
 import hospitalInfoIcon from '../../assets/Images/hospitalinfo.png'; 
 
 interface SidebarProps {
@@ -15,7 +14,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
-  const { hasPermission } = useAuth(); // Obtén el hook de autenticación
+  const { hasPermission } = useAuth(); 
   return (
     <div
       className={`fixed inset-y-0 left-0 transform ${
@@ -104,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           </li>
 
           {/* Opción para Persona salud */}
-          {hasPermission(['Admin Hospital'])&&(
+          {hasPermission(['Admin Hospital', 'Admin Sedes'])&&(
           <li className="group">
             <Link
               to="/personal-salud"
@@ -158,8 +157,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </div>
             </Link>
           </li>
-
-
 
           {/* Opción de reporte */}
           {hasPermission(['Admin Sedes'])&&(

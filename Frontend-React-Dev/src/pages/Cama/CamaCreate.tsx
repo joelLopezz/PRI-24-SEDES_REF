@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -28,9 +28,8 @@ const CamaCreate = () => {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // Estado para el mensaje de éxito
-  const navigate = useNavigate(); // Inicializa useNavigate
-  
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEspecialidades = async () => {
@@ -84,15 +83,13 @@ const CamaCreate = () => {
         disponible: formData.disponible,
         ocupada: formData.ocupada,
         alta: formData.alta,
-        es_actual: 1, // Por defecto es 1
-        usuario_modificacion: 'user_id', // Este valor deberá ser obtenido de alguna manera (por ejemplo, del estado global de autenticación)
+        es_actual: 1, 
+        usuario_modificacion: 'user_id',
       };
 
-      // Hacer la solicitud POST para crear la cama y el historial asociado
       const response = await axios.post('http://localhost:3000/cama', { datosCama: camaData, datosHistorial: historialData });
 
       console.log('Cama creada:', response.data);
-      //alert('Cama creada exitosamente');ç
       setSuccessMessage('Personal de salud creado correctamente');
       setTimeout(() => navigate('/cama'), 1500);
 

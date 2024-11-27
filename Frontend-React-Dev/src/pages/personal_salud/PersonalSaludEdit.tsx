@@ -324,22 +324,17 @@ const PersonalSaludEdit: React.FC = () => {
 
             {/* Botones */}
             <div className="d-flex justify-content-between mt-4">
-              <button type="submit" className="btn btn-primary">
-                Actualizar
+              <button
+                type="reset" className="btn btn-secondary col-2" onClick={clearMessages}
+              >
+                Limpiar
               </button>
               <button
-                type="reset"
-                className="btn btn-secondary"
-                onClick={clearMessages}
-              >
-                Limpiar Mensajes
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleCancel}
-              >
+                type="button" className="btn btn-danger col-2" onClick={handleCancel}>
                 Cancelar
+              </button>
+              <button type="submit" className="btn btn-success col-2">
+                Actualizar
               </button>
             </div>
           </form>

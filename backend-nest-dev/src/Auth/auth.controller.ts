@@ -10,7 +10,6 @@ export class AuthController {
   @Post('login')
   login(@Body() loginDto: { usuarioID: number; nombre: string; rol: string; establecimientoID: number }) {
     try {
-      // Almacenar la información del usuario en el servicio de autenticación
       this.authService.login(loginDto);
       return {
         statusCode: HttpStatus.OK,

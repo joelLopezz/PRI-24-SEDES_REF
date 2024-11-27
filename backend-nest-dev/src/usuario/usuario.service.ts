@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryRunner } from 'typeorm';
@@ -15,7 +14,6 @@ export class UsuarioService {
     private personalSaludRepository: Repository<PersonalSalud>,
   ) {}
 
-  // Crear un nuevo usuario con contraseña encriptada y asociarlo con un PersonalSalud
   async createUsuario(data: Partial<Usuario>, queryRunner?: QueryRunner): Promise<Usuario> {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.contrasenia, salt);
@@ -68,7 +66,7 @@ export class UsuarioService {
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    usuario.estado = 0; // Cambiar el estado a 0 para desactivación lógica
+    usuario.estado = 0;
     usuario.fecha_modificacion = new Date();
 
     return this.usuarioRepository.save(usuario);
@@ -103,7 +101,7 @@ export class UsuarioService {
     // Generar un nuevo hash para la nueva contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(nuevaContrasenia, salt);
-    // Actualizar la contraseña y la fecha de modificación
+    
     usuario.contrasenia = hashedPassword;
     usuario.fecha_modificacion = new Date();
     // Guardar el usuario actualizado

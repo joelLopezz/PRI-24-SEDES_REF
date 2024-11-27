@@ -29,7 +29,7 @@ export class ReporteService {
       .leftJoin('cama.especialidad', 'especialidad')
       .leftJoin('cama.establecimientoSalud', 'establecimiento')
       .where('establecimiento.idestablecimiento_ID = :hospitalId', { hospitalId })
-      .andWhere('historiaCama.es_actual = :esActual', { esActual: true }) // Condición para es_actual = true
+      .andWhere('historiaCama.es_actual = :esActual', { esActual: true })
       .select([
         'especialidad.nombre AS especialidad',
         'SUM(historiaCama.instalada) AS inscritas',

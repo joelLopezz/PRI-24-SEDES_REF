@@ -123,8 +123,14 @@ const PersonalSaludList: React.FC = () => {
               <td>{personal.cargo}</td>
               <td>{personal.matricula_profesional}</td>
               <td>{personal.ci}</td>
-              <td>{personal.telefono}</td>
-              <td>{personal.correo_electronico}</td>
+              <td>
+                <a href={`https://wa.me/${'+591' + personal.telefono}`} target="_blank" rel="noopener noreferrer">
+                  {personal.telefono}
+                </a>
+              </td>
+              <td>
+                <a href={`mailto:${personal.correo_electronico}`}>{personal.correo_electronico}</a>
+              </td>
               <td className="botones">
                 <button
                   className="button-editar"
