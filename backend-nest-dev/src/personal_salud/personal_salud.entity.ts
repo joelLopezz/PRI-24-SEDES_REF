@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { Usuario } from '../usuario/usuario.entity';
 import {AreaPersonal}  from '../area_personal/area_personal.entity'; 
 import {RolTurno}  from '../rol_turnos/rol_turno.entity'; 
-import { EstablecimientoSalud } from '../establecimiento/establecimiento.entity'; // Importa la entidad correcta
+import { EstablecimientoSalud } from '../establecimiento/establecimiento.entity'; 
 import {PersoEspeciaHospital} from '../perso_especia_hospital/entities/perso_especia_hospital.entity'
 
 @Entity('personal_salud')

@@ -35,9 +35,8 @@ const PersonalSaludEdit: React.FC = () => {
           throw new Error('Error al cargar los datos del personal de salud');
         }
         const personalData = await response.json();
-        // Asumimos que los datos están en la propiedad 'data'
        const data = personalData.data;
-        //console.log('Datos del personal cargados:', data); // Verifica los datos
+
         setFormData({
           nombres: data.nombres,
           primer_apellido: data.primer_apellido,
@@ -64,7 +63,6 @@ const PersonalSaludEdit: React.FC = () => {
   }, [id]);
   
 
-  // Manejo de cambios en los inputs del formulario
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -72,22 +70,18 @@ const PersonalSaludEdit: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Limpiar mensajes de error y éxito
   const clearMessages = () => {
     setErrorMessage('');
     setSuccessMessage('');
   };
 
-  // Cancelar y navegar de vuelta a la lista de personal de salud
   const handleCancel = () => {
     navigate('/personal-salud');
   };
 
-  // Manejar el envío del formulario para actualizar los datos
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Verificar que los campos requeridos estén llenos
     if (!formData.nombres || !formData.primer_apellido || !formData.ci || !formData.telefono || !formData.correo_electronico || !formData.rol) {
       setErrorMessage('Todos los campos obligatorios deben ser completados.');
       return;

@@ -21,30 +21,18 @@ const PersonalSaludList: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  // Obtener los registros de PersonalSalud del backend
-  // const fetchPersonalesSalud = () => {
-  //   fetch('http://localhost:3000/personal-salud')
-  //     .then(response => response.json())
-  //     .then(data => setPersonalesSalud(data))
-  //     .catch(() => setErrorMessage('Error al obtener la lista de personal de salud'));
-  // };
-
-
   const fetchPersonalesSalud = () => {
     fetch('http://localhost:3000/personal-salud')
       .then(response => {
-        //console.log('Respuesta del servidor:', response); // Verifica la respuesta
         if (!response.ok) {
           throw new Error('Error al obtener los datos');
         }
         return response.json();
       })
       .then(data => {
-        //console.log('Datos obtenidos:', data); // Verifica los datos obtenidos
-        setPersonalesSalud(data.data); // Accede a la propiedad 'data' que contiene el arreglo
+        setPersonalesSalud(data.data); 
       })
       .catch((error) => {
-        //console.error('Error en fetchPersonalesSalud:', error);
         setErrorMessage('Error al obtener la lista de personal de salud');
       });
   };
@@ -54,9 +42,7 @@ const PersonalSaludList: React.FC = () => {
     fetchPersonalesSalud();
   }, []);
 
-  // Función para eliminar un personal de salud
   const handleDelete = (id: number) => {
-    //console.log('Intentando eliminar el ID:', id);
     if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
       fetch(`http://localhost:3000/personal-salud/${id}`, {
         method: 'DELETE',
@@ -68,7 +54,7 @@ const PersonalSaludList: React.FC = () => {
           if (!response.ok) {
             throw new Error('Error al eliminar el personal de salud');
           }
-          // Filtra el registro eliminado directamente en el estado
+          
           setPersonalesSalud(prevPersonales => prevPersonales.filter(personal => personal.personal_ID !== id));
         })
         .catch((error) => {

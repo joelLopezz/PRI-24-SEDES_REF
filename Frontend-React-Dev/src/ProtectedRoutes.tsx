@@ -162,10 +162,8 @@ function ProtectedRoutes() {
             <Route path='/cronograma-turnos' element={<RolTurnosList/>}/>
             <Route path='/consulta-externa' element={<ConsultaExternaList/>}/>
 
-            {/*Actualizar contrasenia*/}
             <Route path="/cambiar-contrasenia" element={<CambiarContrasenia />} />
 
-            {/* Referencias rutas*/}
             <Route path="/referencia" element={<ReferenciaList />} />
             <Route path="/referencia/create" element={<ReferenciaCreate />} />
             <Route path="/referencia/pendiente" element={<ReferenciaPendiente />} />

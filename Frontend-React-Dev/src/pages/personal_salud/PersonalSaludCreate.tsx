@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../Context/AuthContext'; // Asegúrate de importar useAuth
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-//import { EstablecimientoSalud } from '../../../../backend-nest-dev/src/establecimiento/establecimiento.entity';
 
 interface Specialty {
   id: number;
@@ -33,19 +32,15 @@ const PersonalSaludCreate: React.FC = () => {
     establecimiento:'',
   });
 
-  const [specialties, setSpecialties] = useState<Specialty[]>([]); // Estado para almacenar las especialidades
-  const [establecimeinto, setEstablecimiento] = useState<Establecimiento[]>([]); // Estado para almacenar las especialidades
+  const [specialties, setSpecialties] = useState<Specialty[]>([]); 
+  const [establecimeinto, setEstablecimiento] = useState<Establecimiento[]>([]); 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-
-  //Obetener el rol de usuario logueado
   const { role } = useAuth();
 
   useEffect(() => {
-    // Función para obtener las especialidades desde el backend
     const fetchSpecialties = async () => {
       try {
         const response = await fetch('http://localhost:3000/specialties/list');
@@ -53,7 +48,7 @@ const PersonalSaludCreate: React.FC = () => {
           throw new Error('Error al obtener las especialidades');
         }
         const data = await response.json();
-        setSpecialties(data); // Almacenar las especialidades en el estado
+        setSpecialties(data); 
       } catch (error) {
         console.error('Error al obtener las especialidades:', error);
         setErrorMessage('Error al cargar las especialidades');
@@ -68,7 +63,7 @@ const PersonalSaludCreate: React.FC = () => {
           throw new Error('Error al obtener los establecimientos');
         }
         const data = await response.json();
-        setEstablecimiento(data); // Almacenar las especialidades en el estado
+        setEstablecimiento(data); 
       } catch (error) {
         console.error('Error al obtener los establecimientos:', error);
         setErrorMessage('Error al cargar los establecimientos');
@@ -77,7 +72,7 @@ const PersonalSaludCreate: React.FC = () => {
 
     fetchEstablecimientos();
     fetchSpecialties();
-  }, []); // Ejecutar una vez al montar el componente
+  }, []); 
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -112,7 +107,6 @@ const PersonalSaludCreate: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Verificar que los campos requeridos estén llenos
     if (
       !formData.nombres ||
       !formData.primer_apellido ||
@@ -125,12 +119,11 @@ const PersonalSaludCreate: React.FC = () => {
       return;
     }
 
-    console.log('Datos enviados al servidor:', formData); // Mostrar datos en consola para depuración
+    //console.log('Datos enviados al servidor:', formData);
 
     const url = 'http://localhost:3000/personal-salud/create-new-personal-salud';
     setLoading(true);
 
-    // Construir el JSON a enviar
     const payload = {
       nombres: formData.nombres,
       primer_apellido: formData.primer_apellido,
@@ -146,7 +139,6 @@ const PersonalSaludCreate: React.FC = () => {
     };
 
     try {
-      // Enviar solicitud POST al backend con el JSON correcto
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -155,7 +147,6 @@ const PersonalSaludCreate: React.FC = () => {
         body: JSON.stringify(payload),
       });
 
-      // Manejo de la respuesta del servidor
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error en el servidor:', errorData);
@@ -163,11 +154,9 @@ const PersonalSaludCreate: React.FC = () => {
         return;
       }
 
-      // Mostrar mensaje de éxito si la solicitud fue exitosa
       setSuccessMessage('Personal de salud creado correctamente');
-
-      // Navegar después de un pequeño retraso para que se vea el mensaje
       setTimeout(() => navigate('/personal-salud'), 1000);
+      
     } catch (error) {
       console.error('Error al hacer la solicitud:', error);
       setErrorMessage('Ocurrió un error inesperado al enviar los datos.');
