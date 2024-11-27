@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           )}
 
           {/* Opción para Cama */}
-          {hasPermission(['Doctor', 'Enfermero', 'Admin Hospital'])&&(
+          {hasPermission(['Doctor', 'Enfermera', 'Admin Hospital'])&&(
             <li className="group">
             <Link
               to="/cama"

@@ -45,21 +45,22 @@ export class HistoriaCamaService {
     console.log("Último registro encontrado para la misma cama_ID:", ultimoRegistro);
 
     // Obtener instalada y ofertada desde el último registro sin modificación
+    const ocupada = ultimoRegistro.ocupada;
     const instaladaConstante = ultimoRegistro.instalada;
     const ofertadaConstante = ultimoRegistro.ofertada;
     console.log("Valores constantes obtenidos del último registro:", { instaladaConstante, ofertadaConstante });
 
     // Calcular el valor de ocupada usando la fórmula correcta: ocupada = ofertada - disponible - alta
-    const nuevaOcupada = ofertadaConstante - disponible - alta;
-    console.log("Valor calculado para ocupada:", nuevaOcupada);
+    //const nuevaOcupada = ofertadaConstante - disponible - alta;
+    //console.log("Valor calculado para ocupada:", nuevaOcupada);
 
     // Crear el nuevo registro en HistoriaCama copiando instalada y ofertada exactamente como en el último registro
     const nuevoRegistro = new HistoriaCama();
     nuevoRegistro.cama = { cama_ID } as Cama;
-    nuevoRegistro.instalada = instaladaConstante; // Copiar instalada constante del último registro
-    nuevoRegistro.ofertada = ofertadaConstante;   // Copiar ofertada constante del último registro
+    nuevoRegistro.instalada = instaladaConstante; 
+    nuevoRegistro.ofertada = ofertadaConstante; 
     nuevoRegistro.disponible = disponible;
-    nuevoRegistro.ocupada = nuevaOcupada;
+    nuevoRegistro.ocupada = ocupada;
     nuevoRegistro.alta = alta;
     nuevoRegistro.usuario_modificacion = 0; // Cambiar según el usuario actual
     nuevoRegistro.es_actual = 1;

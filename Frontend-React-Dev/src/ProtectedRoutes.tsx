@@ -144,7 +144,7 @@ function ProtectedRoutes() {
               element={hasPermission(['Admin Sedes', 'Admin Hospital', 'Doctor']) ? <ServiciosEspInfo /> : <Navigate to="/inicio" />}
             />
             <Route path="/credits" element={<Credits />} />
-            <Route path="/cama" element={hasPermission(['Doctor', 'Enfermero', 'Admin Hospital']) ? <CamaList /> : <Navigate to="/inicio" />}
+            <Route path="/cama" element={hasPermission(['Doctor', 'Enfermera', 'Admin Hospital']) ? <CamaList /> : <Navigate to="/inicio" />}
             />
             <Route path='/crearCama' element={hasPermission(['Doctor', 'Enfermero', 'Admin Hospital']) ? <CamaCreate /> : <Navigate to="/inicio" />}/>
  

@@ -22,7 +22,6 @@ const EspecialidadesList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState(''); // Estado para el mensaje de confirmación
   const navigate = useNavigate(); // Inicializa 
-  //Obetener el rol de usuario logueado
    const { role } = useAuth();
 
   useEffect(() => {
@@ -36,14 +35,23 @@ const EspecialidadesList = () => {
     };
     fetchEspecialidades();
   }, []);
+  
   const handleNavigation = () => {
     navigate('/reporte-especialidades'); // Cambia '/otra-pagina' por la ruta de destino deseada
   };
+
   const handleEdit = (especialidad: EspecialidadData) => {
     setSelectedEspecialidad(especialidad);
     setConfirmationMessage(''); // Resetea el mensaje de confirmación al abrir el modal
     setIsModalOpen(true); // Abre el modal
   };
+
+  const handleEditCama = (especialidad: EspecialidadData) => {
+    setSelectedEspecialidad(especialidad);
+    setConfirmationMessage(''); // Resetea el mensaje de confirmación al abrir el modal
+    setIsModalOpen(true); // Abre el modal
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false); // Cierra el modal
     setSelectedEspecialidad(null); // Limpia la selección al cerrar el modal
@@ -54,31 +62,35 @@ const EspecialidadesList = () => {
     const parsedValue = value === '' ? '' : Number(value);
     setSelectedEspecialidad((prev) => prev ? { ...prev, [name]: parsedValue } : null);
   };
+  
   const handleSaveChanges = async () => {
     if (selectedEspecialidad) {
+      const totalSum = selectedEspecialidad.ocupadas + selectedEspecialidad.disponibles + selectedEspecialidad.alta;
+  
+      // Validación: Si la suma es diferente a la cantidad ofertada, mostrar advertencia
+      if (totalSum !== selectedEspecialidad.ofertadas) {
+        setConfirmationMessage('La suma de los campos: Ocupadas, Disponibles y Altas no coincide con las ofertadas. Verifique el conteo de cama.');
+        return; // No continuar si la validación falla
+      }
+  
       try {
-        // Asegurarse de que los valores son numéricos y válidos antes de enviar
         const dataToSend = {
-          // disponible: isNaN(Number(selectedEspecialidad.disponibles)) ? 0 : Number(selectedEspecialidad.disponibles),
-          // alta: isNaN(Number(selectedEspecialidad.alta)) ? 0 : Number(selectedEspecialidad.ocupadas),
           disponible: selectedEspecialidad.disponibles,
-          alta:  selectedEspecialidad.alta,
+          alta: selectedEspecialidad.alta,
         };
-        // Log para verificar los datos antes de enviarlos al backend
+  
         console.log("Datos que se enviarán al backend:", {
           historia_ID: selectedEspecialidad.historia_ID,
           ...dataToSend
         });
-
-        
-        // Hacer la solicitud POST solo con los datos requeridos
+  
         await axios.post(`http://localhost:3000/historia-cama/reinsertar/${selectedEspecialidad.historia_ID}`, dataToSend);
-        setConfirmationMessage('DATOS ACTUALIZADOS CORRECTAMENTE'); // Muestra el mensaje de confirmación
-        // Cerrar el modal automáticamente después de 1 segundo
+        setConfirmationMessage('Datos actualizados con éxito.');
+  
         setTimeout(() => {
           handleModalClose();
         }, 1400);
-        // Actualizar la lista local después de la edición
+  
         setEspecialidades((prevEspecialidades) =>
           prevEspecialidades.map((especialidad) =>
             especialidad.historia_ID === selectedEspecialidad.historia_ID
@@ -86,12 +98,13 @@ const EspecialidadesList = () => {
               : especialidad
           )
         );
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error al actualizar los datos:', error);
-        setConfirmationMessage('ERROR AL ACTUALIZAR LOS DATOS'); // Muestra un mensaje de error si falla
+        setConfirmationMessage('ERROR AL ACTUALIZAR LOS DATOS');
       }
     }
   };
+  
   
   return (
     <div className="container_cama_list">
@@ -118,6 +131,9 @@ const EspecialidadesList = () => {
               {(role == 'Enfermera' || role == 'Doctor') && (
               <th>Accion</th>
               )}
+              {/* {(role == 'Admin Hospital') && (
+              <th>Accion</th>
+              )} */}
             </tr>
           </thead>
           <tbody>
@@ -137,6 +153,13 @@ const EspecialidadesList = () => {
                   </button>
                 </td>
                 )}
+                {/* {(role == 'Admin Hospital') && (
+                <td>
+                  <button className="btn btn-warning" onClick={() => handleEditCama(especialidad)}>
+                    <i className="fas fa-edit"></i> Editar
+                  </button>
+                </td>
+                )} */}
               </tr>
             ))}
           </tbody>
@@ -164,7 +187,7 @@ const EspecialidadesList = () => {
                         name="instaladas"
                         value={selectedEspecialidad.instaladas}
                         onChange={handleInputChange}
-                        readOnly
+                        readOnly = {role != 'Admin Hospital'}
                       />
                     </div>
                   </div>
@@ -179,7 +202,7 @@ const EspecialidadesList = () => {
                         name="ofertadas"
                         value={selectedEspecialidad.ofertadas}
                         onChange={handleInputChange}
-                        readOnly
+                        readOnly= {role != 'Admin Hospital'}
                       />
                     </div>
                   </div>
@@ -194,7 +217,7 @@ const EspecialidadesList = () => {
                         name="ocupadas"
                         value={selectedEspecialidad.ocupadas}
                         onChange={handleInputChange}
-                        readOnly
+                        
                       />
                     </div>
                   </div>
@@ -209,6 +232,7 @@ const EspecialidadesList = () => {
                         name="disponibles"
                         value={selectedEspecialidad.disponibles}
                         onChange={handleInputChange}
+                        readOnly = {role === 'Admin Hospital'}
                       />
                     </div>
                   </div>
@@ -223,6 +247,7 @@ const EspecialidadesList = () => {
                         name="alta"
                         value={selectedEspecialidad.alta}
                         onChange={handleInputChange}
+                        readOnly = {role == 'Admin Hospital'}
                       />
                     </div>
                   </div>
