@@ -70,9 +70,9 @@ const ReferenciaList: React.FC = () => {
   };
 
   const handleEdit = (referenciaId: number) => {
-    navigate(`/registro/edit/${referenciaId}`);
+    navigate(`/referencia/edit/${referenciaId}`);
   };
-
+  
   const handlePendientes = () => {
     navigate('/referencia/pendiente');
   };

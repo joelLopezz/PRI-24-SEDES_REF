@@ -43,6 +43,7 @@ import CamaCreate from './pages/Cama/CamaCreate';
 import ReferenciaList from './pages/Referencia/ReferenciaList';
 import ReferenciaCreate from './pages/Referencia/FormularioReferencias';
 import ReferenciaPendiente from './pages/Referencia/ReferenciaPendientes';
+import ReferenciaEdit from './pages/Referencia/ReferenciaEdit';
 
 function ProtectedRoutes() {
   const { hasPermission } = useAuth();
@@ -168,6 +169,9 @@ function ProtectedRoutes() {
             <Route path="/referencia" element={<ReferenciaList />} />
             <Route path="/referencia/create" element={<ReferenciaCreate />} />
             <Route path="/referencia/pendiente" element={<ReferenciaPendiente />} />
+            
+            <Route path="/referencia/edit/:id" element={<ReferenciaEdit />} />
+
         </Route>
       </Routes>
   );
