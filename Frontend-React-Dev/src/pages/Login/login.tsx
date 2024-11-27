@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import './login.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 
 const Login: React.FC = () => {
@@ -81,6 +81,11 @@ const Login: React.FC = () => {
       });
   };
 
+  // const handleRedirect = () => {
+  //   // Redirigir a la ruta deseada
+  //   navigate('/OlvidoContraseña');
+  // };
+
   return (
     <div className="login-page">
       <div className="container_login">
@@ -129,6 +134,9 @@ const Login: React.FC = () => {
           </div>
 
             <input type="submit" className="btn" value="Ingresar" />
+            {/* <h6 className="title" style={{ cursor: 'pointer' }} onClick={handleRedirect}>
+              Olvido de contraseña
+            </h6> */}
           </form>
         </div>
       </div>

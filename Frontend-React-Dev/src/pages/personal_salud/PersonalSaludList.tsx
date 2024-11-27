@@ -9,6 +9,7 @@ interface PersonalSalud {
   primer_apellido: string;
   segundo_nombre: string;
   ci: string;
+  telefono: number,
   matricula_profesional: string;
   sexo: string;
   cargo: string;
@@ -106,9 +107,11 @@ const PersonalSaludList: React.FC = () => {
           <tr>
             <th>Nombre</th>
             <th>Apellido</th>
-            <th>CI</th>
-            <th>Matrícula Profesional</th>
             <th>Cargo</th>
+            <th>Matrícula Profesional</th>
+            <th>CI</th>
+            <th>Telefono</th>
+            <th>Correo</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -117,9 +120,11 @@ const PersonalSaludList: React.FC = () => {
             <tr key={personal.personal_ID}>
               <td>{personal.nombres}</td>
               <td>{personal.primer_apellido} {personal.segundo_nombre}</td>
-              <td>{personal.ci}</td>
-              <td>{personal.matricula_profesional}</td>
               <td>{personal.cargo}</td>
+              <td>{personal.matricula_profesional}</td>
+              <td>{personal.ci}</td>
+              <td>{personal.telefono}</td>
+              <td>{personal.correo_electronico}</td>
               <td className="botones">
                 <button
                   className="button-editar"
@@ -131,7 +136,7 @@ const PersonalSaludList: React.FC = () => {
                   className="button-eliminar"
                   onClick={() => handleDelete(personal.personal_ID)}>
                   <i className="fas fa-trash"></i>
-                  Eliminar1
+                  Eliminar
                 </button>
               </td>
 

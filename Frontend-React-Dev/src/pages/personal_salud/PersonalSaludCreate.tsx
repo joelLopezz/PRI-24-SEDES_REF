@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext'; // Asegúrate de importar useAuth
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+//import { EstablecimientoSalud } from '../../../../backend-nest-dev/src/establecimiento/establecimiento.entity';
+
 interface Specialty {
+  id: number;
+  nombre: string;
+}
+
+interface Establecimiento{
   id: number;
   nombre: string;
 }
@@ -22,14 +30,19 @@ const PersonalSaludCreate: React.FC = () => {
     rol: '',
     telefono: '',
     especialidad: '',
+    establecimiento:'',
   });
 
   const [specialties, setSpecialties] = useState<Specialty[]>([]); // Estado para almacenar las especialidades
+  const [establecimeinto, setEstablecimiento] = useState<Establecimiento[]>([]); // Estado para almacenar las especialidades
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  //Obetener el rol de usuario logueado
+  const { role } = useAuth();
 
   useEffect(() => {
     // Función para obtener las especialidades desde el backend
@@ -47,6 +60,22 @@ const PersonalSaludCreate: React.FC = () => {
       }
     };
 
+    // Función para obtener los establecimientos desde el backend
+    const fetchEstablecimientos = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/establecimiento/nombres');
+        if (!response.ok) {
+          throw new Error('Error al obtener los establecimientos');
+        }
+        const data = await response.json();
+        setEstablecimiento(data); // Almacenar las especialidades en el estado
+      } catch (error) {
+        console.error('Error al obtener los establecimientos:', error);
+        setErrorMessage('Error al cargar los establecimientos');
+      }
+    };
+
+    fetchEstablecimientos();
     fetchSpecialties();
   }, []); // Ejecutar una vez al montar el componente
 
@@ -70,6 +99,7 @@ const PersonalSaludCreate: React.FC = () => {
       rol: '',
       telefono: '',
       especialidad: '',
+      establecimiento:'',
     });
     setErrorMessage('');
     setSuccessMessage('');
@@ -301,10 +331,10 @@ const PersonalSaludCreate: React.FC = () => {
                 required
               >
                 <option value="">Seleccione un rol</option>
+                <option value="Admin Sedes">Admin Sedes</option>
                 <option value="Admin Hospital">Admin Hospital</option>
                 <option value="Doctor">Doctor</option>
-                <option value="Admin Sedes">Admin Sedes</option>
-                <option value="Enfermera">Enfermera</option>
+                <option value="Enfermera">Enfermero</option>
               </select>
             </div>
 
@@ -365,6 +395,30 @@ const PersonalSaludCreate: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Establecimiento */}
+          {role == 'Admin Sedes' &&(
+            <div className="col-md-6 mb-3">
+            <label htmlFor="establecimiento" className="form-label">
+              Establecimiento:
+            </label>
+            <select
+              id="establecimiento"
+              name="establecimiento"
+              value={formData.establecimiento}
+              onChange={handleInputChange}
+              className="form-select"
+              required
+            >
+              <option value="">Seleccione un estalecimiento</option>
+              {establecimeinto.map((Establecimiento) => (
+                <option key={Establecimiento.id} value={Establecimiento.id}>
+                  {Establecimiento.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          )}
 
           {/* Botones */}
           <div className="d-flex justify-content-between mt-4">

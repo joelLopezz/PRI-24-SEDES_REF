@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryRunner, DataSource } from 'typeorm';
 import { PersonalSalud } from './personal_salud.entity';
@@ -14,6 +14,7 @@ import { AuthService } from '../Auth/auth.service';
 import { PersoEspeciaHospitalService } from '../perso_especia_hospital/perso_especia_hospital.service';
 import { CreatePersoEspeciaHospitalDto } from '../perso_especia_hospital/dto/create-perso_especia_hospital.dto';
 import {UpdatePersoEspeciaHospitalDto} from '../perso_especia_hospital/dto/update-perso_especia_hospital.dto';
+import {EstablecimientoSalud} from '../establecimiento/establecimiento.entity';
 
 
 @Injectable()
@@ -21,6 +22,10 @@ export class PersonalSaludService {
   constructor(
     @InjectRepository(PersonalSalud)
     private personalSaludRepository: Repository<PersonalSalud>,
+
+    @InjectRepository(EstablecimientoSalud)
+    private readonly establecimientoRepository: Repository<EstablecimientoSalud>, // Inyección correcta para EstablecimientoSalud
+
     private usuarioService: UsuarioService, 
     private persoEspeciaHospitalService: PersoEspeciaHospitalService,
     private mailService: MailService,
@@ -28,83 +33,96 @@ export class PersonalSaludService {
     private authService: AuthService,
   ) {}
 
+
   //Prueba
 
-  
   async createPersonalSalud_v2(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
     const queryRunner = this.dataSource.createQueryRunner();
     try {
       await queryRunner.connect(); // Conectar el queryRunner
       await queryRunner.startTransaction(); // Iniciar la transacción
-
-      //console.log('Paso 1: Conexión y transacción iniciada.');
+  
 
       // Obtener el usuario autenticado desde AuthService
-      //console.log('Paso 2: Intentando obtener el usuario autenticado...');
       const currentUser = this.authService.getCurrentUser();
       if (!currentUser) {
         console.error('Error: Usuario no autenticado.');
-        throw new Error('Usuario no autenticado'); // Lanzar un error si no hay usuario autenticado
+        throw new Error('Usuario no autenticado');
       }
-      //console.log('Paso 3: Usuario autenticado:', currentUser);
 
       // Variables adicionales para el usuario de creación
       const usuarioCreacionId = currentUser.usuarioID; 
       const establecimientoSaludId = currentUser.establecimientoID;
+      const usuarioRol = currentUser.rol; // Rol del usuario autenticado
+
+      console.log('Paso 5: Establecimiento de salud ID:', establecimientoSaludId);
+      console.log('Paso 6: Role:', usuarioRol);
+
+    // Determinar el establecimiento según el rol
+    let establecimiento: number;
+    if (usuarioRol === 'Admin Sedes') {
+      // Si el rol es 'Admin Sedes', tomar el id del establecimiento recibido desde el frontend
+      const establecimientoAsig = await this.establecimientoRepository.findOne({
+        where: { id: createPersonalSaludDto.establecimiento_salud_idestablecimiento_ID },
+      });
+
+      // Asegurarse de que establecimientoAsig no sea null o undefined antes de acceder al id
+      if (!establecimientoAsig) {
+        throw new Error('Establecimiento no encontrado');
+      }
+      // Asignar el id del establecimiento, que es de tipo 'number'
+      establecimiento = establecimientoAsig.id;
+
+    } else if(usuarioRol === 'Admin Hospital') {
+      // Para otros roles, usar el establecimiento del usuario logueado
+      establecimiento = establecimientoSaludId;
+    }else{
+      throw new ForbiddenException('Acceso denegado'); // Si el rol no es reconocido, se lanza un error de acceso denegado
+    }
+    
+    console.log('Paso 7: Establecimiento ID:', establecimiento);
+
+    const personalSaludData = {
+       ...createPersonalSaludDto,
+      fecha_creacion: new Date(),
+      usuario_creacion: usuarioCreacionId,
+      establecimiento_salud_idestablecimiento_ID: establecimiento,
+    };
 
 
-      //console.log('Paso 4: Usuario de creación ID:', usuarioCreacionId);
-      //console.log('Paso 5: Establecimiento de salud ID:', establecimientoSaludId);
+    // Crear el registro de personal de salud
+    const personalSalud = this.personalSaludRepository.create(personalSaludData);
+    const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
 
-      // Añadir la fecha de creación y el usuario que está creando este registro
-      const personalSaludData = {
-        ...createPersonalSaludDto,
-        fecha_creacion: new Date(),
-        usuario_creacion: usuarioCreacionId,
-        establecimiento_salud_idestablecimiento_ID: establecimientoSaludId,
-      };
+    // Crear el usuario asociado al personal de salud creado
+    const nombreUsuario = this.generarNombreUsuario(
+       personalSaludData.nombres,
+      personalSaludData.primer_apellido,
+      personalSaludData.segundo_apellido
+    );
 
-      //console.log('Paso 6: Datos del personal de salud a crear:', personalSaludData);
+    const contrasenia = this.generarContrasenia();
+    const usuarioData: Partial<Usuario> = {
+      nombre_usuario: nombreUsuario,
+      contrasenia,
+      estado: 1,
+       rol: createPersonalSaludDto.rol,
+       personal: savedPersonalSalud,
+       establecimiento_id: establecimientoSaludId,
+      fecha_creacion: new Date(),
+    };
 
-      // Crear el registro de personal de salud
-      const personalSalud = this.personalSaludRepository.create(personalSaludData);
-      const savedPersonalSalud = await queryRunner.manager.save(personalSalud);
-
-      //console.log('Paso 7: Personal de salud creado exitosamente:', savedPersonalSalud);
-
-      // Crear el usuario asociado al personal de salud creado
-      const nombreUsuario = this.generarNombreUsuario(
-        personalSaludData.nombres,
-        personalSaludData.primer_apellido,
-        personalSaludData.segundo_apellido
-      );
-      const contrasenia = this.generarContrasenia();
-      const usuarioData: Partial<Usuario> = {
-        nombre_usuario: nombreUsuario,
-        contrasenia,
-        estado: 1,
-        rol: createPersonalSaludDto.rol,
-        personal: savedPersonalSalud,
-        establecimiento_id: establecimientoSaludId,
-        fecha_creacion: new Date(),
-      };
-
-      //console.log('Paso 8: Datos del usuario a crear:', usuarioData);
-
-      await this.usuarioService.createUsuario(usuarioData, queryRunner);
-
-      //console.log('Paso 9: Usuario creado exitosamente.');
+    await this.usuarioService.createUsuario(usuarioData, queryRunner);
 
       // Crear la relación entre PersonalSalud, Especialidad y Hospital
-      const createPersoEspeciaHospitalDto: CreatePersoEspeciaHospitalDto = {
+    const createPersoEspeciaHospitalDto: CreatePersoEspeciaHospitalDto = {
         personal_salud: savedPersonalSalud.personal_ID,
         especialidad: createPersonalSaludDto.especialidad,
         hospital: establecimientoSaludId,
-      };
-      //console.log('Paso 10: Datos para la relación entre personal, especialidad y hospital:', createPersoEspeciaHospitalDto);
-      await this.persoEspeciaHospitalService.create(createPersoEspeciaHospitalDto, queryRunner);
+      }; 
 
-      //console.log('Paso 11: Relación entre personal, especialidad y hospital creada exitosamente.');
+    //console.log('Paso 10: Datos para la relación entre personal, especialidad y hospital:', createPersoEspeciaHospitalDto);
+    await this.persoEspeciaHospitalService.create(createPersoEspeciaHospitalDto, queryRunner);
 
       // Enviar las credenciales por correo electrónico
       //console.log('Paso 12: Enviando credenciales al correo electrónico del personal de salud.');
@@ -116,14 +134,12 @@ export class PersonalSaludService {
         nombreUsuario,
         contrasenia,
         personalSaludData.telefono
-      );
+      );  
 
       //console.log('Paso 13: Correo electrónico enviado exitosamente.');
 
       // Confirmar la transacción
       await queryRunner.commitTransaction();
-
-      //console.log('Paso 14: Transacción confirmada.');
 
       // Retornar el personal de salud creado
       return savedPersonalSalud;
@@ -141,9 +157,10 @@ export class PersonalSaludService {
       }
     }
   }
-  
 
   //fin de prueba
+
+  
 
   // Crear un registro de personal de salud y usuario
   async createPersonalSalud(createPersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
@@ -226,7 +243,35 @@ export class PersonalSaludService {
 
   // Método para obtener todos los registros
   async getAllPersonalSalud(): Promise<PersonalSalud[]> {
-    return this.personalSaludRepository.find({ where: { estado: 1 }, relations: ['usuarios'] });
+    // Obtener el usuario autenticado desde AuthService
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      console.error('Error: Usuario no autenticado.');
+      throw new Error('Usuario no autenticado'); // Lanzar un error si no hay usuario autenticado
+    }
+    // Variables adicionales para el usuario de creación
+    const usuarioCreacionId = currentUser.usuarioID; 
+    const establecimientoSaludId = currentUser.establecimientoID;
+
+    // Verificar si el establecimiento de salud existe
+    const establecimientoAsig = await this.establecimientoRepository.findOne({
+      where: { id: establecimientoSaludId },
+    });
+
+    if (!establecimientoAsig) {
+      console.error('Error: Establecimiento de salud no encontrado.');
+      throw new Error('Establecimiento de salud no encontrado'); // Lanzar un error si el establecimiento no se encuentra
+    }
+
+    // Filtrar PersonalSalud por estado = 1 y por establecimientoSaludId
+    return this.personalSaludRepository.find({
+      where: {
+        estado: 1,
+        establecimientoSalud: establecimientoAsig, // Asegúrate de que la relación sea la correcta
+      },
+      relations: ['usuarios'], // Asegúrate de que estás cargando la relación de usuarios
+    });
+
   }
 
   // Método para obtener el personal de salud por ID

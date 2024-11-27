@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Controller, Post, Put, Param, Body, HttpStatus, NotFoundException, Logger } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { AuthService } from '../Auth/auth.service';
@@ -99,26 +98,4 @@ export class UsuarioController {
       };
     }
   }
-
-  // Actualizar la contraseña del usuario
-  // @Put(':usuario_ID/contrasenia')
-  // async updatePassword(
-  //   @Param('usuario_ID') usuario_ID: number,
-  //   @Body('contraseniaActual') contraseniaActual: string, // Incluye la contraseña actual
-  //   @Body('nuevaContrasenia') nuevaContrasenia: string,
-  // ) {
-  //   try {
-  //     await this.usuarioService.updatePassword(usuario_ID, contraseniaActual, nuevaContrasenia);
-
-  //     return {
-  //       statusCode: HttpStatus.OK,
-  //       message: 'Contraseña actualizada exitosamente',
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       statusCode: error instanceof NotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST,
-  //       message: error.message,
-  //     };
-  //   }
-  // }
 }

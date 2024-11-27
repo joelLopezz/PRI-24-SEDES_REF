@@ -1,6 +1,3 @@
-/* eslint-disable prettier/prettier */
-// src/personal_salud/dto/create-personal-salud.dto.ts
-
 export class CreatePersonalSaludDto {
     personalId: number;
     nombres: string;
@@ -15,7 +12,7 @@ export class CreatePersonalSaludDto {
     fecha_creacion: Date;
     usuario_creacion: number;
     estado: number;
-    rol: string;  // Este es el rol que pertenece al usuario
+    rol: string;
     telefono: number;
     especialidad: number;
   }

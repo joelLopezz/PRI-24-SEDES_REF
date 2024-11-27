@@ -26,12 +26,23 @@ export class CamaService {
   ) {}
 
   async getEspecialidadesPorHospital(): Promise<any[]> {
-    const hospital_id = 1; // ID fijo del hospital para el filtro
+    // Obtener el usuario autenticado desde AuthService
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      console.error('Error: Usuario no autenticado.');
+      throw new Error('Usuario no autenticado'); // Lanzar un error si no hay usuario autenticado
+    }
+
+    // Variables adicionales para la consulta
+    const establecimientoSaludId = currentUser.establecimientoID;
+
+
+    //const hospital_id = 1; // ID fijo del hospital para el filtro
     const especialidades = await this.especialidadRepository
       .createQueryBuilder('especialidad')
       .leftJoin('especialidad.camas', 'cama')
       .leftJoin('cama.historial', 'historiaCama')
-      .where('cama.establecimiento_salud_ID = :hospital_id', { hospital_id })
+      .where('cama.establecimiento_salud_ID = :establecimientoSaludId', { establecimientoSaludId })
       .andWhere('historiaCama.es_actual = :es_actual', { es_actual: 1 }) // Condición para es_actual = 1
       .select([
         'especialidad.nombre AS nombre',

@@ -144,13 +144,12 @@ function ProtectedRoutes() {
               element={hasPermission(['Admin Sedes', 'Admin Hospital', 'Doctor']) ? <ServiciosEspInfo /> : <Navigate to="/inicio" />}
             />
             <Route path="/credits" element={<Credits />} />
-            <Route path="/cama" element={hasPermission(['Admin Hospital', 'Doctor']) ? <CamaList /> : <Navigate to="/inicio" />}
+            <Route path="/cama" element={hasPermission(['Doctor', 'Enfermero', 'Admin Hospital']) ? <CamaList /> : <Navigate to="/inicio" />}
             />
-            <Route path='/crearCama' element={<CamaCreate/>}/>
-
+            <Route path='/crearCama' element={hasPermission(['Doctor', 'Enfermero', 'Admin Hospital']) ? <CamaCreate /> : <Navigate to="/inicio" />}/>
+ 
             <Route path="/personal-salud" element={<PersonalSaludList />} />
             <Route path="/personal-salud/create" element={<PersonalSaludCreate />} />
-            {/* <Route path="/personal-salud/edit/:id" element={<PersonalSaludEdit isEditing=  {true} />} /> */}
             <Route path="/personal-salud/edit/:id" element={<PersonalSaludEdit />} />
 
             <Route path="/personal-salud/create" element={<PersonalSaludCreate/>} />

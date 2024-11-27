@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import axios from 'axios';
 import '../Cama/style/camaList.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth } from '../../Context/AuthContext'; // Asegúrate de importar useAuth
+
 interface EspecialidadData {
   historia_ID: number;
   nombre: string;
@@ -19,7 +21,9 @@ const EspecialidadesList = () => {
   const [selectedEspecialidad, setSelectedEspecialidad] = useState<EspecialidadData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState(''); // Estado para el mensaje de confirmación
-  const navigate = useNavigate(); // Inicializa useNavigate
+  const navigate = useNavigate(); // Inicializa 
+  //Obetener el rol de usuario logueado
+   const { role } = useAuth();
 
   useEffect(() => {
     const fetchEspecialidades = async () => {
@@ -92,9 +96,12 @@ const EspecialidadesList = () => {
   return (
     <div className="container_cama_list">
       <h2 className="title">Especialidades por Hospital</h2>
-      <div>
-      <button onClick={() => navigate('/crearCama')}  className="btn btn-success">Crear Nueva Cama</button>
-      </div>
+
+      {(role == 'Admin Hospital') &&(
+        <div>
+        <button onClick={() => navigate('/crearCama')}  className="btn btn-success">Crear Nueva Cama</button>
+        </div>
+      )}
       {especialidades.length === 0 ? (
         <p>Cargando datos de especialidades o no hay especialidades disponibles.</p>
       ) : (
@@ -108,7 +115,9 @@ const EspecialidadesList = () => {
               <th>Ocupadas</th>
               <th>Disponibles</th>
               <th>Alta</th>
+              {(role == 'Enfermera' || role == 'Doctor') && (
               <th>Accion</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -121,11 +130,13 @@ const EspecialidadesList = () => {
                 <td>{especialidad.ocupadas}</td>
                 <td>{especialidad.disponibles}</td>
                 <td>{especialidad.alta}</td>
+                {(role == 'Enfermera' || role == 'Doctor') && (
                 <td>
                   <button className="btn btn-warning" onClick={() => handleEdit(especialidad)}>
                     <i className="fas fa-edit"></i> Editar
                   </button>
                 </td>
+                )}
               </tr>
             ))}
           </tbody>

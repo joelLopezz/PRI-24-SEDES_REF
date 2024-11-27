@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { Usuario } from '../usuario/usuario.entity';
 import {AreaPersonal}  from '../area_personal/area_personal.entity'; 
@@ -8,7 +7,7 @@ import {PersoEspeciaHospital} from '../perso_especia_hospital/entities/perso_esp
 
 @Entity('personal_salud')
 export class PersonalSalud {
-  @PrimaryGeneratedColumn() // Clave primaria autogenerada
+  @PrimaryGeneratedColumn() 
   personal_ID: number;
 
   @Column({ type: 'varchar', length: 70 })

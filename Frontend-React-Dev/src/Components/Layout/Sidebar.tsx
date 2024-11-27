@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from './../../Context/AuthContext'; // Importa el contexto de autenticación
 
 // Importamos los iconos personalizados
 import hospitalIcon from '../../assets/Images/hospital.png';
@@ -14,6 +15,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+  const { hasPermission } = useAuth(); // Obtén el hook de autenticación
   return (
     <div
       className={`fixed inset-y-0 left-0 transform ${
@@ -102,6 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           </li>
 
           {/* Opción para Persona salud */}
+          {hasPermission(['Admin Hospital'])&&(
           <li className="group">
             <Link
               to="/personal-salud"
@@ -113,9 +116,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </div>
             </Link>
           </li>
+          )}
 
           {/* Opción para Cama */}
-          <li className="group">
+          {hasPermission(['Doctor', 'Enfermero', 'Admin Hospital'])&&(
+            <li className="group">
             <Link
               to="/cama"
               className="block px-4 py-2 text-gray-200 group-hover:bg-blue-700 group-hover:text-white rounded-md transform transition-transform duration-200 ease-in-out group-hover:translate-x-1"
@@ -126,6 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </div>
             </Link>
           </li>
+          )}
 
           {/* Opción para Cama */}
           <li className="group">
@@ -156,6 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
 
           {/* Opción de reporte */}
+          {hasPermission(['Admin Sedes'])&&(
           <li className="group">
             <Link
               to="/reporte-especialidades"
@@ -167,6 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </div>
             </Link>
           </li> 
+          )}
 
           {/* Opción de reporte */}
           <li className="group">
