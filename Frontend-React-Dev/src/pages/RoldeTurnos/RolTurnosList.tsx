@@ -203,30 +203,6 @@ const ShiftTable: React.FC = () => {
       return 'N/A';
     }
   };
-  
-  
-  const [especialidadId, setEspecialidadId] = useState<number | "">("");
-  const [anioSeleccionado] = useState<number>(2024); 
-  const [currentDoctorId, setCurrentDoctorId] = useState<number | null>(null);
-
-  useEffect(() => {
-    // Cargar la lista de turnos para el modal desde el backend con el nuevo endpoint
-    const fetchTurnos = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/codificacion-turnos/filter?especialidadId=${especialidadId}&year=${anioSeleccionado}&month=${mesSeleccionado}`
-        );
-        const data = await response.json();
-        setTurnos(data);
-      } catch (error) {
-        console.error("Error al cargar los turnos:", error);
-      }
-    };
-
-    fetchTurnos();
-  }, [especialidadId, anioSeleccionado, mesSeleccionado]);
-
-
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -249,6 +225,36 @@ const ShiftTable: React.FC = () => {
       }
     }
   }, [hospitalId]);
+  
+  
+  const [especialidadId, setEspecialidadId] = useState<number | "">(""); 
+  const establecimiento = establecimientoID || hospitalId;
+
+  //const [hospitalseleccionado, sethospitalId] = useState<number | "">(establecimiento);
+  const [anioSeleccionado] = useState<number>(2024); 
+  const [currentDoctorId, setCurrentDoctorId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Cargar la lista de turnos para el modal desde el backend con el nuevo endpoint
+    const fetchTurnos = async () => {
+      try {
+        console.log('hospital'+ establecimiento);
+        const response = await fetch(
+          `http://localhost:3000/codificacion-turnos/filter?especialidadId=${especialidadId}&year=${anioSeleccionado}&month=${mesSeleccionado}&hospital=${establecimiento}`
+        );
+        const data = await response.json();
+        setTurnos(data);
+      } catch (error) {
+        console.error("Error al cargar los turnos:", error);
+      }
+    };
+
+    fetchTurnos();
+  }, [especialidadId, anioSeleccionado, mesSeleccionado, establecimiento]);
+
+
+
+  
   
    // `hospitalId` ya está definido
 
@@ -344,7 +350,7 @@ const ShiftTable: React.FC = () => {
     const fetchDoctors = async () => {
       if (especialidadId !== "") {
         try {
-          const establecimiento = establecimientoID || hospitalId; // Dato estático por ahora
+          const establecimiento = establecimientoID || hospitalId; // Usa el valor del combo de hospital si está disponible
           console.log('Establecimiendo e ' + establecimiento);
           const response = await fetch(
             `http://localhost:3000/rol-turnos/Listado?mes=${mesSeleccionado}&anio=2024&especialidadId=${especialidadId}&hospitalId=${establecimiento}`
@@ -378,7 +384,8 @@ const ShiftTable: React.FC = () => {
     };
   
     fetchDoctors();
-  }, [mesSeleccionado, especialidadId]);
+}, [mesSeleccionado, especialidadId, establecimientoID]); // Añadir establecimientoID como dependencia
+
   
 
   const [showDoctorModal, setShowDoctorModal] = useState(false);

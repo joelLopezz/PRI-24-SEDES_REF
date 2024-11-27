@@ -15,18 +15,51 @@ interface Especialidad {
   turnos: Turno[];
 }
 
+interface Hospital {
+  id: number;
+  nombre: string;
+  redCordinacion: {
+    numeracion: string;
+  };
+  municipio: {
+    nombre: string;
+  };
+}
+
 const ScheduleTable: React.FC = () => {
   const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
+  const [hospitales, setHospitales] = useState<Hospital[]>([]);
+  const [establecimientoID, setEstablecimientoID] = useState<number | "">("");
+  const [redCoordinacion, setRedCoordinacion] = useState<string>("");
+  const [municipio, setMunicipio] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedTurnos, setSelectedTurnos] = useState<Turno[]>([]);
   const [selectedDay, setSelectedDay] = useState<string>('');
 
   useEffect(() => {
-    // Obtener los datos del backend
-    fetch('http://localhost:3000/consulta-externa/reporte-completo')
+    // Obtener los datos del backend de hospitales
+    fetch('http://localhost:3000/establecimiento')
       .then((response) => response.json())
-      .then((data) => setEspecialidades(data));
+      .then((data) => setHospitales(data));
   }, []);
+
+  useEffect(() => {
+    // Obtener los datos del backend de especialidades
+    if (establecimientoID) {
+      fetch(`http://localhost:3000/consulta-externa/reporte-completov2?hospitalId=${establecimientoID}`)
+        .then((response) => response.json())
+        .then((data) => setEspecialidades(data));
+    }
+  }, [establecimientoID]);
+
+  useEffect(() => {
+    // Actualizar la red de coordinación y el municipio al seleccionar un hospital
+    const selectedHospital = hospitales.find((hospital) => hospital.id === establecimientoID);
+    if (selectedHospital) {
+      setRedCoordinacion(selectedHospital.redCordinacion.numeracion);
+      setMunicipio(selectedHospital.municipio.nombre);
+    }
+  }, [establecimientoID, hospitales]);
 
   const openModal = (turnos: Turno[], day: string) => {
     setSelectedTurnos(turnos);
@@ -51,6 +84,8 @@ const ScheduleTable: React.FC = () => {
 
     return horarioPorDia;
   };
+
+  const currentMonth = new Date().toLocaleString('es-ES', { month: 'long' }).toUpperCase();
 
   return (
     <div>
@@ -99,6 +134,37 @@ const ScheduleTable: React.FC = () => {
       )}
 
       {/* Main Table */}
+      <div className="header">
+        <table>
+          <tr>
+            <td>HOSPITAL:</td>
+            <td>
+              <select
+                value={establecimientoID || ""}
+                onChange={(e) => {
+                  const selectedId = Number(e.target.value) || "";
+                  setEstablecimientoID(selectedId);
+                }}
+              >
+                <option value="">Seleccionar Hospital</option>
+                {hospitales.map((hospital) => (
+                  <option key={hospital.id} value={hospital.id}>
+                    {hospital.nombre}
+                  </option>
+                ))}
+              </select>
+            </td>
+            <td>COORDINACIÓN DE RED:</td>
+            <td>{redCoordinacion || ''}</td>
+          </tr>
+          <tr>
+            <td>MES:</td>
+            <td>{currentMonth}</td>
+            <td>MUNICIPIO:</td>
+            <td>{municipio || ''}</td>
+          </tr>
+        </table>
+      </div>
       <div className="table-container">
         <table>
           <thead>

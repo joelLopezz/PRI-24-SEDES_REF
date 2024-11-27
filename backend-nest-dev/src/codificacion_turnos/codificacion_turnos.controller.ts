@@ -19,8 +19,9 @@ export class CodificacionTurnosController {
       @Query('especialidadId') especialidadId: number,
       @Query('year') year: number,
       @Query('month') month: number,
+      @Query('hospital') hospitalId: number,
     ): Promise<CodificacionTurno[]> {
-      return this.codificacionTurnosService.findFiltered(especialidadId, year, month);
+      return this.codificacionTurnosService.findFiltered(especialidadId, year, month, hospitalId);
     }
 
    @Put('update-multiple')

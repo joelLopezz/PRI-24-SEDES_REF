@@ -5,6 +5,8 @@ import { CodificacionTurno } from './codificacion_turno.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { Specialty } from '../specialty/specialty.entity';
+import { AuthService } from '../Auth/auth.service';
+import {EstablecimientoSalud} from '../establecimiento/establecimiento.entity';
 
 @Injectable()
 export class CodificacionTurnosService {
@@ -12,9 +14,10 @@ export class CodificacionTurnosService {
   constructor(
     @InjectRepository(CodificacionTurno)
     private codificacionTurnoRepository: Repository<CodificacionTurno>,
+    private authService: AuthService,
   ) {}
 
-  async findFiltered(especialidadId: number, year: number, month: number): Promise<CodificacionTurno[]> {
+  async findFiltered(especialidadId: number, year: number, month: number, hospital: number): Promise<CodificacionTurno[]> {
     try {
       return await this.codificacionTurnoRepository.find({
         where: {
@@ -23,6 +26,7 @@ export class CodificacionTurnosService {
             new Date(year, month - 1, 1),
             new Date(year, month, 0)
           ),
+          establecimientoSalud: { id: hospital},
         },
       });
     } catch (error) {
@@ -37,6 +41,19 @@ async createMultiple(createCodificacionTurnoDtos: CreateCodificacionTurnoDto[]):
     const nuevasCodificaciones = await Promise.all(createCodificacionTurnoDtos.map(async (dto) => {
       // Crear la codificación de turno desde el DTO
       const codificacionTurno = this.codificacionTurnoRepository.create(dto);
+      const currentUser = this.authService.getCurrentUser();
+      const establecimientoSaludId = currentUser.establecimientoID;
+
+      // Asignar el establecimiento de salud
+      const establecimientoSalud = await this.codificacionTurnoRepository.manager.findOne(EstablecimientoSalud, {
+        where: { id: establecimientoSaludId },
+      });
+
+      if (!establecimientoSalud) {
+        throw new NotFoundException(`El establecimiento de salud con ID ${establecimientoSaludId} no fue encontrado`);
+      }
+
+      codificacionTurno.establecimientoSalud = establecimientoSalud;
 
       // Verificar si `especialidad_especialidad_ID` está presente en el DTO para cargar la relación
       if (dto.especialidad_especialidad_ID) {
@@ -61,6 +78,7 @@ async createMultiple(createCodificacionTurnoDtos: CreateCodificacionTurnoDto[]):
     throw new InternalServerErrorException('Error al crear múltiples codificaciones de turnos.');
   }
 }
+
 
 // Actualizar múltiples codificaciones de turnos
 async updateMultipleCodificacionTurnos(

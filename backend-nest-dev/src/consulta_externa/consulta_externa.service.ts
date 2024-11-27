@@ -43,4 +43,35 @@ export class ConsultaExternaService {
       throw error;
     }
   }
+
+  async obtenerReporteCompletov2(hospitalId: number): Promise<any[]> {
+    try {
+      // Paso 1: Obtener la lista de especialidades desde la vista filtradas por hospitalId
+      const especialidades = await this.entityManager.query(
+        'SELECT * FROM vista_especialidades_conteo_areas WHERE `Hospital ID` = ?',
+        [hospitalId]
+      );
+  
+      // Paso 2: Iterar sobre cada especialidad y obtener sus turnos
+      const reporteCompleto = await Promise.all(
+        especialidades.map(async (especialidad) => {
+          // Ejecutar el procedimiento almacenado para obtener los turnos de la especialidad actual
+          const turnos = await this.entityManager.query('CALL obtener_turnos(?)', [especialidad.ID]);
+  
+          // Combinar la información de la especialidad con la información de los turnos
+          return {
+            ...especialidad,
+            turnos: turnos[0], // Supongo que los turnos están en la primera posición
+          };
+        })
+      );
+  
+      // Paso 3: Retornar el reporte completo
+      return reporteCompleto;
+    } catch (error) {
+      console.error('Error al obtener el reporte completo:', error);
+      throw error;
+    }
+  }
+  
 }

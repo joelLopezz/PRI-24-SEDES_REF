@@ -5,4 +5,5 @@ export class CreateCodificacionTurnoDto {
     Hora_Inicio: string;
     Hora_Fin: string;
     Carga_Horaria: string;
+    establecimiento_idestablecimiento_ID: number;
 }
