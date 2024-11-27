@@ -77,33 +77,27 @@ const ReferenciaEdit: React.FC = () => {
 
   const { hasPermission } = useAuth(); // Usamos el contexto para verificar roles
 
-  // Guardar cambios
   const handleSave = async () => {
     try {
       if (!referencia || !paciente) {
         alert('Faltan datos para actualizar.');
         return;
       }
-
-      // Actualizar paciente
-      const pacienteUpdatePromise = axios.patch(
-        `http://localhost:3000/pacientes/${paciente.paciente_ID}`,
-        paciente
-      );
-
-      // Actualizar referencia
-      const referenciaUpdatePromise = axios.patch(
-        `http://localhost:3000/referencias/${id}`,
-        referencia
-      );
-
-      await Promise.all([pacienteUpdatePromise, referenciaUpdatePromise]);
-
+  
+      // Construir el cuerpo de la solicitud
+      const updateRegistroDto = {
+        paciente,
+        referencia,
+      };
+  
+      // Hacer la solicitud PATCH al endpoint consolidado
+      await axios.patch(`http://localhost:3000/registro/${id}`, updateRegistroDto);
+  
       alert('Referencia y paciente actualizados correctamente');
       navigate('/referencia'); // Redirigir al listado
     } catch (error) {
-      console.error('Error al actualizar la referencia o el paciente:', error);
-      alert('Error al actualizar los datos');
+      console.error('Error al actualizar los datos:', error);
+      alert('Error al actualizar la referencia o el paciente');
     }
   };
 

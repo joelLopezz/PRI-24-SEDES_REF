@@ -77,42 +77,55 @@ export class RegistroService {
   }
   
 
-  // src/registro/registro.service.ts
-async updateRegistro(
-  id: number,
-  updatePacienteDto: UpdatePacienteDto,
-  updateReferenciaDto: UpdateReferenciaDto,
-  userId: number,
-) {
-  const queryRunner = this.dataSource.createQueryRunner();
-  await queryRunner.connect();
-  await queryRunner.startTransaction();
-
-  try {
-    const referencia = await this.referenciaService.findOne(id);
-    if (!referencia) {
-      throw new BadRequestException('Referencia no encontrada');
+  async updateRegistro(
+    id: number,
+    updatePacienteDto: UpdatePacienteDto,
+    updateReferenciaDto: UpdateReferenciaDto,
+    userId: number,
+  ) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+  
+    try {
+      // Encontramos la referencia
+      const referencia = await this.referenciaService.findOne(id);
+      if (!referencia) {
+        throw new BadRequestException('Referencia no encontrada');
+      }
+  
+      // Actualizamos los datos del paciente
+      await this.pacienteService.update(
+        referencia.paciente_paciente_ID.paciente_ID,
+        updatePacienteDto,
+        userId,
+      );
+  
+      // Actualizamos los datos de la referencia
+      const updatedReferencia = await this.referenciaService.update(
+        id,
+        updateReferenciaDto,
+        userId,
+      );
+  
+      // Confirmamos la transacción
+      await queryRunner.commitTransaction();
+  
+      return {
+        message: 'Registro actualizado exitosamente',
+        paciente: updatePacienteDto,
+        referencia: updatedReferencia,
+      };
+    } catch (error) {
+      // Revertimos la transacción en caso de error
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      // Liberamos el queryRunner
+      await queryRunner.release();
     }
-
-    // Actualizamos el paciente
-    await this.pacienteService.update(referencia.paciente_paciente_ID.paciente_ID, updatePacienteDto, userId);
-
-    // Actualizamos la referencia
-    const updatedReferencia = await this.referenciaService.update(id, updateReferenciaDto, userId);
-
-    await queryRunner.commitTransaction();
-    return {
-      message: 'Registro actualizado exitosamente',
-      paciente: updatePacienteDto,
-      referencia: updatedReferencia,
-    };
-  } catch (error) {
-    await queryRunner.rollbackTransaction();
-    throw error;
-  } finally {
-    await queryRunner.release();
   }
-}
+  
   async deleteRegistro(id: number, userId: number) {
     const referencia = await this.referenciaService.findOne(id);
     if (!referencia) {

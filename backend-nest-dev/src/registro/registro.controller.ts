@@ -26,15 +26,21 @@ export class RegistroController {
     return await this.registroService.getRegistroById(id);
   }
 
-  @Patch(':id')
-  async updateRegistro(
-    @Param('id') id: number,
-    @Body() updatePacienteDto: any,
-    @Body() updateReferenciaDto: any,
-  ) {
-    const userId = 123; // Usuario de prueba
-    return await this.registroService.updateRegistro(id, updatePacienteDto, updateReferenciaDto, userId);
-  }
+  // src/registro/registro.controller.ts
+@Patch(':id')
+async updateRegistro(
+  @Param('id') id: number,
+  @Body() registroDto: RegistroCompleteDto,
+) {
+  const userId = 123; // Usuario de prueba
+  return await this.registroService.updateRegistro(
+    id,
+    registroDto.paciente,
+    registroDto.referencia,
+    userId,
+  );
+}
+
 
   @Delete(':id')
   async deleteRegistro(@Param('id') id: number) {
