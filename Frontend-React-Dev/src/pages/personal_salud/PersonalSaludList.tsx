@@ -23,7 +23,7 @@ const PersonalSaludList: React.FC = () => {
   const navigate = useNavigate();
 
   const fetchPersonalesSalud = () => {
-    fetch('http://localhost:3000/personal-salud')
+    fetch(`${API_BASE_URL}/personal-salud`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Error al obtener los datos');
