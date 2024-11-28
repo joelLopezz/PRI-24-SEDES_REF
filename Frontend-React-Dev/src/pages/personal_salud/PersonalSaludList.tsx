@@ -17,6 +17,7 @@ interface PersonalSalud {
 }
 
 const PersonalSaludList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [personalesSalud, setPersonalesSalud] = useState<PersonalSalud[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const PersonalSaludList: React.FC = () => {
 
   const handleDelete = (id: number) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
-      fetch(`http://localhost:3000/personal-salud/${id}`, {
+      fetch(`${API_BASE_URL}/personal-salud/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

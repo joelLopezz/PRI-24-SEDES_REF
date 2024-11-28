@@ -13,13 +13,15 @@ const CamaEdit = () => {
     especialidad: '',
     servicio: '',
   });
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [especialidades, setEspecialidades] = useState<{ especialidad_nombre: string; especialidad_especialidad_ID: number }[]>([]);
   const [servicios, setServicios] = useState<{ servicio_nombre: string; servicio_servicio_ID: number }[]>([]);
 
   useEffect(() => {
     const fetchCama = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/cama/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/cama/${id}`);
         setFormData({
           numero: response.data.numero,
           establecimientoSalud: response.data.establecimientoSalud.nombre,
@@ -33,7 +35,7 @@ const CamaEdit = () => {
 
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/specialties/combo');
+        const response = await axios.get(`${API_BASE_URL}/specialties/combo`);
         setEspecialidades(response.data);
       } catch (error) {
         console.error('Error al cargar especialidades:', error);
@@ -42,7 +44,7 @@ const CamaEdit = () => {
 
     const fetchServicios = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/servicio/combo');
+        const response = await axios.get(`${API_BASE_URL}/servicio/combo`);
         setServicios(response.data);
       } catch (error) {
         console.error('Error al cargar servicios:', error);
@@ -64,7 +66,7 @@ const CamaEdit = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:3000/cama/${id}/actualizar-especialidad-servicio`, {
+      await axios.patch(`${API_BASE_URL}/cama/${id}/actualizar-especialidad-servicio`, {
         especialidad_ID: formData.especialidad,
         servicio_ID: formData.servicio,
       });

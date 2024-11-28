@@ -25,6 +25,7 @@ const CamaCreate = () => {
     alta:'',
   });
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -35,7 +36,7 @@ const CamaCreate = () => {
     const fetchEspecialidades = async () => {
       try {
         //const specialtiesResponse = await axios.get<Specialty[]>('http://localhost:3000/specialties/list');
-        const specialtiesResponse = await axios.get<Specialty[]>('http://localhost:3000/estab-especialidad/especialidades');
+        const specialtiesResponse = await axios.get<Specialty[]>(`${API_BASE_URL}/estab-especialidad/especialidades`);
         setSpecialties(specialtiesResponse.data);
       } catch (error) {
         console.error('Error al obtener las especialidades:', error);
@@ -45,7 +46,7 @@ const CamaCreate = () => {
 
     const fetchServicios = async () => {
       try {
-        const serviciosResponse = await axios.get<Servicio[]>('http://localhost:3000/servicio/list');
+        const serviciosResponse = await axios.get<Servicio[]>(`${API_BASE_URL}/servicio/list`);
         setServicios(serviciosResponse.data);
       } catch (error) {
         console.error('Error al obtener los servicios:', error);
@@ -87,7 +88,7 @@ const CamaCreate = () => {
         usuario_modificacion: 'user_id',
       };
 
-      const response = await axios.post('http://localhost:3000/cama', { datosCama: camaData, datosHistorial: historialData });
+      const response = await axios.post(`${API_BASE_URL}/cama`, { datosCama: camaData, datosHistorial: historialData });
 
       console.log('Cama creada:', response.data);
       setSuccessMessage('Personal de salud creado correctamente');

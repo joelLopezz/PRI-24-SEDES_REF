@@ -19,13 +19,14 @@ interface EstablecimientoData {
 }
 
 const EspecialidadesReport = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [especialidades, setEspecialidades] = useState<EspecialidadData[]>([]);
   const [establecimientos, setEstablecimientos] = useState<EstablecimientoData[]>([]);
   const [selectedEstablecimiento, setSelectedEstablecimiento] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const fetchEstablecimientos = () => {
-    fetch('http://localhost:3000/establecimiento/nombres')
+    fetch(`${API_BASE_URL}/establecimiento/nombres`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Error al obtener los establecimientos');
@@ -48,7 +49,7 @@ const EspecialidadesReport = () => {
 
   const fetchEspecialidades = () => {
     if (selectedEstablecimiento) {
-      fetch(`http://localhost:3000/reporte/hospital/${selectedEstablecimiento}`)
+      fetch(`${API_BASE_URL}/reporte/hospital/${selectedEstablecimiento}`)
         .then(response => {
           if (!response.ok) {
             throw new Error('Error al obtener las especialidades');

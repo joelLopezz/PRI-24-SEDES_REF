@@ -4,22 +4,25 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import axios from 'axios';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importar los íconos para mostrar/ocultar contraseña
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; 
 
 const CambiarContrasenia: React.FC = () => {
-  const { usuarioID } = useAuth(); // Obtener la información del usuario desde el contexto de autenticación
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const { usuarioID } = useAuth();
   const [correoElectronico, setCorreoElectronico] = useState('');
   const [contraseniaActual, setContraseniaActual] = useState('');
   const [nuevaContrasenia, setNuevaContrasenia] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showContraseniaActual, setShowContraseniaActual] = useState(false);
+  const [showNuevaContrasenia, setShowNuevaContrasenia] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     try {
-      const response = await axios.put('http://localhost:3000/usuario/recuperar-contrasenia', {
+      const response = await axios.put(`${API_BASE_URL}/usuario/recuperar-contrasenia`, {
         correoElectronico,
         contraseniaActual,
         nuevaContrasenia,
@@ -28,7 +31,6 @@ const CambiarContrasenia: React.FC = () => {
       if (response.status === 200) {
         setSuccess('Contraseña actualizada exitosamente');
         setError('');
-        // Redirigir al usuario a otra página, por ejemplo, al perfil
         setTimeout(() => navigate('/inicio'), 2000);
       }
     } catch (err: any) {
@@ -56,31 +58,47 @@ const CambiarContrasenia: React.FC = () => {
           </div>
 
           
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label className="block text-sm font-bold mb-2">Contraseña Actual</label>
             <input
-              type="password"
+              //type="password"
+              type={showContraseniaActual ? 'text' : 'password'}
               value={contraseniaActual}
               onChange={(e) => setContraseniaActual(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-2 border border-gray-300 rounded-md pr-12"
               required
             />
+             <span
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              onClick={() => setShowContraseniaActual(!showContraseniaActual)}
+            >
+              {showContraseniaActual ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
-          <div className="mb-4">
+
+          <div className="mb-4 relative">
             <label className="block text-sm font-bold mb-2">Nueva Contraseña</label>
             <input
-              type="password"
+              //type="password"
+              type={showNuevaContrasenia ? 'text' : 'password'}
               value={nuevaContrasenia}
               onChange={(e) => setNuevaContrasenia(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-2 border border-gray-300 rounded-md pr-12"
               required
             />
+            <span
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              onClick={() => setShowNuevaContrasenia(!showNuevaContrasenia)}
+            >
+              {showNuevaContrasenia ? <FaEyeSlash /> : <FaEye />}
+            </span>
+            
           </div> 
 
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+            className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-gren-600 transition duration-300"
           >
             Cambiar Contraseña
           </button>

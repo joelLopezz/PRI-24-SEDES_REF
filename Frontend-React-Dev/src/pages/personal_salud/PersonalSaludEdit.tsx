@@ -16,6 +16,7 @@ const PersonalSaludEdit: React.FC = () => {
     rol: '',
   });
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ const PersonalSaludEdit: React.FC = () => {
     const fetchPersonalData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/personal-salud/${id}`);
+        const response = await fetch(`${API_BASE_URL}/personal-salud/${id}`);
         if (!response.ok) {
           throw new Error('Error al cargar los datos del personal de salud');
         }
@@ -87,7 +88,7 @@ const PersonalSaludEdit: React.FC = () => {
       return;
     }
 
-    const url = `http://localhost:3000/personal-salud/${id}`;
+    const url = `${API_BASE_URL}/personal-salud/${id}`;
     setLoading(true);
 
     try {

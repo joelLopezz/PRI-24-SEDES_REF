@@ -15,6 +15,7 @@ interface EspecialidadData {
   alta: number;
 }
 const EspecialidadesList = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [especialidades, setEspecialidades] = useState<EspecialidadData[]>([]);
   const [selectedEspecialidad, setSelectedEspecialidad] = useState<EspecialidadData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,7 +26,7 @@ const EspecialidadesList = () => {
   useEffect(() => {
     const fetchEspecialidades = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/cama/especialidades');
+        const response = await axios.get(`${API_BASE_URL}/cama/especialidades`);
         setEspecialidades(response.data || []);
       } catch (error) {
         console.error('Error al obtener las especialidades:', error);
@@ -81,7 +82,7 @@ const EspecialidadesList = () => {
           ...dataToSend
         });
   
-        await axios.post(`http://localhost:3000/historia-cama/reinsertar/${selectedEspecialidad.historia_ID}`, dataToSend);
+        await axios.post(`${API_BASE_URL}/historia-cama/reinsertar/${selectedEspecialidad.historia_ID}`, dataToSend);
         setConfirmationMessage('Datos actualizados con éxito.');
   
         setTimeout(() => {

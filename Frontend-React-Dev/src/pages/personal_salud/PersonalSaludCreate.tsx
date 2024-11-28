@@ -32,6 +32,7 @@ const PersonalSaludCreate: React.FC = () => {
     establecimiento:'',
   });
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [specialties, setSpecialties] = useState<Specialty[]>([]); 
   const [establecimeinto, setEstablecimiento] = useState<Establecimiento[]>([]); 
   const [errorMessage, setErrorMessage] = useState('');
@@ -43,7 +44,7 @@ const PersonalSaludCreate: React.FC = () => {
   useEffect(() => {
     const fetchSpecialties = async () => {
       try {
-        const response = await fetch('http://localhost:3000/specialties/list');
+        const response = await fetch(`${API_BASE_URL}/specialties/list`);
         if (!response.ok) {
           throw new Error('Error al obtener las especialidades');
         }
@@ -58,7 +59,7 @@ const PersonalSaludCreate: React.FC = () => {
     // Función para obtener los establecimientos desde el backend
     const fetchEstablecimientos = async () => {
       try {
-        const response = await fetch('http://localhost:3000/establecimiento/nombres');
+        const response = await fetch(`${API_BASE_URL}/establecimiento/nombres`);
         if (!response.ok) {
           throw new Error('Error al obtener los establecimientos');
         }
@@ -121,7 +122,7 @@ const PersonalSaludCreate: React.FC = () => {
 
     //console.log('Datos enviados al servidor:', formData);
 
-    const url = 'http://localhost:3000/personal-salud/create-new-personal-salud';
+    const url = `${API_BASE_URL}/personal-salud/create-new-personal-salud`;
     setLoading(true);
 
     const payload = {
