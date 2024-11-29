@@ -14,13 +14,14 @@ interface Referencia {
 }
 
 const ReferenciaList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [referencias, setReferencias] = useState<Referencia[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const { hasPermission } = useAuth();
 
   const fetchReferencias = () => {
-    fetch('http://localhost:3000/referencias/estado/2')
+    fetch(`${API_BASE_URL}/referencias/estado/2`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error al obtener las referencias');
@@ -38,7 +39,7 @@ const ReferenciaList: React.FC = () => {
 
   const handleDelete = (referenciaId: number) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta referencia?')) {
-      fetch(`http://localhost:3000/referencias/${referenciaId}/remove`, {
+      fetch(`${API_BASE_URL}/referencias/${referenciaId}/remove`, {
         method: 'PATCH', // Usamos PATCH para el soft remove
         headers: {
           'Content-Type': 'application/json',

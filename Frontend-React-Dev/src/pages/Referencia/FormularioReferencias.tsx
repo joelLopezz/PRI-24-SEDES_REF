@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 
 
-
-const apiUrl = 'http://localhost:3000/registro'; // Ajusta la URL según tu configuración
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const apiUrl = `${API_BASE_URL}/registro`; // Ajusta la URL según tu configuración
 
 const FormularioReferencias: React.FC = () => {
   const [paciente, setPaciente] = useState({

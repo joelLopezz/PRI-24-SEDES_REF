@@ -6,6 +6,7 @@ import './Styles/App.css';
 import { useAuth } from '../../Context/AuthContext';
 
 const ReferenciaEdit: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams<{ id: string }>();
   const [referencia, setReferencia] = useState<any>({
     fecha_ingreso: '',
@@ -30,7 +31,7 @@ const ReferenciaEdit: React.FC = () => {
   // Fetch data from the API
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/referencias/${id}`)
+      .get(`${API_BASE_URL}/referencias/${id}`)
       .then((response) => {
         const data = response.data;
         setReferencia({
@@ -91,7 +92,7 @@ const ReferenciaEdit: React.FC = () => {
       };
   
       // Hacer la solicitud PATCH al endpoint consolidado
-      await axios.patch(`http://localhost:3000/registro/${id}`, updateRegistroDto);
+      await axios.patch(`${API_BASE_URL}/registro/${id}`, updateRegistroDto);
   
       alert('Referencia y paciente actualizados correctamente');
       navigate('/referencia'); // Redirigir al listado

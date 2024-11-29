@@ -13,12 +13,13 @@ interface Referencia {
 }
 
 const PendientesList: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [referencias, setReferencias] = useState<Referencia[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const fetchPendientes = () => {
-    fetch('http://localhost:3000/referencias/estado/1') // Solo cargar referencias con estado 1
+    fetch('${API_BASE_URL}/referencias/estado/1') // Solo cargar referencias con estado 1
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error al obtener las referencias pendientes');
@@ -39,7 +40,7 @@ const PendientesList: React.FC = () => {
   }, []);
 
   const handleEdit = (referenciaId: number) => {
-    navigate(`/registro/edit/${referenciaId}`);
+    navigate(`/referencia/edit/${referenciaId}`);
   };
 
   return (
