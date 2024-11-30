@@ -19,7 +19,7 @@ const PendientesList: React.FC = () => {
   const navigate = useNavigate();
 
   const fetchPendientes = () => {
-    fetch('${API_BASE_URL}/referencias/estado/1') // Solo cargar referencias con estado 1
+    fetch(`${API_BASE_URL}/referencias/estado/1`) // Solo cargar referencias con estado 1
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error al obtener las referencias pendientes');

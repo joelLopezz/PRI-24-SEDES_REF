@@ -25,6 +25,12 @@ const ReferenciaEdit: React.FC = () => {
     ci: '',
     domicilio: '',
     telefono: '',
+    procedencia: '',
+    historia_clinica: '',
+    sexo: '',
+    discapacidad:'',
+    tipo_discapacidad: '',
+    grado_discapacidad:'',
   });
   const navigate = useNavigate();
 
@@ -51,6 +57,12 @@ const ReferenciaEdit: React.FC = () => {
           ci: data.paciente_paciente_ID?.ci || '',
           domicilio: data.paciente_paciente_ID?.domicilio || '',
           telefono: data.paciente_paciente_ID?.telefono || '',
+          procedencia: data.paciente_paciente_ID?.procedencia || '',
+          historia_clinica: data.paciente_paciente_ID?.historia_clinica || '',
+          sexo: data.paciente_paciente_ID?.sexo || '',
+          discapacidad: data.paciente_paciente_ID?.discapacidad || '',
+          tipo_discapacidad: data.paciente_paciente_ID?.tipo_discapacidad || '',
+          grado_discapacidad: data.paciente_paciente_ID?.grado_discapacidad || '',
         });
       })
       .catch((error) => {
@@ -80,6 +92,9 @@ const ReferenciaEdit: React.FC = () => {
 
   const handleSave = async () => {
     try {
+      // Verificar si el campo C12 está lleno
+      const isC12Complete =
+        referencia.fecha_recepcion || referencia.hora_recepcion || referencia.medio_comunicacion;
       if (!referencia || !paciente) {
         alert('Faltan datos para actualizar.');
         return;
@@ -88,7 +103,10 @@ const ReferenciaEdit: React.FC = () => {
       // Construir el cuerpo de la solicitud
       const updateRegistroDto = {
         paciente,
-        referencia,
+        referencia: {
+          ...referencia,
+          estado: isC12Complete ? 2 : 1, // Estado 2 si C12 está lleno, 1 de lo contrario
+        },
       };
   
       // Hacer la solicitud PATCH al endpoint consolidado
