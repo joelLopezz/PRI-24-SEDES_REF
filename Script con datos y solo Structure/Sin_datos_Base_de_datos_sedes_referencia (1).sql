@@ -1,8 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `Sedes_referencias` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `Sedes_referencias`;
+CREATE DATABASE  IF NOT EXISTS `sedes_referencia` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `sedes_referencia`;
 -- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
 --
--- Host: localhost    Database: basefinal
+-- Host: localhost    Database: sedes_referencia_final
 -- ------------------------------------------------------
 -- Server version	8.0.40
 
@@ -80,7 +80,7 @@ CREATE TABLE `area_personal_salud` (
   PRIMARY KEY (`area_personal_salud_ID`),
   KEY `area_personal_idx` (`personal_salud_personal_ID`),
   CONSTRAINT `area_personal` FOREIGN KEY (`personal_salud_personal_ID`) REFERENCES `personal_salud` (`personal_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +98,7 @@ CREATE TABLE `cama` (
   `servicio_ID` smallint DEFAULT NULL,
   `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
   `fecha_modificacion` datetime DEFAULT NULL,
-  `usuario_modificacion` mediumint DEFAULT NULL,
+  `usuario_creacion` mediumint DEFAULT NULL,
   PRIMARY KEY (`cama_ID`),
   KEY `establecimiento_salud_ID` (`establecimiento_salud_ID`),
   KEY `especialidad_ID` (`especialidad_ID`),
@@ -125,10 +125,13 @@ CREATE TABLE `codificacion_turnos` (
   `Hora_Fin` time NOT NULL,
   `Carga_Horaria` varchar(6) NOT NULL,
   `fecha` date DEFAULT NULL,
+  `establecimiento_idestablecimiento_ID` smallint DEFAULT NULL,
   PRIMARY KEY (`codificacion_turnos_id`),
   KEY `especialidad_codificacion_turno_idx` (`especialidad_especialidad_ID`),
-  CONSTRAINT `especialidad_codificacion_turno` FOREIGN KEY (`especialidad_especialidad_ID`) REFERENCES `especialidad` (`especialidad_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `establecimiento_codificacion_turno_idx` (`establecimiento_idestablecimiento_ID`),
+  CONSTRAINT `especialidad_codificacion_turno` FOREIGN KEY (`especialidad_especialidad_ID`) REFERENCES `especialidad` (`especialidad_ID`),
+  CONSTRAINT `establecimiento_codificacion_turno` FOREIGN KEY (`establecimiento_idestablecimiento_ID`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -227,7 +230,7 @@ CREATE TABLE `especialidad` (
   `medicina_interna` tinyint DEFAULT NULL,
   `consulta_externa` tinyint DEFAULT NULL,
   PRIMARY KEY (`especialidad_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -257,7 +260,7 @@ CREATE TABLE `establecimiento_salud` (
   KEY `fk_establecimiento_salud_municipio1_idx` (`municipio_ID`),
   CONSTRAINT `fk_establecimiento_salud_municipio1` FOREIGN KEY (`municipio_ID`) REFERENCES `municipio` (`municipio_ID`),
   CONSTRAINT `fk_establecimiento_salud_red_cordinacion1` FOREIGN KEY (`red_cordinacion_red_ID`) REFERENCES `red_cordinacion` (`red_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -276,7 +279,7 @@ CREATE TABLE `establecimiento_salud_has_especialidad` (
   KEY `fk_establecimiento_salud_has_especialidad_idx` (`especialidad_ID`),
   CONSTRAINT `fk_establecimiento_salud_has_especialidad_idx` FOREIGN KEY (`especialidad_ID`) REFERENCES `especialidad` (`especialidad_ID`),
   CONSTRAINT `fk_establecimiento_salud_idx` FOREIGN KEY (`establecimiento_salud_idestablecimiento_ID`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -299,7 +302,7 @@ CREATE TABLE `establecimiento_salud_servicio` (
   KEY `servicio_id` (`servicio_id`),
   CONSTRAINT `establecimiento_salud_servicio_ibfk_1` FOREIGN KEY (`establecimiento_salud_id`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`),
   CONSTRAINT `establecimiento_salud_servicio_ibfk_2` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`servicio_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +326,7 @@ CREATE TABLE `historial_cama` (
   PRIMARY KEY (`historia_ID`),
   KEY `fk_cama` (`cama_ID`),
   CONSTRAINT `fk_cama` FOREIGN KEY (`cama_ID`) REFERENCES `cama` (`cama_ID`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -443,7 +446,7 @@ CREATE TABLE `paciente` (
   `usuario_creacion` mediumint NOT NULL,
   `usuario_modificacion` mediumint DEFAULT NULL,
   PRIMARY KEY (`paciente_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -465,7 +468,7 @@ CREATE TABLE `personal_especialidad_hospital` (
   CONSTRAINT `Especialidad` FOREIGN KEY (`Especialidad_id`) REFERENCES `especialidad` (`especialidad_ID`),
   CONSTRAINT `Hospital` FOREIGN KEY (`Hospital_id`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`),
   CONSTRAINT `Personal_salud` FOREIGN KEY (`Personal_salud_id`) REFERENCES `personal_salud` (`personal_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -495,7 +498,7 @@ CREATE TABLE `personal_salud` (
   PRIMARY KEY (`personal_ID`),
   KEY `fk_personal_salud_establecimiento_salud1_idx` (`establecimiento_salud_idestablecimiento_ID`),
   CONSTRAINT `fk_personal_salud_establecimiento_salud1` FOREIGN KEY (`establecimiento_salud_idestablecimiento_ID`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -532,7 +535,7 @@ CREATE TABLE `red_cordinacion` (
   `usuario_creacion` mediumint NOT NULL,
   `usuario_modificacion` mediumint DEFAULT NULL,
   PRIMARY KEY (`red_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -544,13 +547,13 @@ DROP TABLE IF EXISTS `referencia`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `referencia` (
   `referencia_ID` int NOT NULL AUTO_INCREMENT,
-  `fecha_ingreso` date DEFAULT NULL,
-  `fecha_envio` date DEFAULT NULL,
+  `fecha_ingreso` date NOT NULL,
+  `fecha_envio` date NOT NULL,
   `motivo_referencia` text,
   `nombre_contacto_receptor` varchar(65) NOT NULL,
   `medio_comunicacion` varchar(60) DEFAULT NULL,
-  `fecha_recepcion` date DEFAULT NULL,
-  `hora_recepcion` time DEFAULT NULL,
+  `fecha_recepcion` date NOT NULL,
+  `hora_recepcion` time NOT NULL,
   `paciente_paciente_ID` int NOT NULL,
   `establecimiento_salud_receptor` smallint NOT NULL,
   `establecimiento_salud_referente` smallint NOT NULL,
@@ -567,7 +570,7 @@ CREATE TABLE `referencia` (
   CONSTRAINT `fk_referencia_establecimiento_salud1` FOREIGN KEY (`establecimiento_salud_receptor`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`),
   CONSTRAINT `fk_referencia_establecimiento_salud2` FOREIGN KEY (`establecimiento_salud_referente`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`),
   CONSTRAINT `fk_referencia_paciente1` FOREIGN KEY (`paciente_paciente_ID`) REFERENCES `paciente` (`paciente_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -590,7 +593,7 @@ CREATE TABLE `servicio` (
   PRIMARY KEY (`servicio_ID`),
   KEY `especialidad_ID` (`especialidad_ID`),
   CONSTRAINT `servicio_ibfk_1` FOREIGN KEY (`especialidad_ID`) REFERENCES `especialidad` (`especialidad_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1254 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -679,7 +682,7 @@ CREATE TABLE `turno` (
   CONSTRAINT `fk_turno_especialidad1` FOREIGN KEY (`especialidad_especialidad_ID`) REFERENCES `especialidad` (`especialidad_ID`),
   CONSTRAINT `fk_turno_establecimiento_salud1` FOREIGN KEY (`establecimiento_salud_idestablecimiento_ID`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`),
   CONSTRAINT `fk_turno_personal_salud1` FOREIGN KEY (`personal_salud_personal_ID`) REFERENCES `personal_salud` (`personal_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -704,7 +707,7 @@ CREATE TABLE `usuario` (
   KEY `fk_personal_id` (`personal_ID`),
   CONSTRAINT `fk_personal_id` FOREIGN KEY (`personal_ID`) REFERENCES `personal_salud` (`personal_ID`) ON DELETE CASCADE,
   CONSTRAINT `fk_usuario_establecimiento` FOREIGN KEY (`establecimiento_id`) REFERENCES `establecimiento_salud` (`idestablecimiento_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -725,35 +728,78 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = @saved_cs_client;
 
 --
--- Final view structure for view `vista_especialidades_conteo_areas`
+-- Dumping routines for database 'sedes_referencia_final'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `obtener_turnos` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `obtener_turnos`(
+    IN p_especialidad_id INT,
+    IN p_hospital_id INT
+)
+BEGIN
+    DECLARE total_count INT;
 
-/*!50001 DROP VIEW IF EXISTS `vista_especialidades_conteo_areas`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `vista_especialidades_conteo_areas` AS select `e1`.`especialidad_ID` AS `ID`,`e1`.`nombre` AS `Especialidad`,`esh`.`establecimiento_salud_idestablecimiento_ID` AS `Hospital ID`,(select count(`aps1`.`area_personal_salud_ID`) from ((`area_personal_salud` `aps1` join `personal_salud` `ps1` on((`ps1`.`personal_ID` = `aps1`.`personal_salud_personal_ID`))) join `personal_especialidad_hospital` `peh1` on((`peh1`.`Personal_salud_id` = `ps1`.`personal_ID`))) where ((`aps1`.`area` = 'Emergencia') and (`peh1`.`Especialidad_id` = `e1`.`especialidad_ID`) and (`peh1`.`Hospital_id` = `esh`.`establecimiento_salud_idestablecimiento_ID`) and (month(`aps1`.`fecha`) = month(curdate())) and (year(`aps1`.`fecha`) = year(curdate())))) AS `Emergencia`,(select count(`aps2`.`area_personal_salud_ID`) from ((`area_personal_salud` `aps2` join `personal_salud` `ps2` on((`ps2`.`personal_ID` = `aps2`.`personal_salud_personal_ID`))) join `personal_especialidad_hospital` `peh2` on((`peh2`.`Personal_salud_id` = `ps2`.`personal_ID`))) where ((`aps2`.`area` = 'Consulta Externa') and (`peh2`.`Especialidad_id` = `e1`.`especialidad_ID`) and (`peh2`.`Hospital_id` = `esh`.`establecimiento_salud_idestablecimiento_ID`) and (month(`aps2`.`fecha`) = month(curdate())) and (year(`aps2`.`fecha`) = year(curdate())))) AS `Consulta Externa`,(select count(`aps3`.`area_personal_salud_ID`) from ((`area_personal_salud` `aps3` join `personal_salud` `ps3` on((`ps3`.`personal_ID` = `aps3`.`personal_salud_personal_ID`))) join `personal_especialidad_hospital` `peh3` on((`peh3`.`Personal_salud_id` = `ps3`.`personal_ID`))) where ((`aps3`.`area` = 'Internado') and (`peh3`.`Especialidad_id` = `e1`.`especialidad_ID`) and (`peh3`.`Hospital_id` = `esh`.`establecimiento_salud_idestablecimiento_ID`) and (month(`aps3`.`fecha`) = month(curdate())) and (year(`aps3`.`fecha`) = year(curdate())))) AS `Internado` from (`especialidad` `e1` join `establecimiento_salud_has_especialidad` `esh` on((`esh`.`especialidad_ID` = `e1`.`especialidad_ID`))) */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+    -- First attempt to get the main query result count
+    SET total_count = (
+        SELECT COUNT(*)
+        FROM personal_salud P
+        INNER JOIN area_personal_salud APS ON APS.personal_salud_personal_ID = P.personal_ID
+        INNER JOIN turno T ON T.personal_salud_personal_ID = P.personal_ID
+        INNER JOIN especialidad E ON E.especialidad_ID = T.especialidad_especialidad_ID
+        WHERE APS.area = 'Consulta Externa' AND E.especialidad_ID = p_especialidad_id
+    );
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+    -- If results are found, execute the main query
+    IF total_count > 0 THEN
+        SELECT IFNULL(CONCAT(P.nombres, ' ', P.primer_apellido, ' ', P.segundo_apellido), 'S/D') AS 'Nombre', 
+            IFNULL((
+                SELECT GROUP_CONCAT(CONCAT(DAYNAME(TSC.fecha), '-', IFNULL(CONCAT('Disponible de ', TIME_FORMAT(CT.Hora_Inicio, '%H:%i'), ' a ', TIME_FORMAT(CT.Hora_Fin, '%H:%i')), 'S/H')) SEPARATOR ',')
+                FROM turno TSC
+                LEFT JOIN codificacion_turnos CT ON CT.codificacion_turnos_id = TSC.codificacion_codificacion_turnos_ID
+                WHERE TSC.fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) 
+                AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) 
+                AND TSC.personal_salud_personal_ID = P.personal_ID
+            ), 'S/D') AS 'Horario de atencion'
+        FROM personal_salud P
+        INNER JOIN area_personal_salud APS ON APS.personal_salud_personal_ID = P.personal_ID
+        INNER JOIN turno T ON T.personal_salud_personal_ID = P.personal_ID
+        INNER JOIN especialidad E ON E.especialidad_ID = T.especialidad_especialidad_ID
+        WHERE APS.area = 'Consulta Externa' AND T.establecimiento_salud_idestablecimiento_ID = p_hospital_id AND E.especialidad_ID = p_especialidad_id AND T.fecha BETWEEN
+		DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND
+		DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AND APS.fecha BETWEEN 
+		DATE_SUB(CURDATE(), INTERVAL DAY(CURDATE()) - 1 DAY) 
+		AND LAST_DAY(CURDATE())
+        GROUP BY P.personal_ID;
+    ELSE
+        -- If no results, return default values
+        SELECT 'S/D' AS 'Nombre', 'S/D' AS 'Horario de atencion';
+    END IF;
 
-DELIMITER $$
-
-CREATE PROCEDURE obtener_turnos_por_mes(
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `obtener_turnos_por_mes` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `obtener_turnos_por_mes`(
     IN p_mes INT,
     IN p_anio INT,
     IN p_especialidad_id INT,
@@ -787,54 +833,38 @@ BEGIN
       AND P.establecimiento_salud_idestablecimiento_ID = p_establecimiento_id
     GROUP BY P.personal_ID;
 
-END$$
-
+END ;;
 DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
-DELIMITER $$
+--
+-- Final view structure for view `vista_especialidades_conteo_areas`
+--
 
-CREATE PROCEDURE obtener_turnos(
-    IN p_especialidad_id INT
-)
-BEGIN
-    DECLARE total_count INT;
+/*!50001 DROP VIEW IF EXISTS `vista_especialidades_conteo_areas`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vista_especialidades_conteo_areas` AS select `e1`.`especialidad_ID` AS `ID`,`e1`.`nombre` AS `Especialidad`,`esh`.`establecimiento_salud_idestablecimiento_ID` AS `Hospital ID`,(select count(`aps1`.`area_personal_salud_ID`) from ((`area_personal_salud` `aps1` join `personal_salud` `ps1` on((`ps1`.`personal_ID` = `aps1`.`personal_salud_personal_ID`))) join `personal_especialidad_hospital` `peh1` on((`peh1`.`Personal_salud_id` = `ps1`.`personal_ID`))) where ((`aps1`.`area` = 'Emergencia') and (`peh1`.`Especialidad_id` = `e1`.`especialidad_ID`) and (`peh1`.`Hospital_id` = `esh`.`establecimiento_salud_idestablecimiento_ID`) and (month(`aps1`.`fecha`) = month(curdate())) and (year(`aps1`.`fecha`) = year(curdate())))) AS `Emergencia`,(select count(`aps2`.`area_personal_salud_ID`) from ((`area_personal_salud` `aps2` join `personal_salud` `ps2` on((`ps2`.`personal_ID` = `aps2`.`personal_salud_personal_ID`))) join `personal_especialidad_hospital` `peh2` on((`peh2`.`Personal_salud_id` = `ps2`.`personal_ID`))) where ((`aps2`.`area` = 'Consulta Externa') and (`peh2`.`Especialidad_id` = `e1`.`especialidad_ID`) and (`peh2`.`Hospital_id` = `esh`.`establecimiento_salud_idestablecimiento_ID`) and (month(`aps2`.`fecha`) = month(curdate())) and (year(`aps2`.`fecha`) = year(curdate())))) AS `Consulta Externa`,(select count(`aps3`.`area_personal_salud_ID`) from ((`area_personal_salud` `aps3` join `personal_salud` `ps3` on((`ps3`.`personal_ID` = `aps3`.`personal_salud_personal_ID`))) join `personal_especialidad_hospital` `peh3` on((`peh3`.`Personal_salud_id` = `ps3`.`personal_ID`))) where ((`aps3`.`area` = 'Internado') and (`peh3`.`Especialidad_id` = `e1`.`especialidad_ID`) and (`peh3`.`Hospital_id` = `esh`.`establecimiento_salud_idestablecimiento_ID`) and (month(`aps3`.`fecha`) = month(curdate())) and (year(`aps3`.`fecha`) = year(curdate())))) AS `Internado` from (`especialidad` `e1` join `establecimiento_salud_has_especialidad` `esh` on((`esh`.`especialidad_ID` = `e1`.`especialidad_ID`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-    -- First attempt to get the main query result count
-    SET total_count = (
-        SELECT COUNT(*)
-        FROM personal_salud P
-        INNER JOIN area_personal_salud APS ON APS.personal_salud_personal_ID = P.personal_ID
-        INNER JOIN turno T ON T.personal_salud_personal_ID = P.personal_ID
-        INNER JOIN especialidad E ON E.especialidad_ID = T.especialidad_especialidad_ID
-        WHERE APS.area = 'Consulta Externa' AND E.especialidad_ID = p_especialidad_id
-    );
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-    -- If results are found, execute the main query
-    IF total_count > 0 THEN
-        SELECT IFNULL(CONCAT(P.nombres, ' ', P.primer_apellido, ' ', P.segundo_apellido), 'S/D') AS 'Nombre', 
-            IFNULL((
-                SELECT GROUP_CONCAT(CONCAT(DAYNAME(TSC.fecha), '-', IFNULL(CONCAT('Disponible de ', TIME_FORMAT(CT.Hora_Inicio, '%H:%i'), ' a ', TIME_FORMAT(CT.Hora_Fin, '%H:%i')), 'S/H')) SEPARATOR ',')
-                FROM turno TSC
-                LEFT JOIN codificacion_turnos CT ON CT.codificacion_turnos_id = TSC.codificacion_codificacion_turnos_ID
-                WHERE TSC.fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) 
-                AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) 
-                AND TSC.personal_salud_personal_ID = P.personal_ID
-            ), 'S/D') AS 'Horario de atencion'
-        FROM personal_salud P
-        INNER JOIN area_personal_salud APS ON APS.personal_salud_personal_ID = P.personal_ID
-        INNER JOIN turno T ON T.personal_salud_personal_ID = P.personal_ID
-        INNER JOIN especialidad E ON E.especialidad_ID = T.especialidad_especialidad_ID
-        WHERE APS.area = 'Consulta Externa' AND E.especialidad_ID = p_especialidad_id AND APS.fecha BETWEEN
-		DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND
-		DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) 
-        GROUP BY P.personal_ID;
-    ELSE
-        -- If no results, return default values
-        SELECT 'S/D' AS 'Nombre', 'S/D' AS 'Horario de atencion';
-    END IF;
-
-END$$
-
-DELIMITER ;
-
--- Dump completed on 2024-11-25 13:40:43
+-- Dump completed on 2024-11-27 18:43:31
