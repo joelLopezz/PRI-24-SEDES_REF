@@ -107,5 +107,18 @@ export class UsuarioService {
     // Guardar el usuario actualizado
     return this.usuarioRepository.save(usuario);
   }
+// getpersonal por id
+  async getPersonalSaludByUsuario(usuarioID: number): Promise<PersonalSalud> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { usuario_ID: usuarioID },
+      relations: ['personal'],
+    });
+  
+    if (!usuario || !usuario.personal) {
+      throw new NotFoundException(`No se encontró personal de salud relacionado con el usuario ${usuarioID}`);
+    }
+  
+    return usuario.personal;
+  }
 
 }

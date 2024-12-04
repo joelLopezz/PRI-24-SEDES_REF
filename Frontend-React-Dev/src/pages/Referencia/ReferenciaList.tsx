@@ -94,10 +94,10 @@ const ReferenciaList: React.FC = () => {
       <table className="table-container">
         <thead>
           <tr>
-            <th>Fecha Ingreso</th>
+            <th>Fecha Envio</th>
             <th>Motivo</th>
-            <th>Contacto</th>
-            <th>Medio</th>
+            <th>Emisor</th>
+            <th>Receptor</th>
             <th>Acciones</th>
           </tr>
         </thead>

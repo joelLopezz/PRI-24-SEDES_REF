@@ -1,6 +1,7 @@
-import { Controller, Post, Put, Param, Body, HttpStatus, NotFoundException, Logger } from '@nestjs/common';
+import { Controller, Post, Put, Param, Body, HttpStatus, NotFoundException, Logger, Get, ParseIntPipe  } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { AuthService } from '../Auth/auth.service';
+import { PersonalSalud } from 'src/personal_salud/personal_salud.entity';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -10,6 +11,18 @@ export class UsuarioController {
     private readonly authService: AuthService,
   ) {}
 
+
+  @Get(':id/personal')
+async getPersonalSaludByUsuario(
+  @Param('id', ParseIntPipe) usuarioID: number,
+): Promise<{ statusCode: number; message: string; data: PersonalSalud }> {
+  const personal = await this.usuarioService.getPersonalSaludByUsuario(usuarioID);
+  return {
+    statusCode: HttpStatus.OK,
+    message: 'Datos del personal de salud obtenidos exitosamente',
+    data: personal,
+  };
+}
 
   // Login de usuario
   @Post('login')
@@ -93,4 +106,6 @@ export class UsuarioController {
       };
     }
   }
+
+  
 }
