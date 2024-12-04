@@ -53,6 +53,9 @@ const FormularioReferencias: React.FC = () => {
   const [receptorDetails, setReceptorDetails] = useState({
     nivel: '',
   });
+  
+  const [doctores, setDoctores] = useState<{ id: number; nombreCompleto: string }[]>([]);
+
 
   const { hasPermission } = useAuth();
   const navigate = useNavigate();
@@ -80,11 +83,11 @@ const FormularioReferencias: React.FC = () => {
       ...prev,
       [field]: id, // Guardar el ID del establecimiento seleccionado
     }));
-
+  
     try {
       const response = await axios.get(`${API_BASE_URL}/establecimiento/${id}`);
       const data = response.data;
-
+  
       if (field === 'establecimiento_salud_referente') {
         setReferenteDetails({
           nivel: data.nivel || '',
@@ -96,11 +99,38 @@ const FormularioReferencias: React.FC = () => {
         setReceptorDetails({
           nivel: data.nivel || '',
         });
+  
+        // Fetch doctores del establecimiento receptor
+        console.log('Fetching doctores for establecimiento receptor:', id);
+        const doctoresResponse = await axios.get(
+          `${API_BASE_URL}/personal-salud?establecimientoId=${id}`
+        );
+  
+        if (doctoresResponse.data?.data && doctoresResponse.data.data.length > 0) {
+          console.log('Doctores encontrados:', doctoresResponse.data.data);
+  
+          // Filtrar los doctores del establecimiento
+          const doctoresData = doctoresResponse.data.data
+            .filter((personal: any) => personal.cargo.toLowerCase() === 'doctor') // Filtrar por cargo "Doctor"
+            .map((doctor: { personal_ID: number; nombres: string; primer_apellido: string }) => ({
+              id: doctor.personal_ID,
+              nombreCompleto: `${doctor.nombres} ${doctor.primer_apellido}`,
+            }));
+  
+          setDoctores(doctoresData);
+        } else {
+          console.warn('No se encontraron doctores para el establecimiento:', id);
+          setDoctores([]);
+        }
       }
     } catch (error) {
-      console.error('Error al cargar los detalles del establecimiento:', error);
+      console.error('Error al cargar los detalles del establecimiento o doctores:', error);
+      setDoctores([]); // Limpiar la lista de doctores en caso de error
     }
   };
+  
+  
+  
 
   // Maneja los cambios en los inputs del formulario de referencia
   const handleReferenciaChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -738,24 +768,29 @@ const FormularioReferencias: React.FC = () => {
               <input type="text" placeholder="Especifique" />
             </div>
           </div>
+          
           <div className="form-group">
-            <label>Nombre de la persona contactada:</label>
-            <input type="text" placeholder="Ingrese el nombre de la persona" />
-          </div>
-          <div className="form-group">
-            <label>Medio de comunicación:</label>
-            <input
-              value={referencia.medio_comunicacion}
-              onChange={handleReferenciaChange}
-              type="text"
-              name="medio_comunicacion"
-              placeholder="Ingrese el medio de comunicación"
-            />
-          </div>
-          <div className="form-group">
-            <label>Nombre de quien recibe al paciente:</label>
-            <input type="text" placeholder="Nombre del receptor" />
-          </div>
+  <label>Doctor Receptor:</label>
+  <select
+    value={referencia.medio_comunicacion || ''}
+    onChange={(e) =>
+      setReferencia((prev) => ({ ...prev, medio_comunicacion: e.target.value }))
+    }
+  >
+    <option value="">Seleccione un doctor</option>
+    {doctores.length === 0 && (
+      <option value="" disabled>No hay doctores disponibles</option>
+    )}
+    {doctores.map((doctor) => (
+      <option key={doctor.id} value={doctor.nombreCompleto}>
+        {doctor.nombreCompleto}
+      </option>
+    ))}
+  </select>
+</div>
+
+
+          
           <div className="form-group">
             <label>Fecha y hora de recepción:</label>
             <input
@@ -770,10 +805,6 @@ const FormularioReferencias: React.FC = () => {
               type="time"
               name="hora_recepcion"
             />
-          </div>
-          <div className="form-group">
-            <label>Hora de llegada:</label>
-            <input type="time" />
           </div>
           <div className="form-group full-width">
             <label>
