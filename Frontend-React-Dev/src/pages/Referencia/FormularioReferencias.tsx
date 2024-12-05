@@ -164,9 +164,21 @@ const FormularioReferencias: React.FC = () => {
       setReferencia((prevReferencia) => ({
         ...prevReferencia,
         nombre_contacto_receptor: `${personalData.nombres} ${personalData.primer_apellido}`,
-        telefono: personalData.telefono.toString(),
-        cargo: authData.rol, // Usar el rol del auth para el cargo
+        telefono: personalData.telefono?.toString() || '',
+        cargo: authData.rol,
       }));
+
+      // Cargar el establecimiento relacionado al usuario logueado
+      if (personalData.establecimiento_salud_idestablecimiento_ID) {
+        const establecimientoId = personalData.establecimiento_salud_idestablecimiento_ID.toString();
+        setReferencia((prevReferencia) => ({
+          ...prevReferencia,
+          establecimiento_salud_referente: establecimientoId,
+        }));
+
+        // Autocompletar los detalles del establecimiento
+        await handleEstablecimientoChange('establecimiento_salud_referente', establecimientoId);
+      }
     } catch (error) {
       console.error('Error al obtener los datos del usuario o personal de salud:', error);
       alert('No se pudieron cargar los datos del usuario o del personal de salud.');
@@ -176,6 +188,7 @@ const FormularioReferencias: React.FC = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
+
 
   // Enviar el formulario
   const handleSubmit = async () => {
@@ -255,21 +268,20 @@ const FormularioReferencias: React.FC = () => {
       {/* Desplegable C1 */}
       <ExpandableSection title="DATOS DEL ESTABLECIMIENTO DE SALUD REFERENTE (C1)">
       <div className="grid-container">
+      <div className="grid-container">
           <div className="form-group">
             <label>Nombre del establecimiento:</label>
-            <select
-              value={referencia.establecimiento_salud_referente}
-              onChange={(e) =>
-                handleEstablecimientoChange('establecimiento_salud_referente', e.target.value)
-              }
-            >
-              <option value="">Seleccione un establecimiento</option>
-              {establecimientos.map((establecimiento) => (
-                <option key={establecimiento.id} value={establecimiento.id}>
-                  {establecimiento.nombre}
-                </option>
-              ))}
+            <select value={referencia.establecimiento_salud_referente}disabled
+            style={{ width: '100%' }}>
+              <option>
+                {
+                  establecimientos.find(
+                    (e) => e.id.toString() === referencia.establecimiento_salud_referente
+                  )?.nombre || 'Cargando...'
+                }
+              </option>
             </select>
+          </div>
           </div>
           <div className="form-group">
             <label>Nivel del EESS:</label>

@@ -164,12 +164,13 @@ function ProtectedRoutes() {
 
             <Route path="/cambiar-contrasenia" element={<CambiarContrasenia />} />
 
-            <Route path="/referencia" element={<ReferenciaList />} />
+            
             <Route path="/referencia/create" element={<ReferenciaCreate />} />
             <Route path="/referencia/pendiente" element={<ReferenciaPendiente />} />
             
             <Route path="/referencia/edit/:id" element={<ReferenciaEdit />} />
 
+            <Route path='/referencia' element={hasPermission(['Doctor']) ? <ReferenciaList /> : <Navigate to="/referencia/pendiente"/>}/>
         </Route>
       </Routes>
   );
