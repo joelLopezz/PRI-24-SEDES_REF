@@ -42,6 +42,29 @@ const PendientesList: React.FC = () => {
   const handleEdit = (referenciaId: number) => {
     navigate(`/referencia/edit/${referenciaId}`);
   };
+  const handleDelete = (referenciaId: number) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta referencia?')) {
+      fetch(`${API_BASE_URL}/referencias/${referenciaId}/remove`, {
+        method: 'PATCH', // Usamos PATCH para el soft remove
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Error al eliminar la referencia');
+          }
+          setReferencias((prevReferencias) =>
+            prevReferencias.filter((ref) => ref.referencia_ID !== referenciaId)
+          );
+          alert('Referencia eliminada correctamente');
+        })
+        .catch((error) => {
+          console.error('Error al eliminar la referencia:', error);
+          setErrorMessage('No se pudo eliminar la referencia');
+        });
+    }
+  };
 
   return (
     <div className="container_referencias_list">
@@ -73,6 +96,12 @@ const PendientesList: React.FC = () => {
                 >
                   <i className="fas fa-edit"></i>
                   Editar
+                </button>
+                <button
+                  className="button-eliminar"
+                  onClick={() => handleDelete(ref.referencia_ID)}>
+                  <i className="fas fa-trash"></i>
+                  Eliminar
                 </button>
               </td>
             </tr>

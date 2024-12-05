@@ -41,9 +41,7 @@ const FormularioReferencias: React.FC = () => {
     estado_aprobacion: 1,
   });
 
-  const [establecimientos, setEstablecimientos] = useState<
-    { id: number; nombre: string }[]
-  >([]);
+  
   const [referenteDetails, setReferenteDetails] = useState({
     nivel: '',
     red: '',
@@ -53,6 +51,9 @@ const FormularioReferencias: React.FC = () => {
   const [receptorDetails, setReceptorDetails] = useState({
     nivel: '',
   });
+  const [establecimientos, setEstablecimientos] = useState<
+    { id: number; nombre: string }[]
+  >([]);
   
   const [doctores, setDoctores] = useState<{ id: number; nombreCompleto: string }[]>([]);
 
@@ -150,40 +151,41 @@ const FormularioReferencias: React.FC = () => {
     }));
   };
 
-  // Obtener los datos del usuario logueado y usar su ID para obtener los datos del personal de salud
-  const fetchUserData = async () => {
-    try {
-      const authResponse = await axios.get(`${API_BASE_URL}/auth/me`);
-      const authData = authResponse.data.data;
+ // Obtener los datos del usuario logueado y usar su ID para obtener los datos del personal de salud
+ const fetchUserData = async () => {
+  try {
+    const authResponse = await axios.get(`${API_BASE_URL}/auth/me`);
+    const authData = authResponse.data.data;
 
-      // Usar el usuarioID para obtener los datos del personal de salud relacionado
-      const personalResponse = await axios.get(`${API_BASE_URL}/personal-salud/${authData.usuarioID}`);
-      const personalData = personalResponse.data.data;
+    // Usar el usuarioID para obtener los datos del personal de salud relacionado
+    const personalResponse = await axios.get(`${API_BASE_URL}/personal-salud/${authData.usuarioID}`);
+    const personalData = personalResponse.data.data;
 
-      // Actualizar los campos del formulario C10 con los datos recuperados
+    // Actualizar los campos del formulario C10 con los datos recuperados
+    setReferencia((prevReferencia) => ({
+      ...prevReferencia,
+      nombre_contacto_receptor: `${personalData.nombres} ${personalData.primer_apellido}`,
+      telefono: personalData.telefono?.toString() || '',
+      cargo: authData.rol,
+    }));
+
+    // Cargar el establecimiento relacionado al usuario logueado
+    if (personalData.establecimiento_salud_idestablecimiento_ID) {
+      const establecimientoId = personalData.establecimiento_salud_idestablecimiento_ID.toString();
       setReferencia((prevReferencia) => ({
         ...prevReferencia,
-        nombre_contacto_receptor: `${personalData.nombres} ${personalData.primer_apellido}`,
-        telefono: personalData.telefono?.toString() || '',
-        cargo: authData.rol,
+        establecimiento_salud_referente: establecimientoId,
       }));
 
-      // Cargar el establecimiento relacionado al usuario logueado
-      if (personalData.establecimiento_salud_idestablecimiento_ID) {
-        const establecimientoId = personalData.establecimiento_salud_idestablecimiento_ID.toString();
-        setReferencia((prevReferencia) => ({
-          ...prevReferencia,
-          establecimiento_salud_referente: establecimientoId,
-        }));
-
-        // Autocompletar los detalles del establecimiento
-        await handleEstablecimientoChange('establecimiento_salud_referente', establecimientoId);
-      }
-    } catch (error) {
-      console.error('Error al obtener los datos del usuario o personal de salud:', error);
-      alert('No se pudieron cargar los datos del usuario o del personal de salud.');
+      // Autocompletar los detalles del establecimiento
+      await handleEstablecimientoChange('establecimiento_salud_referente', establecimientoId);
     }
-  };
+  } catch (error) {
+    console.error('Error al obtener los datos del usuario o personal de salud:', error);
+    alert('No se pudieron cargar los datos del usuario o del personal de salud.');
+  }
+};
+
 
   useEffect(() => {
     fetchUserData();
@@ -389,7 +391,7 @@ const FormularioReferencias: React.FC = () => {
               <option value="">Seleccione una opción</option>
               <option value="grado1">grado 1</option>
               <option value="grado2">grado 2</option>
-              <option value="grado2">grado 3</option>
+              <option value="grado3">grado 3</option>
               {/* Agregar opciones adicionales aquí */}
             </select>
           </div>
@@ -623,6 +625,7 @@ const FormularioReferencias: React.FC = () => {
             </div>
           </div>
         </ExpandableSection>
+
 
 {/* Desplegable C9 */}
 <ExpandableSection title="CONSENTIMIENTO INFORMADO PARA EL TRASLADO (C9)">

@@ -175,6 +175,48 @@ export class PersonalSaludService {
     return personalSalud;
   }
 
+  async getPersonalSaludByIdMedico(id: number): Promise<PersonalSalud> {
+    const personalSalud = await this.personalSaludRepository.findOne({
+      where: { establecimiento_salud_idestablecimiento_ID: id },
+      relations: ['usuarios'],  
+    });
+    if (!personalSalud) {
+      throw new NotFoundException(`Personal de salud con ID ${id} no encontrado`);
+    }
+    return personalSalud;
+  }
+
+  async getPersonalSaludByNombreCompleto(nombreCompleto: string): Promise<PersonalSalud> {
+    const [nombres, primerApellido] = nombreCompleto.split(' ');
+  
+    if (!nombres || !primerApellido) {
+      throw new NotFoundException(`Formato inválido para el nombre completo: "${nombreCompleto}"`);
+    }
+  
+    const personalSalud = await this.personalSaludRepository.findOne({
+      where: {
+        nombres: nombres,
+        primer_apellido: primerApellido,
+        estado: 1, // Aseguramos que el personal esté activo
+      },
+      relations: ['usuarios'], // Carga las relaciones necesarias
+    });
+  
+    if (!personalSalud) {
+      throw new NotFoundException(`Personal de salud con nombre "${nombreCompleto}" no encontrado`);
+    }
+  
+    return personalSalud;
+  }
+  
+  async findByNombreConcatenado(nombreConcatenado: string): Promise<PersonalSalud> {
+    const [nombre, primerApellido] = nombreConcatenado.split(' ');
+    return this.personalSaludRepository.findOne({
+      where: { nombres: nombre, primer_apellido: primerApellido },
+    });
+  }
+
+  
   // Método para actualizar el personal de salud por ID
   async updatePersonalSalud(id: number, updatePersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {
     const personalSalud = await this.getPersonalSaludById(id);

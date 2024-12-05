@@ -35,6 +35,32 @@ export class PersonalSaludController {
     }
   }
 
+  @Get('buscar-por-nombre/:nombreCompleto')
+async getPersonalSaludByNombreCompleto(
+  @Param('nombreCompleto') nombreCompleto: string,
+): Promise<{ statusCode: number; message: string; data: PersonalSalud }> {
+  try {
+    const personalSalud = await this.personalSaludService.getPersonalSaludByNombreCompleto(nombreCompleto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: `Personal de salud con nombre "${nombreCompleto}" obtenido exitosamente`,
+      data: personalSalud,
+    };
+  } catch (error) {
+    throw new HttpException(
+      {
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `Personal de salud con nombre "${nombreCompleto}" no encontrado`,
+        error: error.message,
+      },
+      HttpStatus.NOT_FOUND,
+    );
+  }
+}
+
+
+
+
   // Obtener un registro específico de personal de salud por ID
   @Get(':id')
   async getPersonalSaludById(

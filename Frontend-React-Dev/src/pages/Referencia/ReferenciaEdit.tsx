@@ -5,19 +5,73 @@ import axios from 'axios';
 import './Styles/App.css';
 import { useAuth } from '../../Context/AuthContext';
 
+type Referencia = {
+  fecha_ingreso: string;
+  fecha_envio: string;
+  motivo_referencia: string;
+  nombre_contacto_receptor: string;
+  medio_comunicacion: string;
+  fecha_recepcion: string | null;
+  hora_recepcion: string | null;
+  establecimiento_salud_referente: string;
+  establecimiento_salud_receptor: string;
+  cargo?: string;
+  telefono?: string;
+};
+
+type Paciente = {
+  nombres: string;
+  primer_apellido: string;
+  segundo_apellido: string;
+  fecha_nacimiento: string;
+  ci: string;
+  domicilio: string;
+  telefono: string;
+  procedencia: string;
+  historia_clinica: string;
+  sexo: string;
+  discapacidad: string;
+  tipo_discapacidad: string;
+  grado_discapacidad: string;
+};
+
+type EstablecimientoDetails = {
+  nivel: string;
+  red?: string;
+  municipio?: string;
+  telefono?: string;
+};
+
+type Establecimiento = {
+  id: number;
+  nombre: string;
+};
+
+type Doctor = {
+  id: number;
+  nombreCompleto: string;
+};
+
+
 const ReferenciaEdit: React.FC = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams<{ id: string }>();
-  const [referencia, setReferencia] = useState<any>({
+  const navigate = useNavigate();
+  const { hasPermission } = useAuth();
+
+  const [referencia, setReferencia] = useState<Referencia>({
     fecha_ingreso: '',
     fecha_envio: '',
     motivo_referencia: '',
     nombre_contacto_receptor: '',
     medio_comunicacion: '',
-    fecha_recepcion: '',
-    hora_recepcion: '',
+    fecha_recepcion: null,
+    hora_recepcion: null,
+    establecimiento_salud_referente: '',
+    establecimiento_salud_receptor: '',
   });
-  const [paciente, setPaciente] = useState<any>({
+
+  const [paciente, setPaciente] = useState<Paciente>({
     nombres: '',
     primer_apellido: '',
     segundo_apellido: '',
@@ -28,27 +82,47 @@ const ReferenciaEdit: React.FC = () => {
     procedencia: '',
     historia_clinica: '',
     sexo: '',
-    discapacidad:'',
+    discapacidad: '',
     tipo_discapacidad: '',
-    grado_discapacidad:'',
+    grado_discapacidad: '',
   });
-  const navigate = useNavigate();
 
-  // Fetch data from the API
+  const [referenteDetails, setReferenteDetails] = useState<EstablecimientoDetails>({
+    
+    nivel: '',
+    red: '',
+    municipio: '',
+    telefono: '',
+  });
+
+  const [receptorDetails, setReceptorDetails] = useState<EstablecimientoDetails>({
+    nivel: '',
+  });
+
+  const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
+  const [doctores, setDoctores] = useState<Doctor[]>([]);
+  const [isC12Editable, setIsC12Editable] = useState(false);
+
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/referencias/${id}`)
-      .then((response) => {
+    // Cargar datos iniciales para el formulario de edición
+    const fetchReferencia = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/referencias/${id}`);
         const data = response.data;
+
+        // Setear datos de referencia
         setReferencia({
           fecha_ingreso: data.fecha_ingreso || '',
           fecha_envio: data.fecha_envio || '',
           motivo_referencia: data.motivo_referencia || '',
           nombre_contacto_receptor: data.nombre_contacto_receptor || '',
           medio_comunicacion: data.medio_comunicacion || '',
-          fecha_recepcion: data.fecha_recepcion || '',
-          hora_recepcion: data.hora_recepcion || '',
+          fecha_recepcion: data.fecha_recepcion || null,
+          hora_recepcion: data.hora_recepcion || null,
+          establecimiento_salud_referente: data.establecimiento_salud_referente || '',
+          establecimiento_salud_receptor: data.establecimiento_salud_receptor || '',
         });
+
         setPaciente({
           nombres: data.paciente_paciente_ID?.nombres || '',
           primer_apellido: data.paciente_paciente_ID?.primer_apellido || '',
@@ -64,109 +138,193 @@ const ReferenciaEdit: React.FC = () => {
           tipo_discapacidad: data.paciente_paciente_ID?.tipo_discapacidad || '',
           grado_discapacidad: data.paciente_paciente_ID?.grado_discapacidad || '',
         });
-      })
-      .catch((error) => {
-        console.error('Error fetching reference:', error);
-        alert('Failed to load the reference data.');
-      });
+
+        // Cargar detalles del establecimiento referente (C1)
+        if (data.establecimiento_salud_referente) {
+          await handleEstablecimientoChange(
+            'establecimiento_salud_referente',
+            data.establecimiento_salud_referente
+          );
+        }
+
+        if (data.establecimiento_salud_receptor) {
+          await handleEstablecimientoChange(
+            'establecimiento_salud_receptor',
+            data.establecimiento_salud_receptor
+          );
+          setIsC12Editable(false); // Bloquear C12 si ya tiene datos
+        } else {
+          setIsC12Editable(true); // Hacer C12 editable si está vacío
+        }
+
+        if (data.nombre_contacto_receptor) {
+          try {
+            const encodedName = encodeURIComponent(data.nombre_contacto_receptor.trim());
+            const responseC10 = await axios.get(`${API_BASE_URL}/personal-salud/buscar-por-nombre/${encodedName}`);
+            const personalData = responseC10.data.data;
+            setReferencia((prev) => ({
+              ...prev,
+              cargo: personalData.cargo || '',
+              telefono: personalData.telefono || '',
+            }));
+          } catch (error) {
+            console.error('Error fetching C10 data:', error);
+            alert(`No se encontraron datos para el nombre proporcionado: ${data.nombre_contacto_receptor}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error cargando la referencia:', error);
+        alert('Error cargando la referencia.');
+      }
+    };
+
+    fetchReferencia();
   }, [id]);
 
-  // Manejar cambios en los inputs
-  const handleReferenciaChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  useEffect(() => {
+    const fetchEstablecimientos = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/establecimiento/nombres`);
+        setEstablecimientos(response.data); // Cargar los establecimientos
+      } catch (error) {
+        console.error('Error al cargar los establecimientos:', error);
+      }
+    };
+  
+    fetchEstablecimientos();
+  }, []);
+
+  // Manejo de cambios en inputs
+  const handleReferenciaChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setReferencia((prev: any) => ({
+    setReferencia((prev) => ({
       ...prev,
       [name]: value === '' ? null : value,
     }));
   };
 
-  const handlePacienteChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handlePacienteChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setPaciente((prev: any) => ({
+    setPaciente((prev: Paciente) => ({
       ...prev,
-      [name]: value === '' ? null : value,
+      [name]: value,
     }));
   };
 
-  const { hasPermission } = useAuth(); // Usamos el contexto para verificar roles
+  // Manejar cambios en los selects
+  const handleEstablecimientoChange = async (
+    field: 'establecimiento_salud_referente' | 'establecimiento_salud_receptor',
+    id: string
+  ) => {
+    setReferencia((prev) => ({
+      ...prev,
+      [field]: id,
+    }));
 
+    try {
+      const response = await axios.get(`${API_BASE_URL}/establecimiento/${id}`);
+      const data = response.data;
+
+      if (field === 'establecimiento_salud_referente') {
+        setReferenteDetails({
+          nivel: data.nivel || '',
+          red: data.redCordinacion?.nombre || '',
+          municipio: data.municipio?.nombre || '',
+          telefono: data.telefono || '',
+        });
+      } else if (field === 'establecimiento_salud_receptor') {
+        setReceptorDetails({
+          nivel: data.nivel || '',
+        });
+
+        const doctoresResponse = await axios.get(
+          `${API_BASE_URL}/personal-salud?establecimientoId=${id}`
+        );
+        if (doctoresResponse.data?.data) {
+          setDoctores(
+            doctoresResponse.data.data.map((doctor: any) => ({
+              id: doctor.personal_ID,
+              nombreCompleto: `${doctor.nombres} ${doctor.primer_apellido}`,
+            }))
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error cargando datos del establecimiento:', error);
+    }
+  };
+
+  // Guardar los cambios
   const handleSave = async () => {
     try {
-      // Verificar si el campo C12 está lleno
       const isC12Complete =
         referencia.fecha_recepcion || referencia.hora_recepcion || referencia.medio_comunicacion;
-      if (!referencia || !paciente) {
-        alert('Faltan datos para actualizar.');
-        return;
-      }
-  
-      // Construir el cuerpo de la solicitud
+
       const updateRegistroDto = {
         paciente,
         referencia: {
           ...referencia,
-          estado: isC12Complete ? 2 : 1, // Estado 2 si C12 está lleno, 1 de lo contrario
+          estado: isC12Complete ? 2 : 1,
         },
       };
-  
-      // Hacer la solicitud PATCH al endpoint consolidado
+
       await axios.patch(`${API_BASE_URL}/registro/${id}`, updateRegistroDto);
-  
-      alert('Referencia y paciente actualizados correctamente');
-      navigate('/referencia'); // Redirigir al listado
+      alert('Referencia actualizada exitosamente.');
+      navigate('/referencia');
     } catch (error) {
-      console.error('Error al actualizar los datos:', error);
-      alert('Error al actualizar la referencia o el paciente');
+      console.error('Error guardando los cambios:', error);
+      alert('Error guardando los cambios.');
     }
   };
-
   const allowedRolesC12 = ['Admin Sedes', 'Admin Hospital'];
 
-  if (!referencia || !paciente) {
-    return <p>Cargando datos...</p>;
-  }
+  // Verificación para el campo C12
+  const isC12Empty = !referencia.establecimiento_salud_receptor;
 
   return (
     <div className="formulario-referencias">
       <h2 className="titulo-formulario">Editar Referencia</h2>
-
-      {/* Desplegable C1 */}
+      {/* Campo C1 */}
       <ExpandableSection title="DATOS DEL ESTABLECIMIENTO DE SALUD REFERENTE (C1)">
         <div className="grid-container">
-          <div className="form-group">
-            <label>Nombre del establecimiento:</label>
-            <input type="text" placeholder="Ingrese el nombre del establecimiento" />
-          </div>
+        <div className="form-group">
+  <label>Nombre del establecimiento:</label>
+  <select value={referencia.establecimiento_salud_referente} disabled>
+    <option>
+      {
+        establecimientos.find(
+          (e) => e.id.toString() === referencia.establecimiento_salud_referente
+        )?.nombre || 'Cargando...'
+      }
+    </option>
+  </select>
+</div>
+
+
           <div className="form-group">
             <label>Nivel del EESS:</label>
-            <input type="text" placeholder="Ingrese el nivel del EESS" />
+            <input type="text" value={referenteDetails.nivel} readOnly />
           </div>
           <div className="form-group">
             <label>Red de Salud:</label>
-            <input type="text" placeholder="Ingrese la red de salud" />
+            <input type="text" value={referenteDetails.red} readOnly />
           </div>
           <div className="form-group">
             <label>Municipio:</label>
-            <select>
-              <option>Seleccione una opción</option>
-              {/* Agregar opciones adicionales aquí */}
-            </select>
+            <input type="text" value={referenteDetails.municipio} readOnly />
           </div>
           <div className="form-group">
             <label>Tel/Cel del EESS:</label>
-            <input type="tel" placeholder="Ingrese el teléfono o celular del EESS" />
-          </div>
-          <div className="form-group">
-            <label>Fecha y hora:</label>
-            <div className="date-time-inputs">
-              <input type="date" />
-              <input type="time" />
-            </div>
+            <input type="tel" value={referenteDetails.telefono} readOnly />
           </div>
           <div className="form-group">
             <label>Fecha de envío:</label>
             <div className="date-time-inputs">
-              <input value = {referencia.fecha_envio} onChange={handleReferenciaChange} type="date" name='fecha_envio'/>
+              <input value = {referencia.fecha_ingreso} onChange={handleReferenciaChange} type="date" name='fecha_ingreso'/>
               <input type="time" />
             </div>
           </div>
@@ -213,22 +371,6 @@ const ReferenciaEdit: React.FC = () => {
             <input value = {paciente.fecha_nacimiento} onChange={handlePacienteChange} type="date" name='fecha_nacimiento'/>
           </div>
           <div className="form-group">
-            <label>Edad:</label>
-            <input type="number" placeholder="Ingrese la edad" />
-          </div>
-          <div className="form-group">
-            <label>Tipo Discapacidad:</label>
-            <select value = {paciente.tipo_discapacidad} 
-            onChange={handlePacienteChange}
-            name='tipo_discapacidad'>
-              <option value="">Seleccione una opción</option>
-              <option value="Discapacidad 1">Discapacidad 1</option>
-              <option value="Discapacidad 2">Discapacidad 2</option>
-              <option value="Discapacidad 3">Discapacidad 3</option>
-              {/* Agregar opciones adicionales aquí */}
-            </select>
-          </div>
-          <div className="form-group">
   <label>Sexo:</label>
   <div className="radio-group">
     <label>
@@ -251,6 +393,29 @@ const ReferenciaEdit: React.FC = () => {
     </label>
   </div>
 </div>
+<div className="form-group">
+            <label>Tipo Discapacidad:</label>
+            <select value = {paciente.tipo_discapacidad} 
+            onChange={handlePacienteChange}
+            name='tipo_discapacidad'>
+              <option value="">Seleccione una opción</option>
+              <option value="Discapacidad 1">Discapacidad Visual</option>
+              <option value="Discapacidad 2">Discapacidad Auditiva</option>
+              <option value="Discapacidad 3">Discapacidad Motora</option>
+              {/* Agregar opciones adicionales aquí */}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Grado de Discapacidad:</label>
+            <select value = {paciente.grado_discapacidad} onChange={handlePacienteChange} name='grado_discapacidad'>
+              <option value="">Seleccione una opción</option>
+              <option value="grado1">grado 1</option>
+              <option value="grado2">grado 2</option>
+              <option value="grado3">grado 3</option>
+              {/* Agregar opciones adicionales aquí */}
+            </select>
+          </div>
+
           <div className="form-group">
             <label>Nombre del Acompañante:</label>
             <input type="text" placeholder="Ingrese el nombre del acompañante" />
@@ -267,17 +432,10 @@ const ReferenciaEdit: React.FC = () => {
             <label>Tel/Cel del Acompañante:</label>
             <input type="tel" placeholder="Ingrese el teléfono o celular del acompañante" />
           </div>
-          <div className="form-group">
-            <label>Grado de Discapacidad:</label>
-            <select value = {paciente.grado_discapacidad} onChange={handlePacienteChange} name='grado_discapacidad'>
-              <option value="">Seleccione una opción</option>
-              <option value="grado1">grado 1</option>
-              <option value="grado2">grado 2</option>
-              {/* Agregar opciones adicionales aquí */}
-            </select>
-          </div>
+          
         </div>
       </ExpandableSection>
+
       {/* Desplegable C3 */}
       <ExpandableSection title="DATOS CLÍNICOS Y SIGNOS VITALES (C3)">
           <div className="grid-container">
@@ -512,30 +670,26 @@ const ReferenciaEdit: React.FC = () => {
   </div>
 </ExpandableSection>
 
-         {/* Desplegable C10 */}
-         <ExpandableSection title="NOMBRE Y CARGO DE QUIEN ENVIA AL PACIENTE O RESPONSABLE DEL ESTABLECIMIENTO DE SALUD QUE REQUIERE (C10)">
-          <div className="grid-container">
-            <div className="form-group">
-              <label>Nombre:</label>
-              <input value = {referencia.nombre_contacto_receptor} onChange ={handleReferenciaChange} type="text" name='nombre_contacto_receptor' placeholder="Ingrese el nombre" />
-            </div>
-            <div className="form-group">
-              <label>Cargo:</label>
-              <input type="text" placeholder="Ingrese el cargo" />
-            </div>
-            <div className="form-group">
-              <label>Teléfono:</label>
-              <input type="tel" placeholder="Ingrese el teléfono" />
-            </div>
-            <div className="form-group full-width">
-              <label>Nombre del personal de salud que acompaña:</label>
-              <input type="text" placeholder="Ingrese el nombre del personal que acompaña" />
-            </div>
+      {/* Campo C10 */}
+      <ExpandableSection title="NOMBRE Y CARGO DE QUIEN ENVIA AL PACIENTE (C10)">
+        <div className="grid-container">
+          <div className="form-group">
+            <label>Nombre:</label>
+            <input type="text" value={referencia.nombre_contacto_receptor} readOnly />
           </div>
-        </ExpandableSection>
+          <div className="form-group">
+            <label>Cargo:</label>
+            <input type="text" value={referencia.cargo} readOnly />
+          </div>
+          <div className="form-group">
+            <label>Teléfono:</label>
+            <input type="text" value={referencia.telefono} readOnly />
+          </div>
+        </div>
+      </ExpandableSection>
 
-         {/* Desplegable C11 */}
-    <ExpandableSection title="MOTIVO DE REFERENCIA (C11) SOLO MARQUE UNO">
+ {/* Desplegable C11 */}
+ <ExpandableSection title="MOTIVO DE REFERENCIA (C11) SOLO MARQUE UNO">
       <div className="radio-group">
         <label>
           <input
@@ -589,104 +743,101 @@ const ReferenciaEdit: React.FC = () => {
         </label>
       </div>
     </ExpandableSection>
-
-        
-        {/* Desplegable C12 */}
-        {hasPermission(allowedRolesC12) && (
-        <ExpandableSection title="ESTABLECIMIENTO DE SALUD RECEPTOR (C12)">
-          <div className="grid-container">
-            <div className="form-group">
-              <label>Nombre del establecimiento:</label>
-              <input type="text" placeholder="Ingrese el nombre del establecimiento" />
-            </div>
-            <div className="form-group">
-              <label>Nivel:</label>
-              <select>
-                <option>Seleccione un nivel</option>
-                {/* Opciones adicionales */}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Subsector:</label>
-              <div className="radio-group">
-                <label>
-                  <input type="radio" name="subsector" value="publico" /> Público
-                </label>
-                <label>
-                  <input type="radio" name="subsector" value="seguridadSocial" /> Seguridad Social
-                </label>
-                <label>
-                  <input type="radio" name="subsector" value="privado" /> Privado
-                </label>
-                <label>
-                  <input type="radio" name="subsector" value="otro" /> Otro:
-                </label>
-                <input type="text" placeholder="Especifique" />
+      {/* Campo C12 */}
+      
+      <ExpandableSection title="DATOS DEL ESTABLECIMIENTO RECEPTOR (C12)">
+        <div className="grid-container">
+          {isC12Editable ? (
+            <>
+              {/* Funcionalidad como en FormularioReferencia */}
+              <div className="form-group">
+                <label>Nombre del establecimiento:</label>
+                <select
+                  value={referencia.establecimiento_salud_receptor}
+                  onChange={(e) =>
+                    handleEstablecimientoChange('establecimiento_salud_receptor', e.target.value)
+                  }
+                >
+                  <option value="">Seleccione un establecimiento</option>
+                  {establecimientos.map((establecimiento) => (
+                    <option key={establecimiento.id} value={establecimiento.id}>
+                      {establecimiento.nombre}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </div>
-            <div className="form-group">
-              <label>Nombre de la persona contactada:</label>
-              <input type="text" placeholder="Ingrese el nombre de la persona" />
-            </div>
-            <div className="form-group">
-              <label>Medio de comunicación:</label>
-              <input
-                value={referencia.medio_comunicacion}
-                onChange={handleReferenciaChange}
-                type="text"
-                name="medio_comunicacion"
-                placeholder="Ingrese el medio de comunicación"
-              />
-            </div>
-            <div className="form-group">
-              <label>Nombre de quien recibe al paciente:</label>
-              <input type="text" placeholder="Nombre del receptor" />
-            </div>
-            <div className="form-group">
-              <label>Fecha y hora de recepción:</label>
-              <input
-                value={referencia.fecha_recepcion ?? ''}
-                onChange={handleReferenciaChange}
-                type="date"
-                name="fecha_recepcion"
-              />
-              <input
-                value={referencia.hora_recepcion ?? ''}
-                onChange={handleReferenciaChange}
-                type="time"
-                name="hora_recepcion"
-              />
-            </div>
-            <div className="form-group">
-              <label>Hora de llegada:</label>
-              <input type="time" />
-            </div>
-            <div className="form-group full-width">
-              <label>
-                Médico responsable del establecimiento de salud receptor que evalúa los criterios de calidad A.I.O.:
-              </label>
-              <input type="text" placeholder="Nombre del médico responsable" />
-            </div>
-            <div className="form-group">
-              <label>Paciente Admitido:</label>
-              <div className="radio-group">
-                <label>
-                  <input type="radio" name="pacienteAdmitido" value="si" /> Sí
-                </label>
-                <label>
-                  <input type="radio" name="pacienteAdmitido" value="no" /> No
-                </label>
+              <div className="form-group">
+                <label>Nivel:</label>
+                <input type="text" value={receptorDetails.nivel} readOnly />
               </div>
-            </div>
-            <div className="form-group">
-              <label>Motivo:</label>
-              <input type="text" placeholder="Ingrese el motivo" />
-            </div>
-          </div>
-        </ExpandableSection>
-      )}
+              <div className="form-group">
+                <label>Doctor Receptor:</label>
+                <select
+                  value={referencia.medio_comunicacion || ''}
+                  onChange={(e) =>
+                    setReferencia((prev) => ({ ...prev, medio_comunicacion: e.target.value }))
+                  }
+                >
+                  <option value="">Seleccione un doctor</option>
+                  {doctores.map((doctor) => (
+                    <option key={doctor.id} value={doctor.nombreCompleto}>
+                      {doctor.nombreCompleto}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Fecha y hora de recepción:</label>
+                <input
+                  type="date"
+                  name="fecha_recepcion"
+                  value={referencia.fecha_recepcion || ''}
+                  onChange={handleReferenciaChange}
+                />
+                <input
+                  type="time"
+                  name="hora_recepcion"
+                  value={referencia.hora_recepcion || ''}
+                  onChange={handleReferenciaChange}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Mostrar datos ya guardados */}
+              <div className="form-group">
+                <label>Nombre del establecimiento:</label>
+                <select value={referencia.establecimiento_salud_receptor} disabled>
+                  <option>
+                    {
+                      establecimientos.find(
+                        (e) => e.id.toString() === referencia.establecimiento_salud_receptor
+                      )?.nombre || 'Cargando...'
+                    }
+                  </option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Nivel:</label>
+                <input type="text" value={receptorDetails.nivel} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Doctor Receptor:</label>
+                <input type="text" value={referencia.medio_comunicacion} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Fecha y hora de recepción:</label>
+                <input type="text" value={referencia.fecha_recepcion || ''} readOnly />
+                <input type="text" value={referencia.hora_recepcion || ''} readOnly />
+              </div>
+            </>
+          )}
+        </div>
+      </ExpandableSection>
+      
+      
 
-      {/* Botones de acción */}
+      {/* Botones */}
       <div className="form-buttons">
         <button onClick={handleSave} className="btn-save">
           Guardar Cambios
