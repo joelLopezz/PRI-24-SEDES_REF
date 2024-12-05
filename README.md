@@ -375,6 +375,23 @@ Una vez descargado el código fuente de Github, abre una terminal para cada proy
 - **Bases de Datos**:
   - MySQL (gestor de base de datos relacional)
 ---
+# Credenciales de Acceso del Sistema
+
+### Roles y Usuarios
+
+#### 1. Rol: **Admin Sedes**
+- **Usuario:** jlopezt  
+- **Contraseña:** cctbgxi8
+
+#### 2. Rol: **Admin Hospital**
+- **Usuario:** abanderasc  
+- **Contraseña:** twwfor5q
+
+---
+
+### Nota de Seguridad
+⚠️ **Estas credenciales son estrictamente de prueba evitar uso en produccion(se eliminaran de la BD por seguridad luego de las pruebas para evitar accesos no deseados)
+
 ## 20. Bibliografía
 - _"Node.js Design Patterns"_ de Mario Casciaro y Luciano Mammino.
 - [Documentación oficial de React](https://reactjs.org)
