@@ -57,7 +57,6 @@ const ReferenciaEdit: React.FC = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { hasPermission } = useAuth();
 
   const [referencia, setReferencia] = useState<Referencia>({
     fecha_ingreso: '',
@@ -102,6 +101,8 @@ const ReferenciaEdit: React.FC = () => {
   const [establecimientos, setEstablecimientos] = useState<Establecimiento[]>([]);
   const [doctores, setDoctores] = useState<Doctor[]>([]);
   const [isC12Editable, setIsC12Editable] = useState(false);
+  const [referenteNombre, setReferenteNombre] = useState<string>('');
+  const [receptorNombre, setReceptorNombre] = useState<string>('');
 
   useEffect(() => {
     // Cargar datos iniciales para el formulario de edición
@@ -109,7 +110,7 @@ const ReferenciaEdit: React.FC = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/referencias/${id}`);
         const data = response.data;
-
+  
         // Setear datos de referencia
         setReferencia({
           fecha_ingreso: data.fecha_ingreso || '',
@@ -122,7 +123,8 @@ const ReferenciaEdit: React.FC = () => {
           establecimiento_salud_referente: data.establecimiento_salud_referente || '',
           establecimiento_salud_receptor: data.establecimiento_salud_receptor || '',
         });
-
+  
+        // Setear datos del paciente
         setPaciente({
           nombres: data.paciente_paciente_ID?.nombres || '',
           primer_apellido: data.paciente_paciente_ID?.primer_apellido || '',
@@ -138,29 +140,49 @@ const ReferenciaEdit: React.FC = () => {
           tipo_discapacidad: data.paciente_paciente_ID?.tipo_discapacidad || '',
           grado_discapacidad: data.paciente_paciente_ID?.grado_discapacidad || '',
         });
-
+  
         // Cargar detalles del establecimiento referente (C1)
         if (data.establecimiento_salud_referente) {
+          const responseReferente = await axios.get(
+            `${API_BASE_URL}/establecimiento/${data.establecimiento_salud_referente}`
+          );
+          setReferenteNombre(responseReferente.data.nombre || 'Desconocido');
           await handleEstablecimientoChange(
             'establecimiento_salud_referente',
             data.establecimiento_salud_referente
           );
         }
-
+  
+        // Controlar el estado de C12 y cargar detalles del establecimiento receptor
         if (data.establecimiento_salud_receptor) {
+          const responseReceptor = await axios.get(
+            `${API_BASE_URL}/establecimiento/${data.establecimiento_salud_receptor}`
+          );
+          setReceptorNombre(responseReceptor.data.nombre || 'Desconocido');
           await handleEstablecimientoChange(
             'establecimiento_salud_receptor',
             data.establecimiento_salud_receptor
           );
-          setIsC12Editable(false); // Bloquear C12 si ya tiene datos
+  
+          // Si los datos de C12 están completos, bloquear el campo C12
+          if (data.fecha_recepcion && data.hora_recepcion && data.medio_comunicacion) {
+            setIsC12Editable(false);
+          } else {
+            // Permitir la edición si faltan datos en C12
+            setIsC12Editable(true);
+          }
         } else {
-          setIsC12Editable(true); // Hacer C12 editable si está vacío
+          // Si no hay datos en establecimiento_salud_receptor, hacer C12 editable
+          setIsC12Editable(true);
         }
-
+  
+        // Cargar datos del campo C10 (Nombre, Cargo, Teléfono)
         if (data.nombre_contacto_receptor) {
           try {
             const encodedName = encodeURIComponent(data.nombre_contacto_receptor.trim());
-            const responseC10 = await axios.get(`${API_BASE_URL}/personal-salud/buscar-por-nombre/${encodedName}`);
+            const responseC10 = await axios.get(
+              `${API_BASE_URL}/personal-salud/buscar-por-nombre/${encodedName}`
+            );
             const personalData = responseC10.data.data;
             setReferencia((prev) => ({
               ...prev,
@@ -169,15 +191,31 @@ const ReferenciaEdit: React.FC = () => {
             }));
           } catch (error) {
             console.error('Error fetching C10 data:', error);
-            alert(`No se encontraron datos para el nombre proporcionado: ${data.nombre_contacto_receptor}`);
+            alert(
+              `No se encontraron datos para el nombre proporcionado: ${data.nombre_contacto_receptor}`
+            );
           }
         }
+        // Cargar lista de doctores para el establecimiento receptor
+      if (data.establecimiento_salud_receptor) {
+        const doctoresResponse = await axios.get(
+          `${API_BASE_URL}/personal-salud?establecimientoId=${data.establecimiento_salud_receptor}`
+        );
+        if (doctoresResponse.data?.data) {
+          setDoctores(
+            doctoresResponse.data.data.map((doctor: any) => ({
+              id: doctor.personal_ID,
+              nombreCompleto: `${doctor.nombres} ${doctor.primer_apellido}`,
+            }))
+          );
+        }
+      }
       } catch (error) {
         console.error('Error cargando la referencia:', error);
         alert('Error cargando la referencia.');
       }
     };
-
+  
     fetchReferencia();
   }, [id]);
 
@@ -215,48 +253,51 @@ const ReferenciaEdit: React.FC = () => {
     }));
   };
 
-  // Manejar cambios en los selects
-  const handleEstablecimientoChange = async (
-    field: 'establecimiento_salud_referente' | 'establecimiento_salud_receptor',
-    id: string
-  ) => {
-    setReferencia((prev) => ({
-      ...prev,
-      [field]: id,
-    }));
+ // Actualización del handleEstablecimientoChange
+const handleEstablecimientoChange = async (
+  field: 'establecimiento_salud_referente' | 'establecimiento_salud_receptor',
+  id: string
+) => {
+  setReferencia((prev) => ({
+    ...prev,
+    [field]: id,
+  }));
 
-    try {
-      const response = await axios.get(`${API_BASE_URL}/establecimiento/${id}`);
-      const data = response.data;
+  try {
+    const response = await axios.get(`${API_BASE_URL}/establecimiento/${id}`);
+    const data = response.data;
 
-      if (field === 'establecimiento_salud_referente') {
-        setReferenteDetails({
-          nivel: data.nivel || '',
-          red: data.redCordinacion?.nombre || '',
-          municipio: data.municipio?.nombre || '',
-          telefono: data.telefono || '',
-        });
-      } else if (field === 'establecimiento_salud_receptor') {
-        setReceptorDetails({
-          nivel: data.nivel || '',
-        });
+    if (field === 'establecimiento_salud_referente') {
+      setReferenteDetails({
+        nivel: data.nivel || '',
+        red: data.redCordinacion?.nombre || '',
+        municipio: data.municipio?.nombre || '',
+        telefono: data.telefono || '',
+      });
+      setReferenteNombre(data.nombre || 'Desconocido');
+    } else if (field === 'establecimiento_salud_receptor') {
+      setReceptorDetails({
+        nivel: data.nivel || '',
+      });
+      setReceptorNombre(data.nombre || 'Desconocido');
 
-        const doctoresResponse = await axios.get(
-          `${API_BASE_URL}/personal-salud?establecimientoId=${id}`
+      const doctoresResponse = await axios.get(
+        `${API_BASE_URL}/personal-salud?establecimientoId=${id}`
+      );
+      if (doctoresResponse.data?.data) {
+        setDoctores(
+          doctoresResponse.data.data.map((doctor: any) => ({
+            id: doctor.personal_ID,
+            nombreCompleto: `${doctor.nombres} ${doctor.primer_apellido}`,
+          }))
         );
-        if (doctoresResponse.data?.data) {
-          setDoctores(
-            doctoresResponse.data.data.map((doctor: any) => ({
-              id: doctor.personal_ID,
-              nombreCompleto: `${doctor.nombres} ${doctor.primer_apellido}`,
-            }))
-          );
-        }
       }
-    } catch (error) {
-      console.error('Error cargando datos del establecimiento:', error);
     }
-  };
+
+  } catch (error) {
+    console.error('Error cargando datos del establecimiento:', error);
+  }
+};
 
   // Guardar los cambios
   const handleSave = async () => {
@@ -272,6 +313,8 @@ const ReferenciaEdit: React.FC = () => {
         },
       };
 
+
+    
       await axios.patch(`${API_BASE_URL}/registro/${id}`, updateRegistroDto);
       alert('Referencia actualizada exitosamente.');
       navigate('/referencia');
@@ -280,11 +323,7 @@ const ReferenciaEdit: React.FC = () => {
       alert('Error guardando los cambios.');
     }
   };
-  const allowedRolesC12 = ['Admin Sedes', 'Admin Hospital'];
-
-  // Verificación para el campo C12
-  const isC12Empty = !referencia.establecimiento_salud_receptor;
-
+  
   return (
     <div className="formulario-referencias">
       <h2 className="titulo-formulario">Editar Referencia</h2>
@@ -292,17 +331,9 @@ const ReferenciaEdit: React.FC = () => {
       <ExpandableSection title="DATOS DEL ESTABLECIMIENTO DE SALUD REFERENTE (C1)">
         <div className="grid-container">
         <div className="form-group">
-  <label>Nombre del establecimiento:</label>
-  <select value={referencia.establecimiento_salud_referente} disabled>
-    <option>
-      {
-        establecimientos.find(
-          (e) => e.id.toString() === referencia.establecimiento_salud_referente
-        )?.nombre || 'Cargando...'
-      }
-    </option>
-  </select>
-</div>
+            <label>Nombre del establecimiento:</label>
+            <input type="text" value={referenteNombre} readOnly />
+          </div>
 
 
           <div className="form-group">
@@ -806,17 +837,9 @@ const ReferenciaEdit: React.FC = () => {
             <>
               {/* Mostrar datos ya guardados */}
               <div className="form-group">
-                <label>Nombre del establecimiento:</label>
-                <select value={referencia.establecimiento_salud_receptor} disabled>
-                  <option>
-                    {
-                      establecimientos.find(
-                        (e) => e.id.toString() === referencia.establecimiento_salud_receptor
-                      )?.nombre || 'Cargando...'
-                    }
-                  </option>
-                </select>
-              </div>
+            <label>Nombre del establecimiento:</label>
+            <input type="text" value={receptorNombre} readOnly />
+          </div>
               <div className="form-group">
                 <label>Nivel:</label>
                 <input type="text" value={receptorDetails.nivel} readOnly />

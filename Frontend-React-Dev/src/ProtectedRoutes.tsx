@@ -170,7 +170,7 @@ function ProtectedRoutes() {
             <Route path="/referencia/pendiente" element={<ReferenciaPendiente />} />
             
             <Route path="/referencia/edit/:id" element={<ReferenciaEdit />} />
-            <Route path="/referencia" element={<ReferenciaList />} />
+            <Route path='/referencia' element={hasPermission(['Doctor', 'Enfermero']) ? <ReferenciaList /> : <Navigate to="/referencia/pendiente" />}/>
             
         </Route>
       </Routes>

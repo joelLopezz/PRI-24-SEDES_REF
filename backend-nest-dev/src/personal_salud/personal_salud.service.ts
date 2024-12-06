@@ -209,13 +209,6 @@ export class PersonalSaludService {
     return personalSalud;
   }
   
-  async findByNombreConcatenado(nombreConcatenado: string): Promise<PersonalSalud> {
-    const [nombre, primerApellido] = nombreConcatenado.split(' ');
-    return this.personalSaludRepository.findOne({
-      where: { nombres: nombre, primer_apellido: primerApellido },
-    });
-  }
-
   
   // Método para actualizar el personal de salud por ID
   async updatePersonalSalud(id: number, updatePersonalSaludDto: CreatePersonalSaludDto): Promise<PersonalSalud> {

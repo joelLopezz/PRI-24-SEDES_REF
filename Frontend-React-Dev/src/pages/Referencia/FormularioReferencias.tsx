@@ -47,9 +47,11 @@ const FormularioReferencias: React.FC = () => {
     red: '',
     municipio: '',
     telefono: '',
+    nombre: '',
   });
   const [receptorDetails, setReceptorDetails] = useState({
     nivel: '',
+    nombre: '',
   });
   const [establecimientos, setEstablecimientos] = useState<
     { id: number; nombre: string }[]
@@ -95,10 +97,12 @@ const FormularioReferencias: React.FC = () => {
           red: data.redCordinacion?.nombre || '',
           municipio: data.municipio?.nombre || '',
           telefono: data.telefono || '',
+          nombre: data.nombre || '',
         });
       } else if (field === 'establecimiento_salud_receptor') {
         setReceptorDetails({
           nivel: data.nivel || '',
+          nombre: data.nombre || '',
         });
   
         // Fetch doctores del establecimiento receptor
