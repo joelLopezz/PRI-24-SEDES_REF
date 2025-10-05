@@ -52,7 +52,7 @@ export class PersonalSaludService {
       console.log('Paso 6: Role:', usuarioRol);
 
     let establecimiento: number;
-    if (usuarioRol === 'Admin Sedes') {
+    if (usuarioRol === 'Admin Sedes' || usuarioRol === 'ADMIN') {
       const establecimientoAsig = await this.establecimientoRepository.findOne({
         where: { id: createPersonalSaludDto.establecimiento_salud_idestablecimiento_ID },
       });
